@@ -11,6 +11,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 set(SRC
     src/main.cpp
     src/window/window.cpp
+    src/render/renderer.cpp
+    src/render/shaders.cpp
+    src/render/textures.cpp
 )
 
 add_executable(game ${SRC})

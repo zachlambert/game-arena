@@ -1,4 +1,4 @@
-#include "render/shader_manager.h"
+#include "render/shaders.h"
 
 #include <fstream>
 #include <iostream>
@@ -6,8 +6,7 @@
 #include <vector>
 
 #include <GL/glew.h>
-
-namespace mist {
+// SHADER LOADING FUNCTION
 
 bool load_file_into_string(const std::string &file_path, std::string& string)
 {
@@ -52,8 +51,8 @@ void compile_and_check_shader(
 unsigned int load_shader(const std::string &vs_path, const std::string &fs_path)
 {
     // Create shaders
-    unsigned int vertex_shader_id = glCreateShader(GL_VERTEX_SHADER);
-    unsigned int fragment_shader_id = glCreateShader(GL_FRAGMENT_SHADER);
+    unsigned int vertex_program_id = glCreateShader(GL_VERTEX_SHADER);
+    unsigned int fragment_program_id = glCreateShader(GL_FRAGMENT_SHADER);
 
     std::string vertex_shader_code;
     if (!load_file_into_string(vs_path, vertex_shader_code)) {
@@ -66,17 +65,17 @@ unsigned int load_shader(const std::string &vs_path, const std::string &fs_path)
     }
 
     compile_and_check_shader(
-        vs_path, vertex_shader_code, vertex_shader_id
+        vs_path, vertex_shader_code, vertex_program_id
     );
 
     compile_and_check_shader(
-        fs_path, fragment_shader_code, fragment_shader_id
+        fs_path, fragment_shader_code, fragment_program_id
     );
 
     // Link the program
     GLuint program_id = glCreateProgram();
-    glAttachShader(program_id, vertex_shader_id);
-    glAttachShader(program_id, fragment_shader_id);
+    glAttachShader(program_id, vertex_program_id);
+    glAttachShader(program_id, fragment_program_id);
     glLinkProgram(program_id);
 
     // Check the program
@@ -93,33 +92,15 @@ unsigned int load_shader(const std::string &vs_path, const std::string &fs_path)
         std::cout << program_error_message << std::endl;
     }
 
-    glDetachShader(program_id, vertex_shader_id);
-    glDetachShader(program_id, fragment_shader_id);
+    glDetachShader(program_id, vertex_program_id);
+    glDetachShader(program_id, fragment_program_id);
 
-    glDeleteShader(vertex_shader_id);
-    glDeleteShader(fragment_shader_id);
+    glDeleteShader(vertex_program_id);
+    glDeleteShader(fragment_program_id);
 
     return program_id;
 }
 
-ShaderManager::ShaderManager(std::string base_dir)
-{
-    shaders[static_cast<std::size_t>(ShaderType::COLORED)] = std::unique_ptr<Shader>(new ShaderColored(load_shader(
-        base_dir + "shaders/colored.vs", base_dir + "shaders/colored.fs"
-    )));
-    shaders[static_cast<std::size_t>(ShaderType::TEXTURED)] = std::unique_ptr<Shader>(new ShaderTextured(load_shader(
-        base_dir + "shaders/textured.vs", base_dir + "shaders/textured.fs"
-    )));
-}
-
-std::size_t ShaderManager::determine_shader_index(const Material &material)
-{
-    switch (material.type) {
-        case MaterialType::COLORED:
-            return static_cast<std::size_t>(ShaderType::COLORED);
-        case MaterialType::TEXTURED:
-            return static_cast<std::size_t>(ShaderType::TEXTURED);
-    }
-}
-
-} // namespace mist
+Shaders::Shaders(const std::string &base_dir):
+    sprite_program_id(load_shader(base_dir + "shaders/sprite.vs", base_dir + "shaders/sprite.fs"))
+{}

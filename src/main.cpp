@@ -10,6 +10,7 @@
 #include <glm/gtx/transform.hpp>
 
 #include "window/window.h"
+#include "render/renderer.h"
 
 int main()
 {
@@ -18,7 +19,11 @@ int main()
         return 1;
     }
 
+    Renderer renderer;
+    renderer.initialise();
+
     while (window.is_running()) {
+        renderer.render();
         window.update();
     }
 
