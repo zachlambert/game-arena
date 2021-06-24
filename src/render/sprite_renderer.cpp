@@ -1,4 +1,5 @@
 #include "render/sprite_renderer.h"
+#include <iostream>
 
 void SpriteRenderer::load_sprite(const SpriteConfig &config)
 {
@@ -110,8 +111,14 @@ void SpriteRenderer::render(const Command &command)
     const Sprite &sprite = sprites[command.sprite_index];
 
     glBindTexture(GL_TEXTURE_2D, sprite.diffuse_texture_id);
+    // std::cout << "Tex id: " << sprite.diffuse_texture_id << std::endl;
 
     glUniformMatrix4fv(m_loc, 1, GL_FALSE, &(*command.model)[0][0]);
+    auto vpos = (*command.model) * glm::vec4(0, 0, 0, 1);
+    // std::cout << "Pos : " << vpos.x << ", " << vpos.y << ", " << vpos.z << std::endl;
+
+    // std::cout << "Vertices offset: " << sprite.vertices_offset << std::endl;
+    // std::cout << "Indices offset: " << sprite.indices_offset << std::endl;
 
     glDrawElementsBaseVertex(
         GL_TRIANGLES, 6, GL_UNSIGNED_SHORT,

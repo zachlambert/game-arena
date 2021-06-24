@@ -3,66 +3,35 @@
 
 #include <vector>
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/transform.hpp>
-
-struct Camera {
-    double aspect_ratio;
-    glm::vec2 pos;
-    double zoom;
-    double orientation;
-    std::size_t num_levels;
-    static constexpr double base_scaling = 0.001f;
-
-    mutable glm::mat4 view;
-    void update_view_matrix() const {
-        view = glm::scale(glm::vec3(base_scaling*zoom, base_scaling*zoom*aspect_ratio, 1.0f/num_levels))
-            * glm::rotate((float)orientation, glm::vec3(0, 0, 1))
-            * glm::translate(glm::vec3(-pos.x, -pos.y, 0));
-    }
-
-    // aspect ratio = width / height
-    Camera(double aspect_ratio): aspect_ratio(aspect_ratio), pos(0, 0), zoom(1), orientation(0) {}
-};
-
-struct Entity {
-    glm::vec2 pos;
-    double depth;
-    double orientation;
-
-    mutable glm::mat4 model;
-    // TODO: Only make this update when parameters have changed
-    // OR have two types of entity: one which never or rarely moves, where
-    // you can keep a flag for when anything changes.
-    // For the other, except it to continually change so recalculate each time.
-    void update_model_matrix() const {
-        model = glm::translate(glm::vec3(pos.x, pos.y, depth))
-                * glm::rotate((float)orientation, glm::vec3(0, 0, 1));
-    }
-    int sprite_index; // -1 For no sprite
-
-    Entity(): pos(0, 0), depth(-1), orientation(0) {}
-};
+#include "world/camera.h"
+#include "world/entity.h"
 
 class World {
 public:
     World(const Camera &camera): camera(camera) {}
-    void add_entity(const Entity &entity) { entities.push_back(entity); }
-    void add_player(const Entity &entity) {
-        player_index = entities.size();
-        entities.push_back(entity);
-    }
-    Entity &player(){ return entities[player_index]; }
+
+    void create_default_world();
+    void create_entity(
+        const Action *action_in,
+        const State *state_in,
+        const Visual *visual_in
+    );
+
     void update(double dt);
-
     const Camera &get_camera()const{ return camera; }
-    const std::vector<Entity> &get_entities()const{ return entities; }
+    const std::vector<Visual> &get_visuals()const{ return visuals; }
 private:
-    Camera camera;
-    std::vector<Entity> entities;
-    std::size_t player_index;
-};
+    void update_action(int action_id);
+    void update_state(int state_id, double dt);
+    void update_visual(int visual_id);
 
-void create_default_world(World &world);
+    std::vector<Entity> entities;
+
+    std::vector<State> states;
+    std::vector<Action> actions;
+
+    Camera camera;
+    std::vector<Visual> visuals;
+};
 
 #endif

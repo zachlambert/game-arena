@@ -26,7 +26,7 @@ int main()
 
     Camera camera(1080.0f/720);
     World world(camera);
-    create_default_world(world);
+    world.create_default_world();
 
     Clock clock;
 
