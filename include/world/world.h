@@ -7,6 +7,7 @@
 #include <glm/gtx/transform.hpp>
 
 struct Camera {
+    double aspect_ratio;
     glm::vec2 pos;
     double zoom;
     double orientation;
@@ -15,12 +16,13 @@ struct Camera {
 
     mutable glm::mat4 view;
     void update_view_matrix() const {
-        view = glm::scale(glm::vec3(base_scaling*zoom, base_scaling*zoom, 1.0f/num_levels))
+        view = glm::scale(glm::vec3(base_scaling*zoom, base_scaling*zoom*aspect_ratio, 1.0f/num_levels))
             * glm::rotate((float)orientation, glm::vec3(0, 0, 1))
             * glm::translate(glm::vec3(-pos.x, -pos.y, 0));
     }
 
-    Camera(): pos(0, 0), zoom(1), orientation(0) {}
+    // aspect ratio = width / height
+    Camera(double aspect_ratio): aspect_ratio(aspect_ratio), pos(0, 0), zoom(1), orientation(0) {}
 };
 
 struct Entity {
@@ -45,6 +47,7 @@ struct Entity {
 struct World {
     Camera camera;
     std::vector<Entity> entities;
+    World(const Camera &camera): camera(camera) {}
 };
 
 #endif

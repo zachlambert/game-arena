@@ -22,7 +22,8 @@ int main()
     Renderer renderer;
     renderer.initialise();
 
-    World world;
+    Camera camera(1080.0f/720);
+    World world(camera);
 
     Entity entity1;
     entity1.sprite_index = 0;
