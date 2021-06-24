@@ -36,11 +36,12 @@ struct Camera {
     }
 
     // aspect ratio = screen_width / height
-    Camera(int screen_width, int screen_height):
+    Camera(int screen_width, int screen_height, std::size_t num_levels = 16):
         screen_width(screen_width),
         screen_height(screen_height),
         aspect_ratio((double)screen_width/screen_height),
-        pos(0, 0), zoom(1), orientation(0) {}
+        pos(0, 0), zoom(1), orientation(0),
+        num_levels(num_levels) {}
 };
 
 #endif
