@@ -44,10 +44,25 @@ struct Entity {
     Entity(): pos(0, 0), depth(-1), orientation(0) {}
 };
 
-struct World {
+class World {
+public:
+    World(const Camera &camera): camera(camera) {}
+    void add_entity(const Entity &entity) { entities.push_back(entity); }
+    void add_player(const Entity &entity) {
+        player_index = entities.size();
+        entities.push_back(entity);
+    }
+    Entity &player(){ return entities[player_index]; }
+    void update(double dt);
+
+    const Camera &get_camera()const{ return camera; }
+    const std::vector<Entity> &get_entities()const{ return entities; }
+private:
     Camera camera;
     std::vector<Entity> entities;
-    World(const Camera &camera): camera(camera) {}
+    std::size_t player_index;
 };
+
+void create_default_world(World &world);
 
 #endif

@@ -190,18 +190,18 @@ void Renderer::render(const World &world)
     glClearColor(0.8f, 0.8f, 0.8f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    world.camera.update_view_matrix();
-    for (const auto &entity: world.entities) {
+    world.get_camera().update_view_matrix();
+    for (const auto &entity: world.get_entities()) {
         entity.update_model_matrix();
     }
 
     // Draw sprites
     SpriteRenderer::Params sprite_params;
-    sprite_params.view = &world.camera.view;
+    sprite_params.view = &world.get_camera().view;
     sprite_renderer.enable(sprite_params);
 
     SpriteRenderer::Command sprite_command;
-    for (const auto &entity: world.entities) {
+    for (const auto &entity: world.get_entities()) {
         if (entity.sprite_index >= 0) {
             sprite_command.sprite_index = entity.sprite_index;
             sprite_command.model = &entity.model;

@@ -10,7 +10,9 @@
 #include <glm/gtx/transform.hpp>
 
 #include "window/window.h"
+#include "window/clock.h"
 #include "render/renderer.h"
+#include "world/world.h"
 
 int main()
 {
@@ -24,22 +26,12 @@ int main()
 
     Camera camera(1080.0f/720);
     World world(camera);
+    create_default_world(world);
 
-    Entity entity1;
-    entity1.sprite_index = 0;
-    entity1.depth = -1;
-    entity1.orientation = 0.5;
-    world.entities.push_back(entity1);
-
-    Entity entity2;
-    entity2.sprite_index = 3;
-    entity2.pos.x = 200;
-    entity2.pos.y = 100;
-    entity2.orientation = -0.78;
-    entity2.depth = -2;
-    world.entities.push_back(entity2);
+    Clock clock;
 
     while (window.is_running()) {
+        world.update(clock.sample_dt());
         renderer.render(world);
         window.update();
     }
