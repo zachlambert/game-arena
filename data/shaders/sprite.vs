@@ -10,6 +10,6 @@ uniform mat4 V;
 uniform mat4 M;
 
 void main(){
-    gl_Position = vec4(vertexUV[0], vertexUV[1], 0, 1);
+    gl_Position = V * M * vec4(vertexPosition_modelspace, 1);
     UV = vertexUV;
 }

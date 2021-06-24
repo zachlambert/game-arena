@@ -69,14 +69,16 @@ void SpriteRenderer::initialise(unsigned int program_id)
     v_loc = glGetUniformLocation(program_id, "V");
     diffuse_texture_loc = glGetUniformLocation(program_id, "diffuse_texture");
 
-    // Must have loaded all sprites
+    // 1. Generate ids
 
     glGenVertexArrays(1, &static_VAO);
     glGenBuffers(1, &static_VBO);
     glGenBuffers(1, &static_EBO);
 
+    // 2. Bind vertex array
     glBindVertexArray(static_VAO);
 
+    // 3. Bind and configure buffer for vertex attributes
     glBindBuffer(GL_ARRAY_BUFFER, static_VBO);
     glBufferData(
         GL_ARRAY_BUFFER,
@@ -85,57 +87,53 @@ void SpriteRenderer::initialise(unsigned int program_id)
         GL_STATIC_DRAW
     );
 
+    // 4. Bind and configure buffer for vertex attributes
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, static_EBO);
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER,
+    glBufferData(
+        GL_ELEMENT_ARRAY_BUFFER,
         static_indices.size() * sizeof(unsigned short),
         &static_indices[0],
         GL_STATIC_DRAW
     );
 
-    // Attribute 0: Vertex positions
-    glEnableVertexAttribArray(0);
+    // 5. Define the vertex buffer attributes
+
     glVertexAttribPointer(
         0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
         (void*)0
     );
+    glEnableVertexAttribArray(0);
 
-    // Attribute 1: Texture coordinates
-    glEnableVertexAttribArray(1);
     glVertexAttribPointer(
         1, 2, GL_UNSIGNED_SHORT, GL_TRUE, sizeof(Vertex),
         (void*)offsetof(Vertex, tex_coords)
     );
+    glEnableVertexAttribArray(1);
 }
 
-void SpriteRenderer::use(const Params &params)
+void SpriteRenderer::enable(const Params &params)
 {
-    glBindVertexArray(static_VAO);
     glUseProgram(program_id);
+    glBindVertexArray(static_VAO);
     glUniformMatrix4fv(v_loc, 1, GL_FALSE, &params.view[0][0]);
+    glActiveTexture(GL_TEXTURE0);
+    glUniform1i(diffuse_texture_loc, 0);
 }
 
 void SpriteRenderer::render(const Command &command)
 {
     const Sprite &sprite = sprites[command.sprite_index];
 
-    glActiveTexture(GL_TEXTURE0);
-    glUniform1i(diffuse_texture_loc, 0);
     glBindTexture(GL_TEXTURE_2D, sprite.diffuse_texture_id);
 
     glUniformMatrix4fv(m_loc, 1, GL_FALSE, &command.model[0][0]);
 
-    glDrawElements(
+    glDrawElementsBaseVertex(
         GL_TRIANGLES, 6, GL_UNSIGNED_SHORT,
-        (void*)(sizeof(unsigned short) * sprite.indices_offset)
+        (void*)(sizeof(unsigned short) * sprite.indices_offset),
+        sprite.vertices_offset
     );
 
-    for (int i = 0; i < static_indices.size(); i++) {
-        Vertex v = static_vertices[static_indices[i]];
-        glm::vec4 vpos((float)v.position[0], (float)v.position[1], 0, 1.0f);
-        glm::mat4 view = glm::scale(glm::vec3(0.02f, 0.02f, 1)) * glm::rotate(0.0f, glm::vec3(0, 0, 1));
-        vpos = view * command.model * vpos;
-        // std::cout << "X: " << vpos[0] << ", Y: " << vpos[1] << ", Z: " << vpos[2] << ", W: " << vpos[3] << std::endl;
-    }
     // std::cout << "Error: " << glGetError() << std::endl;
 }
 
@@ -147,13 +145,13 @@ Renderer::Renderer(const std::string &base_dir):
 {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
-    // glEnable(GL_CULL_FACE);
+
+    glEnable(GL_BLEND);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void Renderer::initialise()
 {
-    sprite_renderer.initialise(shaders.sprite_program_id);
-
     {
         SpriteConfig config;
         config.texture_id = texture_manager.get_texture_id("spritesheet1.png");
@@ -163,6 +161,8 @@ void Renderer::initialise()
         config.size = glm::vec2(256, 256);
         sprite_renderer.load_sprite(config);
     }
+
+    sprite_renderer.initialise(shaders.sprite_program_id);
 }
 
 void Renderer::render()
@@ -174,11 +174,11 @@ void Renderer::render()
     
     glm::mat4 view = glm::scale(glm::vec3(0.002f, 0.002f, 1)) * glm::rotate(0.0f, glm::vec3(0, 0, 1));
     SpriteRenderer::Params params = { view };
-    sprite_renderer.use(params);
+    sprite_renderer.enable(params);
 
     double x = 0;
     double y = 0;
-    double depth = 1;
+    double depth = -1;
     double orientation = 0;
 
     glm::mat4 model =

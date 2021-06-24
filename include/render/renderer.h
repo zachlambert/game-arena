@@ -60,7 +60,7 @@ public:
     struct Params {
         const glm::mat4 &view;
     };
-    void use(const Params &params);
+    void enable(const Params &params);
 
     struct Command {
         const glm::mat4 &model;
