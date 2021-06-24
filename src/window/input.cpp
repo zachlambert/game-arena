@@ -4,6 +4,7 @@
 #include <unordered_map>
 std::unordered_map<InputType, InputState> inputs;
 std::unordered_map<int, InputType> key_mappings;
+std::unordered_map<int, InputType> mouse_button_mappings;
 
 void key_callback(
     GLFWwindow* window,
@@ -23,14 +24,38 @@ void key_callback(
     }
 }
 
+void mouse_button_callback(
+    GLFWwindow* window,
+    int button,
+    int action,
+    int mods)
+{
+    auto search = mouse_button_mappings.find(button);
+    if (search != mouse_button_mappings.end()) {
+        InputType input_id = search->second;
+        if (action == GLFW_PRESS) {
+            inputs[input_id] = InputState::PRESSED;
+        } else if (action == GLFW_RELEASE) {
+            inputs[input_id] = InputState::RELEASED;
+        }
+    }
+}
+
 Input::Input(const Window &window): window(window)
 {
     glfwSetKeyCallback(window.window, key_callback);
+    glfwSetMouseButtonCallback(window.window, mouse_button_callback);
 }
 
-void Input::register_input(InputType input_id, int key)const
+void Input::register_key(InputType input_id, int key)const
 {
     key_mappings[key] = input_id;
+    inputs[input_id] = InputState::UP;
+}
+
+void Input::register_mouse_button(InputType input_id, int button)const
+{
+    mouse_button_mappings[button] = input_id;
     inputs[input_id] = InputState::UP;
 }
 

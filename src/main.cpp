@@ -34,10 +34,12 @@ int main()
     Clock clock;
     Input input(window);
     
-    input.register_input(InputType::MOVE_RIGHT, GLFW_KEY_D);
-    input.register_input(InputType::MOVE_LEFT, GLFW_KEY_A);
-    input.register_input(InputType::MOVE_UP, GLFW_KEY_W);
-    input.register_input(InputType::MOVE_DOWN, GLFW_KEY_S);
+    input.register_key(InputType::MOVE_RIGHT, GLFW_KEY_D);
+    input.register_key(InputType::MOVE_LEFT, GLFW_KEY_A);
+    input.register_key(InputType::MOVE_UP, GLFW_KEY_W);
+    input.register_key(InputType::MOVE_DOWN, GLFW_KEY_S);
+
+    input.register_mouse_button(InputType::CLICK_LEFT, GLFW_MOUSE_BUTTON_LEFT);
 
     while (window.is_running()) {
         window.update();

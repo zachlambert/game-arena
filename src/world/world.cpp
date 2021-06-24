@@ -1,5 +1,6 @@
 #include "world/world.h"
 
+#include <iostream>
 #include <random>
 
 void World::create_default_world()
@@ -16,14 +17,14 @@ void World::create_default_world()
     // Create player
 
     action.type = ActionType::PLAYER;
-    visual.sprite_index = 0;
+    visual.sprite_index = 3;
     create_entity(&action, &state, &visual);
 
     // Create moving enemy
 
     action.type = ActionType::RANDOM_WALK;
     state.pos.x = -100;
-    visual.sprite_index = 3;
+    visual.sprite_index = 0;
     create_entity(&action, &state, &visual);
 
     // Create stationary entity
@@ -92,6 +93,11 @@ void update_action_player(State &state, const Input &input, Camera &camera)
     glm::vec2 mouse_pos_screen = input.get_mouse_pos();
     glm::vec2 mouse_pos_world = camera.project_point(mouse_pos_screen);
     state.orientation = std::atan2(mouse_pos_world.y - state.pos.y, mouse_pos_world.x - state.pos.x);
+
+    if (input.query_input_state(InputType::CLICK_LEFT) == InputState::PRESSED)
+    {
+        std::cout << "MOUSE PRESSED" << std::endl;
+    }
 }
 
 void update_action_random_walk(State &state)
@@ -126,7 +132,6 @@ void update_state(State &state, double dt)
 
 void update_visual(Visual &visual, const State &state)
 {
-
     visual.model = glm::translate(glm::vec3(state.pos.x, state.pos.y, visual.depth))
         * glm::rotate((float)state.orientation, glm::vec3(0, 0, 1));
 }
