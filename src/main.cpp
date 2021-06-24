@@ -21,7 +21,7 @@ int main()
         return 1;
     }
 
-    Renderer renderer;
+    Renderer renderer("data/");
     renderer.initialise();
 
     Camera camera(1080.0f/720);

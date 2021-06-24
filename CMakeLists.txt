@@ -14,7 +14,9 @@ set(SRC
     src/window/window.cpp
     src/render/renderer.cpp
     src/render/shaders.cpp
+    src/render/sprite_renderer.cpp
     src/render/textures.cpp
+    src/render/vertex.cpp
     src/world/world.cpp
 )
 
