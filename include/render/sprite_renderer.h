@@ -7,7 +7,6 @@
 #include <glm/glm.hpp>
 
 #include "render/textures.h"
-#include "render/vertex.h"
 
 // Passed to renderer to configure sprite
 struct SpriteConfig {
@@ -21,6 +20,14 @@ struct Sprite {
     unsigned int vertices_offset;
     unsigned int indices_offset;
 };
+
+struct SpriteVertex {
+    // 2D x, y, but add z for controlling draw order
+    glm::vec<3, GLfloat> position;
+    glm::vec<2, GLushort> tex_coords;
+    SpriteVertex(glm::vec3 position, glm::vec2 tex_coords);
+};
+
 
 class SpriteRenderer {
 public:
@@ -42,7 +49,7 @@ public:
 
 private:
     // OpenGL data
-    std::vector<Vertex> static_vertices;
+    std::vector<SpriteVertex> static_vertices;
     std::vector<unsigned short> static_indices;
     unsigned int static_VAO, static_VBO, static_EBO;
 

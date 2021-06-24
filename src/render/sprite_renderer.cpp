@@ -1,6 +1,18 @@
 #include "render/sprite_renderer.h"
 #include <iostream>
 
+SpriteVertex::SpriteVertex(glm::vec3 position, glm::vec2 tex_coords)
+{
+    // Position straightforward
+    this->position = position;
+    // Tex coords: Need to convert to normalised ushort
+    // If outside the [0, 1] range, clamp coordinates
+    this->tex_coords[0] = static_cast<unsigned short>(
+        glm::clamp(tex_coords.x, 0.0f, 1.0f) * (float)0xFFFF);
+    this->tex_coords[1] = static_cast<unsigned short>(
+        glm::clamp(tex_coords.y, 0.0f, 1.0f) * (float)0xFFFF);
+}
+
 void SpriteRenderer::load_sprite(const SpriteConfig &config)
 {
     double left = -config.size[0]/2 - config.offset[0];
@@ -15,19 +27,19 @@ void SpriteRenderer::load_sprite(const SpriteConfig &config)
 
     unsigned int vertices_offset = static_vertices.size();
 
-    static_vertices.push_back(Vertex(
+    static_vertices.push_back(SpriteVertex(
         glm::vec3(left, top, 0),
         glm::vec2(uv_left, uv_top)
     ));
-    static_vertices.push_back(Vertex(
+    static_vertices.push_back(SpriteVertex(
         glm::vec3(right, top, 0),
         glm::vec2(uv_right, uv_top)
     ));
-    static_vertices.push_back(Vertex(
+    static_vertices.push_back(SpriteVertex(
         glm::vec3(right, bot, 0),
         glm::vec2(uv_right, uv_bot)
     ));
-    static_vertices.push_back(Vertex(
+    static_vertices.push_back(SpriteVertex(
         glm::vec3(left, bot, 0),
         glm::vec2(uv_left, uv_bot)
     ));
@@ -68,7 +80,7 @@ void SpriteRenderer::initialise(unsigned int program_id)
     glBindBuffer(GL_ARRAY_BUFFER, static_VBO);
     glBufferData(
         GL_ARRAY_BUFFER,
-        static_vertices.size() * sizeof(Vertex),
+        static_vertices.size() * sizeof(SpriteVertex),
         &static_vertices[0],
         GL_STATIC_DRAW
     );
@@ -85,14 +97,14 @@ void SpriteRenderer::initialise(unsigned int program_id)
     // 5. Define the vertex buffer attributes
 
     glVertexAttribPointer(
-        0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+        0, 3, GL_FLOAT, GL_FALSE, sizeof(SpriteVertex),
         (void*)0
     );
     glEnableVertexAttribArray(0);
 
     glVertexAttribPointer(
-        1, 2, GL_UNSIGNED_SHORT, GL_TRUE, sizeof(Vertex),
-        (void*)offsetof(Vertex, tex_coords)
+        1, 2, GL_UNSIGNED_SHORT, GL_TRUE, sizeof(SpriteVertex),
+        (void*)offsetof(SpriteVertex, tex_coords)
     );
     glEnableVertexAttribArray(1);
 }
@@ -111,14 +123,7 @@ void SpriteRenderer::render(const Command &command)
     const Sprite &sprite = sprites[command.sprite_index];
 
     glBindTexture(GL_TEXTURE_2D, sprite.diffuse_texture_id);
-    // std::cout << "Tex id: " << sprite.diffuse_texture_id << std::endl;
-
     glUniformMatrix4fv(m_loc, 1, GL_FALSE, &(*command.model)[0][0]);
-    auto vpos = (*command.model) * glm::vec4(0, 0, 0, 1);
-    // std::cout << "Pos : " << vpos.x << ", " << vpos.y << ", " << vpos.z << std::endl;
-
-    // std::cout << "Vertices offset: " << sprite.vertices_offset << std::endl;
-    // std::cout << "Indices offset: " << sprite.indices_offset << std::endl;
 
     glDrawElementsBaseVertex(
         GL_TRIANGLES, 6, GL_UNSIGNED_SHORT,
