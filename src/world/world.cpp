@@ -142,6 +142,12 @@ void World::update(double dt, const Input &input)
     for (std::size_t i = 0; i < states.size(); i++) {
         State &state = states[i];
         update_state(state, dt);
+
+        // Also update camera pos
+        int action_id = entities[state.entity_id].action_id;
+        if (action_id >= 0 && actions[action_id].type == ActionType::PLAYER) {
+            camera.pos = state.pos;
+        }
     }
 
     for (std::size_t i = 0; i < visuals.size(); i++) {
