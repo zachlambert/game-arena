@@ -11,6 +11,8 @@
 #include "render/shaders.h"
 #include "render/textures.h"
 
+#include "world/world.h"
+
 struct Vertex {
     glm::vec<3, GLfloat> position; // 2D x, y, but add z for controlling draw order
     glm::vec<2, GLushort> tex_coords;
@@ -58,12 +60,12 @@ public:
     void initialise(unsigned int program_id);
 
     struct Params {
-        const glm::mat4 &view;
+        const glm::mat4 *view;
     };
     void enable(const Params &params);
 
     struct Command {
-        const glm::mat4 &model;
+        const glm::mat4 *model;
         std::size_t sprite_index;
     };
     void render(const Command &command);
@@ -87,7 +89,7 @@ class Renderer {
 public:
     Renderer(const std::string &base_dir = "data/");
     void initialise();
-    void render();
+    void render(const World &world);
 private:
     TextureManager texture_manager;
     Shaders shaders;

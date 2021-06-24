@@ -7,4 +7,7 @@ uniform sampler2D diffuse_texture;
 
 void main(){
     color = texture(diffuse_texture, UV).rgba;
+    if (color[3] == 0) {
+        discard;
+    }
 }

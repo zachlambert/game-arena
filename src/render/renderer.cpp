@@ -115,7 +115,7 @@ void SpriteRenderer::enable(const Params &params)
 {
     glUseProgram(program_id);
     glBindVertexArray(static_VAO);
-    glUniformMatrix4fv(v_loc, 1, GL_FALSE, &params.view[0][0]);
+    glUniformMatrix4fv(v_loc, 1, GL_FALSE, &(*params.view)[0][0]);
     glActiveTexture(GL_TEXTURE0);
     glUniform1i(diffuse_texture_loc, 0);
 }
@@ -126,7 +126,7 @@ void SpriteRenderer::render(const Command &command)
 
     glBindTexture(GL_TEXTURE_2D, sprite.diffuse_texture_id);
 
-    glUniformMatrix4fv(m_loc, 1, GL_FALSE, &command.model[0][0]);
+    glUniformMatrix4fv(m_loc, 1, GL_FALSE, &(*command.model)[0][0]);
 
     glDrawElementsBaseVertex(
         GL_TRIANGLES, 6, GL_UNSIGNED_SHORT,
@@ -145,9 +145,8 @@ Renderer::Renderer(const std::string &base_dir):
 {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
-
     glEnable(GL_BLEND);
-    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void Renderer::initialise()
@@ -165,26 +164,27 @@ void Renderer::initialise()
     sprite_renderer.initialise(shaders.sprite_program_id);
 }
 
-void Renderer::render()
+void Renderer::render(const World &world)
 {
     glClearColor(0.6f, 0.6f, 0.6f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Render sprites
-    
-    glm::mat4 view = glm::scale(glm::vec3(0.002f, 0.002f, 1)) * glm::rotate(0.0f, glm::vec3(0, 0, 1));
-    SpriteRenderer::Params params = { view };
-    sprite_renderer.enable(params);
+    world.camera.update_view_matrix();
+    for (const auto &entity: world.entities) {
+        entity.update_model_matrix();
+    }
 
-    double x = 0;
-    double y = 0;
-    double depth = -1;
-    double orientation = 0;
+    // Draw sprites
+    SpriteRenderer::Params sprite_params;
+    sprite_params.view = &world.camera.view;
+    sprite_renderer.enable(sprite_params);
 
-    glm::mat4 model =
-        glm::translate(glm::vec3(x, y, depth))
-        * glm::rotate((float)orientation, glm::vec3(0, 0, 1));
-
-    SpriteRenderer::Command command = { model, 0 };
-    sprite_renderer.render(command);
+    SpriteRenderer::Command sprite_command;
+    for (const auto &entity: world.entities) {
+        if (entity.sprite_index >= 0) {
+            sprite_command.sprite_index = entity.sprite_index;
+            sprite_command.model = &entity.model;
+            sprite_renderer.render(sprite_command);
+        }
+    }
 }
