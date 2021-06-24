@@ -11,6 +11,10 @@ class World {
 public:
     World(const Camera &camera): camera(camera) {}
 
+    void clear();
+    int entity_create();
+    Action &entity_create_action(int id);
+    unsigned int create_entity();
     void create_default_world();
     void create_entity(
         const Action *action_in,

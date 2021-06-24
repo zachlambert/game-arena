@@ -44,29 +44,13 @@ void initialise_mesh_renderer(MeshRenderer &renderer, const Shaders &shaders)
     std::vector<glm::vec2> vertices;
     glm::vec4 color;
 
+    // Normalised gun ray
+    // x_scale = length
+    // y_scale = tan(theta/2)*length
     vertices.push_back(glm::vec2(0, 0));
-    vertices.push_back(glm::vec2(0, 100));
-    vertices.push_back(glm::vec2(-100, 120));
-    vertices.push_back(glm::vec2(-100, 140));
-    vertices.push_back(glm::vec2(-50, 160));
-    vertices.push_back(glm::vec2(100, 160));
-    vertices.push_back(glm::vec2(100, 200));
-    vertices.push_back(glm::vec2(80, 200));
-    vertices.push_back(glm::vec2(80, 250));
-    vertices.push_back(glm::vec2(150, 250));
-    vertices.push_back(glm::vec2(150, 50));
-    vertices.push_back(glm::vec2(160, 450));
-    vertices.push_back(glm::vec2(120, 420));
-    vertices.push_back(glm::vec2(110, 380));
-    vertices.push_back(glm::vec2(120, 390));
-    vertices.push_back(glm::vec2(90, 390));
-    vertices.push_back(glm::vec2(90, 480));
-    vertices.push_back(glm::vec2(160, 470));
-    vertices.push_back(glm::vec2(200, 400));
-    // vertices.push_back(glm::vec2(250, 300));
-    // vertices.push_back(glm::vec2(200, 200));
-    vertices.push_back(glm::vec2(300, 0));
-    color = glm::vec4(1, 0, 0, 1);
+    vertices.push_back(glm::vec2(1, 1));
+    vertices.push_back(glm::vec2(1, -1));
+    color = glm::vec4(0.5, 0.5, 0.5, 1);
     renderer.load_mesh(triangulate_mesh(vertices, color));
 
     renderer.initialise(shaders.mesh_program_id);
