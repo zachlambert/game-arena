@@ -96,7 +96,8 @@ void update_action_player(State &state, const Input &input, Camera &camera)
 
     if (input.query_input_state(InputType::CLICK_LEFT) == InputState::PRESSED)
     {
-        std::cout << "MOUSE PRESSED" << std::endl;
+        static int count = 0;
+        std::cout << "MOUSE PRESSED " << count++ << std::endl;
     }
 }
 
@@ -154,6 +155,10 @@ void World::update(double dt, const Input &input)
             camera.pos = state.pos;
         }
     }
+
+    camera.zoom = std::exp(std::log(camera.zoom)+input.get_scroll_amount());
+    if (camera.zoom < 0.1) camera.zoom = 0.1;
+    if (camera.zoom > 10) camera.zoom = 10;
 
     for (std::size_t i = 0; i < visuals.size(); i++) {
         Visual &visual = visuals[i];

@@ -5,6 +5,7 @@
 std::unordered_map<InputType, InputState> inputs;
 std::unordered_map<int, InputType> key_mappings;
 std::unordered_map<int, InputType> mouse_button_mappings;
+double scroll_yoffset;
 
 void key_callback(
     GLFWwindow* window,
@@ -41,10 +42,21 @@ void mouse_button_callback(
     }
 }
 
-Input::Input(const Window &window): window(window)
+void mouse_scroll_callback(
+    GLFWwindow *window,
+    double xoffset,
+    double yoffset)
+{
+    scroll_yoffset += yoffset;
+}
+
+Input::Input(const Window &window, double scroll_scale):
+    window(window), scroll_scale(scroll_scale)
 {
     glfwSetKeyCallback(window.window, key_callback);
     glfwSetMouseButtonCallback(window.window, mouse_button_callback);
+    glfwSetScrollCallback(window.window, mouse_scroll_callback);
+    scroll_yoffset = 0;
 }
 
 void Input::register_key(InputType input_id, int key)const
@@ -81,4 +93,11 @@ glm::vec2 Input::get_mouse_pos()const
     double mx, my;
     glfwGetCursorPos(window.window, &mx, &my);
     return glm::vec2(mx, my);
+}
+
+double Input::get_scroll_amount()const
+{
+    double return_value = scroll_yoffset * scroll_scale;
+    scroll_yoffset = 0;
+    return return_value;
 }
