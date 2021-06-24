@@ -24,9 +24,15 @@ struct State {
     State(): entity_id(0), pos(0, 0), orientation(0), twist(0, 0, 0) {}
 };
 
+enum class VisualType {
+    SPRITE,
+    MESH
+};
+
 struct Visual {
     std::size_t entity_id;
-    unsigned int sprite_index;
+    VisualType type;
+    unsigned int render_index; // sprite_index, mesh_index, etc
     mutable glm::mat4 model;
     double depth;
     Visual(): depth(-1) {}

@@ -53,17 +53,35 @@ void Renderer::render(const World &world)
     glClearColor(0.8f, 0.8f, 0.8f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Draw sprites
-    SpriteRenderer::Params sprite_params;
-    sprite_params.view = &world.get_camera().view;
-    sprite_renderer.enable(sprite_params);
+    // Render sprites
+    {
+        SpriteRenderer::Params params;
+        params.view = &world.get_camera().view;
+        sprite_renderer.enable(params);
 
-    SpriteRenderer::Command sprite_command;
-    for (const auto &visual: world.get_visuals()) {
-        if (visual.sprite_index >= 0) {
-            sprite_command.sprite_index = visual.sprite_index;
-            sprite_command.model = &visual.model;
-            sprite_renderer.render(sprite_command);
+        SpriteRenderer::Command command;
+        for (const auto &visual: world.get_visuals()) {
+            if (visual.type == VisualType::SPRITE) {
+                command.sprite_index = visual.render_index;
+                command.model = &visual.model;
+                sprite_renderer.render(command);
+            }
+        }
+    }
+
+    // Render meshes
+    {
+        MeshRenderer::Params params;
+        params.view = &world.get_camera().view;
+        mesh_renderer.enable(params);
+
+        MeshRenderer::Command command;
+        for (const auto &visual: world.get_visuals()) {
+            if (visual.type == VisualType::MESH) {
+                command.mesh_index = visual.render_index;
+                command.model = &visual.model;
+                mesh_renderer.render(command);
+            }
         }
     }
 

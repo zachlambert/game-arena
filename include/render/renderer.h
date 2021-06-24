@@ -8,9 +8,10 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
+#include "render/textures.h"
 #include "render/shaders.h"
 #include "render/sprite_renderer.h"
-#include "render/textures.h"
+#include "render/mesh_renderer.h"
 
 class World;
 
@@ -27,6 +28,7 @@ private:
     TextureManager texture_manager;
     Shaders shaders;
     SpriteRenderer sprite_renderer;
+    MeshRenderer mesh_renderer;
 };
 
 #endif
