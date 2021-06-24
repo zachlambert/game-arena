@@ -22,10 +22,6 @@ public:
     const Camera &get_camera()const{ return camera; }
     const std::vector<Visual> &get_visuals()const{ return visuals; }
 private:
-    void update_action(int action_id, const Input &input);
-    void update_state(int state_id, double dt);
-    void update_visual(int visual_id);
-
     std::vector<Entity> entities;
 
     std::vector<State> states;

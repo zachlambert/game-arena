@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <vector>
+#include <thread>
+#include <chrono>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <GL/glew.h>
@@ -25,7 +27,7 @@ int main()
     Renderer renderer("data/");
     renderer.initialise();
 
-    Camera camera(1080.0f/720);
+    Camera camera(1080, 720);
     World world(camera);
     world.create_default_world();
 
@@ -41,6 +43,7 @@ int main()
         window.update();
         world.update(clock.sample_dt(), input);
         renderer.render(world);
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
     return 0;

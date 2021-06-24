@@ -71,7 +71,7 @@ void World::create_entity(
     entities.push_back(entity);
 }
 
-void update_action_player(State &state, const Input &input)
+void update_action_player(State &state, const Input &input, Camera &camera)
 {
     state.twist.x = 0;
     if (input.input_down(InputType::MOVE_RIGHT)) {
@@ -88,6 +88,10 @@ void update_action_player(State &state, const Input &input)
     if (input.input_down(InputType::MOVE_DOWN)) {
         state.twist.y -= 800;
     }
+
+    glm::vec2 mouse_pos_screen = input.get_mouse_pos();
+    glm::vec2 mouse_pos_world = camera.project_point(mouse_pos_screen);
+    state.orientation = std::atan2(mouse_pos_world.y - state.pos.y, mouse_pos_world.x - state.pos.x);
 }
 
 void update_action_random_walk(State &state)
@@ -99,14 +103,11 @@ void update_action_random_walk(State &state)
     state.twist.z = state.twist.z*0.99 + distribution(generator)*0.5;
 }
 
-void World::update_action(int action_id, const Input &input)
+void update_action(Action &action, State &state, const Input &input, Camera &camera)
 {
-    Action &action = actions[action_id];
-    State &state = states[entities[action.entity_id].state_id];
-
     switch(action.type) {
         case ActionType::PLAYER:
-            update_action_player(state, input);
+            update_action_player(state, input, camera);
             break;
         case ActionType::RANDOM_WALK:
             update_action_random_walk(state);
@@ -114,9 +115,8 @@ void World::update_action(int action_id, const Input &input)
     }
 }
 
-void World::update_state(int state_id, double dt)
+void update_state(State &state, double dt)
 {
-    State &state = states[state_id];
     state.pos.x += state.twist.x * dt;
     state.pos.y += state.twist.y * dt;
     state.orientation += state.twist.z * dt;
@@ -124,10 +124,8 @@ void World::update_state(int state_id, double dt)
     if (state.orientation > M_PI) state.orientation -= 2*M_PI;
 }
 
-void World::update_visual(int visual_id)
+void update_visual(Visual &visual, const State &state)
 {
-    Visual &visual = visuals[visual_id];
-    State &state = states[entities[visual.entity_id].state_id];
 
     visual.model = glm::translate(glm::vec3(state.pos.x, state.pos.y, visual.depth))
         * glm::rotate((float)state.orientation, glm::vec3(0, 0, 1));
@@ -136,15 +134,20 @@ void World::update_visual(int visual_id)
 void World::update(double dt, const Input &input)
 {
     for (std::size_t i = 0; i < actions.size(); i++) {
-        update_action(i, input);
+        Action &action = actions[i];
+        State &state = states[entities[action.entity_id].state_id];
+        update_action(action, state, input, camera);
     }
 
     for (std::size_t i = 0; i < states.size(); i++) {
-        update_state(i, dt);
+        State &state = states[i];
+        update_state(state, dt);
     }
 
     for (std::size_t i = 0; i < visuals.size(); i++) {
-        update_visual(i);
+        Visual &visual = visuals[i];
+        State &state = states[entities[visual.entity_id].state_id];
+        update_visual(visual, state);
     }
     camera.update_view_matrix();
 }

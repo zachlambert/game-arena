@@ -31,11 +31,11 @@ bool Window::initialise()
     }
 
     // TODO: Provide configuration for this
-    glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    // glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+    // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // Disable vsync
-    glfwSwapInterval(0);
+    // glfwSwapInterval(0);
 
     return true;
 }
