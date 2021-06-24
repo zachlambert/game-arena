@@ -1,5 +1,6 @@
 #include "render/mesh_renderer.h"
 
+#include <iostream>
 #include <stack>
 
 MeshVertex::MeshVertex(glm::vec3 position, glm::vec4 color)
@@ -58,12 +59,14 @@ MeshConfig triangulate_mesh(std::vector<glm::vec2> vertices, glm::vec4 color)
     stack.push(initial);
 
     int a, b, c;
+    int asdf = 0;
     while (!stack.empty()) {
+        std::cout << asdf++ << std::endl;
         const std::vector<MeshComponent> &current = stack.top();
         a = 0;
         b = 1;
         c = 2;
-        bool valid = false;
+        bool valid = true;
         while (c!= current.size()) {
             bool current_valid = triangle_valid(a, b, c, current);
             if (current_valid) {
@@ -73,9 +76,9 @@ MeshConfig triangulate_mesh(std::vector<glm::vec2> vertices, glm::vec4 color)
                 mesh.colors.push_back(current[a].color);
                 mesh.colors.push_back(current[b].color);
                 mesh.colors.push_back(current[c].color);
-                mesh.indices.push_back(vertices.size()-3);
-                mesh.indices.push_back(vertices.size()-2);
-                mesh.indices.push_back(vertices.size()-1);
+                mesh.indices.push_back(mesh.vertices.size()-3);
+                mesh.indices.push_back(mesh.vertices.size()-2);
+                mesh.indices.push_back(mesh.vertices.size()-1);
 
                 if (!valid) {
                     valid = true;
@@ -93,6 +96,7 @@ MeshConfig triangulate_mesh(std::vector<glm::vec2> vertices, glm::vec4 color)
             }
             c++;
         }
+        stack.pop();
     }
 
     return mesh;
@@ -111,11 +115,12 @@ void MeshRenderer::load_mesh(const MeshConfig &config)
     }
 
     mesh.indices_offset = static_indices.size();
-    std::copy(config.indices.begin(), config.indices.end(), static_indices.begin());
+    std::copy(config.indices.begin(), config.indices.end(), std::back_inserter(static_indices));
 
     mesh.element_count = config.indices.size();
 
     meshes.push_back(mesh);
+
 }
 
 void MeshRenderer::initialise(unsigned int program_id)

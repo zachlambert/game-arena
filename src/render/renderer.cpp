@@ -8,7 +8,7 @@ void initialise_texture_manager(TextureManager &texture_manager)
     texture_manager.load_texture("spritesheet1_diffuse", "spritesheet1.png");
 }
 
-void initialise_sprite_renderer(const TextureManager &texture_manager, const Shaders &shaders, SpriteRenderer &renderer)
+void initialise_sprite_renderer(SpriteRenderer &renderer, const TextureManager &texture_manager, const Shaders &shaders)
 {
     SpriteConfig config;
     config.diffuse_texture = texture_manager.get_texture("spritesheet1_diffuse");
@@ -37,6 +37,22 @@ void initialise_sprite_renderer(const TextureManager &texture_manager, const Sha
     renderer.initialise(shaders.sprite_program_id);
 }
 
+void initialise_mesh_renderer(MeshRenderer &renderer, const Shaders &shaders)
+{
+    // Remember: Define meshes clockwise !
+
+    std::vector<glm::vec2> vertices;
+    glm::vec4 color;
+
+    vertices.push_back(glm::vec2(0, 0));
+    vertices.push_back(glm::vec2(0, 200));
+    vertices.push_back(glm::vec2(200, 100));
+    color = glm::vec4(1, 0, 0, 1);
+    renderer.load_mesh(triangulate_mesh(vertices, color));
+
+    renderer.initialise(shaders.mesh_program_id);
+}
+
 void Renderer::initialise()
 {
     glEnable(GL_DEPTH_TEST);
@@ -45,7 +61,8 @@ void Renderer::initialise()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     initialise_texture_manager(texture_manager);
-    initialise_sprite_renderer(texture_manager, shaders, sprite_renderer);
+    initialise_sprite_renderer(sprite_renderer, texture_manager, shaders);
+    initialise_mesh_renderer(mesh_renderer, shaders);
 }
 
 void Renderer::render(const World &world)

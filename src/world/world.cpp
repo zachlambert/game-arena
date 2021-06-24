@@ -17,22 +17,32 @@ void World::create_default_world()
     // Create player
 
     action.type = ActionType::PLAYER;
-    visual.sprite_index = 3;
+    visual.render_index = 3;
+    visual.type = VisualType::SPRITE;
     create_entity(&action, &state, &visual);
 
     // Create moving enemy
 
     action.type = ActionType::RANDOM_WALK;
     state.pos.x = -100;
-    visual.sprite_index = 0;
+    visual.render_index = 0;
     create_entity(&action, &state, &visual);
 
     // Create stationary entity
 
     state.pos.x = 200;
     state.pos.y = 100;
-    visual.sprite_index = 4;
+    visual.render_index = 4;
     create_entity(nullptr, &state, &visual);
+
+    // Create entity with polygon
+
+    action.type = ActionType::RANDOM_WALK;
+    state.pos.x = -100;
+    state.pos.y = 150;
+    visual.render_index = 0;
+    visual.type = VisualType::MESH;
+    create_entity(&action, &state, &visual);
 }
 
 void World::create_entity(
