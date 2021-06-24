@@ -50,18 +50,3 @@ void Window::update()
     glfwSwapBuffers(window);
     glfwPollEvents();
 }
-
-void Window::cursor_get_pos(double *mx, double *my)
-{
-    glfwGetCursorPos(window, mx, my);
-}
-
-void Window::cursor_set_pos(double mx, double my)
-{
-    glfwSetCursorPos(window, mx, my);
-}
-
-bool Window::key_is_pressed(Key key)
-{
-    return (glfwGetKey(window, static_cast<int>(key)) == GLFW_PRESS);
-}

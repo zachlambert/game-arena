@@ -5,6 +5,7 @@
 
 #include "world/camera.h"
 #include "world/entity.h"
+#include "window/input.h"
 
 class World {
 public:
@@ -17,11 +18,11 @@ public:
         const Visual *visual_in
     );
 
-    void update(double dt);
+    void update(double dt, const Input &input);
     const Camera &get_camera()const{ return camera; }
     const std::vector<Visual> &get_visuals()const{ return visuals; }
 private:
-    void update_action(int action_id);
+    void update_action(int action_id, const Input &input);
     void update_state(int state_id, double dt);
     void update_visual(int visual_id);
 

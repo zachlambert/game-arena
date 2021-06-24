@@ -10,6 +10,7 @@
 #include <glm/gtx/transform.hpp>
 
 #include "window/window.h"
+#include "window/input.h"
 #include "window/clock.h"
 #include "render/renderer.h"
 #include "world/world.h"
@@ -29,11 +30,17 @@ int main()
     world.create_default_world();
 
     Clock clock;
+    Input input(window);
+    
+    input.register_input(InputType::MOVE_RIGHT, GLFW_KEY_D);
+    input.register_input(InputType::MOVE_LEFT, GLFW_KEY_A);
+    input.register_input(InputType::MOVE_UP, GLFW_KEY_W);
+    input.register_input(InputType::MOVE_DOWN, GLFW_KEY_S);
 
     while (window.is_running()) {
-        world.update(clock.sample_dt());
-        renderer.render(world);
         window.update();
+        world.update(clock.sample_dt(), input);
+        renderer.render(world);
     }
 
     return 0;

@@ -71,9 +71,23 @@ void World::create_entity(
     entities.push_back(entity);
 }
 
-void update_action_player(State &state)
+void update_action_player(State &state, const Input &input)
 {
+    state.twist.x = 0;
+    if (input.input_down(InputType::MOVE_RIGHT)) {
+        state.twist.x += 800;
+    }
+    if (input.input_down(InputType::MOVE_LEFT)) {
+        state.twist.x -= 800;
+    }
 
+    state.twist.y = 0;
+    if (input.input_down(InputType::MOVE_UP)) {
+        state.twist.y += 800;
+    }
+    if (input.input_down(InputType::MOVE_DOWN)) {
+        state.twist.y -= 800;
+    }
 }
 
 void update_action_random_walk(State &state)
@@ -85,14 +99,14 @@ void update_action_random_walk(State &state)
     state.twist.z = state.twist.z*0.99 + distribution(generator)*0.5;
 }
 
-void World::update_action(int action_id)
+void World::update_action(int action_id, const Input &input)
 {
     Action &action = actions[action_id];
     State &state = states[entities[action.entity_id].state_id];
 
     switch(action.type) {
         case ActionType::PLAYER:
-            update_action_player(state);
+            update_action_player(state, input);
             break;
         case ActionType::RANDOM_WALK:
             update_action_random_walk(state);
@@ -119,10 +133,10 @@ void World::update_visual(int visual_id)
         * glm::rotate((float)state.orientation, glm::vec3(0, 0, 1));
 }
 
-void World::update(double dt)
+void World::update(double dt, const Input &input)
 {
     for (std::size_t i = 0; i < actions.size(); i++) {
-        update_action(i);
+        update_action(i, input);
     }
 
     for (std::size_t i = 0; i < states.size(); i++) {
