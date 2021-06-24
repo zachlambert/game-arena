@@ -59,10 +59,9 @@ MeshConfig triangulate_mesh(std::vector<glm::vec2> vertices, glm::vec4 color)
     stack.push(initial);
 
     int a, b, c;
-    int asdf = 0;
     while (!stack.empty()) {
-        std::cout << asdf++ << std::endl;
-        const std::vector<MeshComponent> &current = stack.top();
+        const std::vector<MeshComponent> current = stack.top();
+        stack.pop();
         a = 0;
         b = 1;
         c = 2;
@@ -84,7 +83,7 @@ MeshConfig triangulate_mesh(std::vector<glm::vec2> vertices, glm::vec4 color)
                     valid = true;
                     int new_start = b;
                     int new_end = c;
-                    std::vector<MeshComponent> new_mesh(vertices.size());
+                    std::vector<MeshComponent> new_mesh(c-b+1);
                     for (int i = 0; i < c-b+1; i++) {
                         new_mesh[i] = current[b+i];
                     }
@@ -96,7 +95,15 @@ MeshConfig triangulate_mesh(std::vector<glm::vec2> vertices, glm::vec4 color)
             }
             c++;
         }
-        stack.pop();
+        if (!valid) {
+            int new_start = b;
+            int new_end = c-1;
+            std::vector<MeshComponent> new_mesh(vertices.size());
+            for (int i = 0; i < c-b+1; i++) {
+                new_mesh[i] = current[b+i];
+            }
+            stack.push(new_mesh);
+        }
     }
 
     return mesh;

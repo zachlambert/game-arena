@@ -37,12 +37,12 @@ void World::create_default_world()
 
     // Create entity with polygon
 
-    action.type = ActionType::RANDOM_WALK;
+    // action.type = ActionType::RANDOM_WALK;
     state.pos.x = -100;
     state.pos.y = 150;
     visual.render_index = 0;
     visual.type = VisualType::MESH;
-    create_entity(&action, &state, &visual);
+    create_entity(nullptr, &state, &visual);
 }
 
 void World::create_entity(
