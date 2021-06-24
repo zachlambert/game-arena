@@ -34,8 +34,8 @@ struct Visual {
     VisualType type;
     unsigned int render_index; // sprite_index, mesh_index, etc
     mutable glm::mat4 model;
-    double depth;
-    Visual(): depth(-1) {}
+    unsigned int depth;
+    Visual(): depth(8) {}
 };
 
 struct Entity {

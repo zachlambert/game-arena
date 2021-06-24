@@ -74,10 +74,10 @@ void initialise_mesh_renderer(MeshRenderer &renderer, const Shaders &shaders)
 
 void Renderer::initialise()
 {
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
 
     initialise_texture_manager(texture_manager);
     initialise_sprite_renderer(sprite_renderer, texture_manager, shaders);
@@ -86,7 +86,7 @@ void Renderer::initialise()
 
 void Renderer::render(const World &world)
 {
-    glClearColor(0.8f, 0.8f, 0.8f, 0.0f);
+    glClearColor(0.9f, 0.9f, 0.9f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Render sprites
