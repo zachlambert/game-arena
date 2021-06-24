@@ -6,34 +6,40 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-unsigned int load_texture(const std::string &texture_path)
+bool TextureManager::load_texture(const std::string &name, const std::string &relative_path)
 {
-    int width, height, num_channels;
-    unsigned char *data = stbi_load(texture_path.c_str(), &width, &height, &num_channels, 0);
+    const std::string texture_path = base_dir + relative_path;
+
+    Texture texture;
+    unsigned char *data = stbi_load(texture_path.c_str(), &texture.width, &texture.height, &texture.num_channels, 0);
     if (!data) {
         std::cout << "Failed to load " << texture_path << std::endl;
-        return 0;
+        texture.id = 0;
+        texture.width = 1;
+        texture.height = 1;
+        std::pair<std::string, Texture> new_pair(name, texture);
+        textures.insert(new_pair);
+        return false;
     } else {
-        GLuint texture_id;
-        glGenTextures(1, &texture_id);
-        glBindTexture(GL_TEXTURE_2D, texture_id);
-        switch (num_channels) {
+        glGenTextures(1, &texture.id);
+        glBindTexture(GL_TEXTURE_2D, texture.id);
+        switch (texture.num_channels) {
             case 1: // depth (eg: specular or normal map)
                 glTexImage2D(
                     GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
-                    width, height, 0, GL_DEPTH_COMPONENT,
+                    texture.width, texture.height, 0, GL_DEPTH_COMPONENT,
                     GL_UNSIGNED_BYTE, data);
                 break;
             case 3: // rgb
                 glTexImage2D(
                     GL_TEXTURE_2D, 0, GL_RGB,
-                    width, height, 0, GL_RGB,
+                    texture.width, texture.height, 0, GL_RGB,
                     GL_UNSIGNED_BYTE, data);
                 break;
             case 4: // rgba
                 glTexImage2D(
                     GL_TEXTURE_2D, 0, GL_RGBA,
-                    width, height, 0, GL_RGBA,
+                    texture.width, texture.height, 0, GL_RGBA,
                     GL_UNSIGNED_BYTE, data);
                 break;
             default:
@@ -48,21 +54,9 @@ unsigned int load_texture(const std::string &texture_path)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         stbi_image_free(data);
-        return texture_id;
     }
-}
 
-
-unsigned int TextureManager::get_texture_id(const std::string &relative_path)
-{
-    auto search = textures.find(relative_path);
-    if (search != textures.end()) {
-        return search->second;
-    } else {
-        std::pair<std::string, unsigned int> new_pair(
-            relative_path,
-            load_texture(base_dir + relative_path)
-        );
-        return textures.insert(new_pair).first->second;
-    }
+    std::pair<std::string, Texture> new_pair(name, texture);
+    textures.insert(new_pair);
+    return true;
 }

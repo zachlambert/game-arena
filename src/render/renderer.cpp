@@ -21,33 +21,32 @@ Vertex::Vertex(glm::vec3 position, glm::vec2 tex_coords)
 void SpriteRenderer::load_sprite(const SpriteConfig &config)
 {
     double left = -(config.size[0] + config.offset[0])/2;
-    double bot = -(config.size[1] + config.offset[1])/2;
-    double right = (config.size[0] - config.offset[0])/2;
     double top = (config.size[1] - config.offset[1])/2;
+    double right = (config.size[0] - config.offset[0])/2;
+    double bot = -(config.size[1] + config.offset[1])/2;
 
-    // TODO: Change denominator to spritesheet size when has more than one sprite
-    double uv_left = config.pos[0]/config.size[0];
-    double uv_bot = config.pos[1]/config.size[1];
-    double uv_right = (config.pos[0]+config.size[0])/config.size[0];
-    double uv_top = (config.pos[1]+config.size[1])/config.size[1];
+    double uv_left = (double)config.pos[0]/config.diffuse_texture.width;
+    double uv_top = (double)(config.pos[1])/config.diffuse_texture.height;
+    double uv_right = (double)(config.pos[0]+config.size[0])/config.diffuse_texture.width;
+    double uv_bot = (double)(config.pos[1] + config.size[1])/config.diffuse_texture.height;
 
     unsigned int vertices_offset = static_vertices.size();
 
     static_vertices.push_back(Vertex(
-        glm::vec3(left, bot, 0),
-        glm::vec2(uv_left, uv_bot)
-    ));
-    static_vertices.push_back(Vertex(
-        glm::vec3(right, bot, 0),
-        glm::vec2(uv_right, uv_bot)
+        glm::vec3(left, top, 0),
+        glm::vec2(uv_left, uv_top)
     ));
     static_vertices.push_back(Vertex(
         glm::vec3(right, top, 0),
         glm::vec2(uv_right, uv_top)
     ));
     static_vertices.push_back(Vertex(
-        glm::vec3(left, top, 0),
-        glm::vec2(uv_left, uv_top)
+        glm::vec3(right, bot, 0),
+        glm::vec2(uv_right, uv_bot)
+    ));
+    static_vertices.push_back(Vertex(
+        glm::vec3(left, bot, 0),
+        glm::vec2(uv_left, uv_bot)
     ));
 
     unsigned int indices_offset = static_indices.size();
@@ -59,7 +58,11 @@ void SpriteRenderer::load_sprite(const SpriteConfig &config)
     static_indices.push_back(2);
     static_indices.push_back(3);
 
-    sprites.push_back({config.texture_id, vertices_offset, indices_offset});
+    Sprite sprite;
+    sprite.diffuse_texture_id = config.diffuse_texture.id;
+    sprite.vertices_offset = vertices_offset;
+    sprite.indices_offset = indices_offset;
+    sprites.push_back(sprite);
 }
 
 void SpriteRenderer::initialise(unsigned int program_id)
@@ -151,9 +154,11 @@ Renderer::Renderer(const std::string &base_dir):
 
 void Renderer::initialise()
 {
+    texture_manager.load_texture("spritesheet1_diffuse", "spritesheet1.png");
+
     {
         SpriteConfig config;
-        config.texture_id = texture_manager.get_texture_id("spritesheet1.png");
+        config.diffuse_texture = texture_manager.get_texture("spritesheet1_diffuse");
         config.offset = glm::vec2(0, 0);
 
         config.pos = glm::vec2(0, 0);
@@ -166,7 +171,7 @@ void Renderer::initialise()
 
 void Renderer::render(const World &world)
 {
-    glClearColor(0.6f, 0.6f, 0.6f, 0.0f);
+    glClearColor(0.8f, 0.8f, 0.8f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     world.camera.update_view_matrix();

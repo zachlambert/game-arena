@@ -4,13 +4,19 @@
 #include <unordered_map>
 #include <string>
 
+struct Texture {
+    unsigned int id;
+    int width, height, num_channels;
+};
+
 class TextureManager{
 public:
     TextureManager(std::string base_dir):base_dir(base_dir + "textures/") {}
-    unsigned int get_texture_id(const std::string &relative_path);
+    bool load_texture(const std::string &name, const std::string &relative_path);
+    Texture get_texture(const std::string &name)const{ return textures.at(name); }
 private:
     std::string base_dir;
-    std::unordered_map<std::string, unsigned int> textures;
+    std::unordered_map<std::string, Texture> textures;
 };
 
 #endif

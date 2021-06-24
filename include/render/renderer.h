@@ -19,30 +19,10 @@ struct Vertex {
     Vertex(glm::vec3 position, glm::vec2 tex_coords);
 };
 
-
-class Mesh {
-public:
-    Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned short> &indices): vertices(vertices), indices(indices) {}
-
-    // Raw mesh data
-    std::vector<Vertex> vertices;
-    std::vector<unsigned short> indices;
-    std::size_t vertices_offset;
-    std::size_t indices_offset;
-    std::size_t index;
-};
-
-struct MeshMinimal {
-    std::size_t index_count;
-    std::size_t indices_offset;
-    std::size_t vertices_offset;
-};
-
 // Passed to renderer to configure sprite
 struct SpriteConfig {
-    glm::vec<2, GLushort> pos, size;
-    glm::vec<2, GLshort> offset;
-    unsigned int texture_id;
+    glm::vec<2, GLint> pos, size, offset;
+    Texture diffuse_texture;
 };
 
 // Stored information for sprite

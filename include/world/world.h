@@ -11,15 +11,16 @@ struct Camera {
     double zoom;
     double orientation;
     std::size_t num_levels;
+    static constexpr double base_scaling = 0.001f;
 
     mutable glm::mat4 view;
     void update_view_matrix() const {
-        view = glm::scale(glm::vec3(1/zoom, 1/zoom, 1.0f/num_levels))
+        view = glm::scale(glm::vec3(base_scaling*zoom, base_scaling*zoom, 1.0f/num_levels))
             * glm::rotate((float)orientation, glm::vec3(0, 0, 1))
             * glm::translate(glm::vec3(-pos.x, -pos.y, 0));
     }
 
-    Camera(): pos(0, 0), zoom(500), orientation(0) {}
+    Camera(): pos(0, 0), zoom(1), orientation(0) {}
 };
 
 struct Entity {
