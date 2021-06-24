@@ -107,4 +107,8 @@ Shaders::Shaders(const std::string &base_dir)
         base_dir + "shaders/sprite.vs",
         base_dir + "shaders/sprite.fs"
     );
+    mesh_program_id = load_shader(
+        base_dir + "shaders/mesh.vs",
+        base_dir + "shaders/mesh.fs"
+    );
 }

@@ -7,6 +7,7 @@
 
 struct Shaders {
     unsigned int sprite_program_id;
+    unsigned int mesh_program_id;
     Shaders(const std::string &base_dir);
 };
 
