@@ -30,13 +30,13 @@ int main()
     entity1.orientation = 0.5;
     world.entities.push_back(entity1);
 
-    // Entity entity2;
-    // entity2.sprite_index = 0;
-    // entity2.pos.x = 200;
-    // entity2.pos.y = 100;
-    // entity2.orientation = 0.78;
-    // entity2.depth = -2;
-    // world.entities.push_back(entity2);
+    Entity entity2;
+    entity2.sprite_index = 3;
+    entity2.pos.x = 200;
+    entity2.pos.y = 100;
+    entity2.orientation = -0.78;
+    entity2.depth = -2;
+    world.entities.push_back(entity2);
 
     while (window.is_running()) {
         renderer.render(world);

@@ -20,10 +20,10 @@ Vertex::Vertex(glm::vec3 position, glm::vec2 tex_coords)
 
 void SpriteRenderer::load_sprite(const SpriteConfig &config)
 {
-    double left = -(config.size[0] + config.offset[0])/2;
-    double top = (config.size[1] - config.offset[1])/2;
-    double right = (config.size[0] - config.offset[0])/2;
-    double bot = -(config.size[1] + config.offset[1])/2;
+    double left = -config.size[0]/2 - config.offset[0];
+    double top = config.size[1]/2 - config.offset[1];
+    double right = config.size[0]/2 - config.offset[0];
+    double bot = -config.size[1]/2 - config.offset[1];
 
     double uv_left = (double)config.pos[0]/config.diffuse_texture.width;
     double uv_top = (double)(config.pos[1])/config.diffuse_texture.height;
@@ -163,6 +163,22 @@ void Renderer::initialise()
 
         config.pos = glm::vec2(0, 0);
         config.size = glm::vec2(256, 256);
+        sprite_renderer.load_sprite(config);
+
+        config.pos = glm::vec2(256, 0);
+        sprite_renderer.load_sprite(config);
+
+        config.pos = glm::vec2(384, 0);
+        sprite_renderer.load_sprite(config);
+
+        config.pos = glm::vec2(0, 256);
+        config.size = glm::vec2(512, 256);
+        config.offset = glm::vec2(-128, 0);
+        sprite_renderer.load_sprite(config);
+
+        config.pos = glm::vec2(512, 256);
+        config.size = glm::vec2(256, 256);
+        config.offset = glm::vec2(0, 0);
         sprite_renderer.load_sprite(config);
     }
 
