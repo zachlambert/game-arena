@@ -1,5 +1,7 @@
 #include "game/world_builder.h"
 
+#include <iostream>
+
 void build_world(EntityManager &entity_manager)
 {
     // Create player
@@ -28,5 +30,6 @@ void build_world(EntityManager &entity_manager)
         config.orientation = M_PI/2;
         build_terrain(entity_manager, config);
     }
+    return;
 }
 

@@ -34,7 +34,7 @@ int EntityManager::entity_create(int num_components, Signature signature)
     }
 
     if (entity.start == -1) {
-        entity.start = entities.tail;
+        entity.start = component_references.tail;
         component_references.reserve(entity.count);
     }
 

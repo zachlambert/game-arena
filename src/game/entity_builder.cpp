@@ -84,7 +84,7 @@ void build_terrain(EntityManager &entity_manager, TerrainConfig config)
     visual_static.render_index = config.mesh_index;
     visual_static.type = component::VisualStatic::Type::MESH;
 
-    int id = entity_manager.entity_create(3, signature);
+    int id = entity_manager.entity_create(2, signature);
     entity_manager.entity_add_transform(id, 0, transform);
     entity_manager.entity_add_visual_static(id, 1, visual_static);
 }

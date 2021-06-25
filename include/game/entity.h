@@ -5,6 +5,8 @@
 #include <bitset>
 #include "game/components.h"
 
+#include <iostream>
+
 constexpr int MAX_COMPONENTS_PER_ENTITY = 16;
 constexpr int MAX_ENTITIES = 1024;
 constexpr int MAX_COMPONENTS = MAX_COMPONENTS_PER_ENTITY*MAX_ENTITIES;
@@ -85,6 +87,8 @@ public:
 
     bool entity_supports_system(int entity_id, SystemType type){ return entities[entity_id].signature.test((std::size_t)type); }
 
+    // TODO: Temporarily public for debugging
+    Buffer<ComponentReference, MAX_COMPONENTS> component_references;
 private:
     template <typename T>
     T* get_component(int entity_id, int index, ComponentType type, Buffer<T, MAX_COMPONENTS> &buffer);
@@ -94,7 +98,6 @@ private:
     void remove_component(Buffer<T, MAX_COMPONENTS> &buffer, int index);
 
     Buffer<Entity, MAX_ENTITIES> free;
-    Buffer<ComponentReference, MAX_COMPONENTS> component_references;
 
     class SystemManager;
     friend SystemManager;
@@ -124,6 +127,9 @@ inline void EntityManager::add_component(int entity_id, int offset, Buffer<T, MA
     buffer.append(component);
     component_references[entities[entity_id].start + offset].index = buffer.tail-1;
     component_references[entities[entity_id].start + offset].type = component_type;
+    std::cout << "Adding type = " << (int)component_type << std::endl;
+    std::cout << "Pos = " << entities[entity_id].start + offset << std::endl;
+    std::cout << "Comp index = " << buffer.tail - 1 << std::endl;
 }
 
 template <typename T>
