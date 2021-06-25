@@ -35,7 +35,7 @@ void SystemRenderStatic::update(EntityManager &entity_manager) {
 
 void SystemRenderStatic::update_entity(component::Transform &transform, component::VisualStatic &visual_static) {
     visual_static.model = glm::translate(glm::vec3(transform.pos.x, transform.pos.y, (double)visual_static.depth))
-        * glm::rotate((float)transform.orientation, glm::vec3(0, 0, 1));
+        * glm::rotate((float)transform.orientation, glm::vec3(0, 0, 1)) * glm::scale(glm::vec3(transform.scale.x, transform.scale.y, 1));
 }
 
 

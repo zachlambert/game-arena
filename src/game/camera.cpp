@@ -20,3 +20,10 @@ glm::vec2 Camera::project_point(const glm::vec2 &screen_pos)const
 
     return glm::vec2(result.x, result.y);
 }
+
+void Camera::adjust_zoom(double zoom_amount)
+{
+    zoom = std::exp(std::log(zoom) + zoom_rate*zoom_amount);
+    if (zoom < zoom_lower_limit) zoom = zoom_lower_limit;
+    if (zoom > zoom_upper_limit) zoom = zoom_upper_limit;
+}

@@ -43,12 +43,21 @@ void initialise_mesh_renderer(MeshRenderer &renderer, const Shaders &shaders)
     std::vector<glm::vec2> vertices;
     glm::vec4 color;
 
+    // Terrain element
+    vertices.push_back(glm::vec2(-100, 0));
+    vertices.push_back(glm::vec2(-80, 200));
+    vertices.push_back(glm::vec2(20, 240));
+    vertices.push_back(glm::vec2(0, -150));
+    color = glm::vec4(0, 0, 0.1, 1);
+    renderer.load_mesh(triangulate_mesh(vertices, color));
+
     // Normalised gun ray
     // x_scale = length
     // y_scale = tan(theta/2)*length
+    vertices.clear();
     vertices.push_back(glm::vec2(0, 0));
-    vertices.push_back(glm::vec2(100, 100));
-    vertices.push_back(glm::vec2(100, -100));
+    vertices.push_back(glm::vec2(1, 1));
+    vertices.push_back(glm::vec2(1, -1));
     color = glm::vec4(0.5, 0.5, 0.5, 1);
     renderer.load_mesh(triangulate_mesh(vertices, color));
 

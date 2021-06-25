@@ -27,7 +27,8 @@ struct BaseComponent {
 struct Transform: public BaseComponent {
     glm::vec2 pos;
     double orientation;
-    Transform(): pos(0, 0), orientation(0) {}
+    glm::vec2 scale;
+    Transform(): pos(0, 0), orientation(0), scale(1, 1) {}
 };
 
 struct Physics: public BaseComponent {

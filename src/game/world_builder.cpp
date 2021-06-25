@@ -22,8 +22,10 @@ void build_world(EntityManager &entity_manager)
         build_enemy(entity_manager, config);
     }
 
-    // Create a terrain element
+    // Create a gun ray
     {
+        // x_scale = length
+        // y_scale = tan(theta/2)*length
         TerrainConfig config;
         config.mesh_index = 0;
         config.pos = glm::vec2(-200, 0);

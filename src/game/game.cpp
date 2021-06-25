@@ -24,5 +24,6 @@ void Game::update(double dt)
         camera.pos = transform.pos;
         break;
     }
+    camera.adjust_zoom(input.get_scroll_amount());
     camera.update_view_matrix();
 }
