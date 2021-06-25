@@ -12,7 +12,7 @@
 #include "render/shaders.h"
 #include "render/sprite_renderer.h"
 #include "render/mesh_renderer.h"
-#include "world/game.h"
+#include "game/game.h"
 
 class Renderer {
 public:

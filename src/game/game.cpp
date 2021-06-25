@@ -1,6 +1,6 @@
-#include "world/game.h"
+#include "game/game.h"
 
-#include "world/world_builder.h"
+#include "game/world_builder.h"
 #include <iostream>
 #include <random>
 

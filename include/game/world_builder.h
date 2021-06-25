@@ -1,8 +1,8 @@
-#ifndef WORLD_WORLD_LOADER_H
-#define WORLD_WORLD_LOADER_H
+#ifndef GAME_WORLD_LOADER_H
+#define GAME_WORLD_LOADER_H
 
-#include "world/entity.h"
-#include "world/entity_builder.h"
+#include "game/entity.h"
+#include "game/entity_builder.h"
 
 void build_world(EntityManager &entity_manager)
 {

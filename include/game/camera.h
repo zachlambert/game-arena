@@ -1,5 +1,5 @@
-#ifndef WORLD_CAMERA_H
-#define WORLD_CAMERA_H
+#ifndef GAME_CAMERA_H
+#define GAME_CAMERA_H
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/transform.hpp>

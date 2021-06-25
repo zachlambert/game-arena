@@ -1,7 +1,7 @@
-#ifndef ENTITY_BUILDER_H
-#define ENTITY_BUILDER_H
+#ifndef GAME_ENTITY_BUILDER_H
+#define GAME_ENTITY_BUILDER_H
 
-#include "world/entity.h"
+#include "game/entity.h"
 
 struct PlayerConfig {
     unsigned int sprite_index;

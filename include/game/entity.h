@@ -3,7 +3,7 @@
 
 #include <array>
 #include <bitset>
-#include "world/components.h"
+#include "game/components.h"
 
 constexpr int MAX_COMPONENTS_PER_ENTITY = 16;
 constexpr int MAX_ENTITIES = 1024;
@@ -96,23 +96,23 @@ private:
     friend System;
 };
 
-component::Transform* EntityManager::get_transform_component(int entity_id, int index)
+inline component::Transform* EntityManager::get_transform_component(int entity_id, int index)
 {
     return get_component(entity_id, index, ComponentType::TRANSFORM, transform);
 }
 
-component::Physics* EntityManager::get_physics_component(int entity_id, int index)
+inline component::Physics* EntityManager::get_physics_component(int entity_id, int index)
 {
     return get_component(entity_id, index, ComponentType::PHYSICS, physics);
 }
 
-component::VisualStatic* EntityManager::get_visual_static_component(int entity_id, int index)
+inline component::VisualStatic* EntityManager::get_visual_static_component(int entity_id, int index)
 {
     return get_component(entity_id, index, ComponentType::VISUAL_STATIC, visual_static);
 }
 
 template <typename T>
-T* EntityManager::get_component(int entity_id, int index, ComponentType type, Buffer<T, MAX_COMPONENTS> &buffer)
+inline T* EntityManager::get_component(int entity_id, int index, ComponentType type, Buffer<T, MAX_COMPONENTS> &buffer)
 {
     // If index = 0, return the first occurance of the component
     // If index = 1, return the second occurance of the component
@@ -127,7 +127,7 @@ T* EntityManager::get_component(int entity_id, int index, ComponentType type, Bu
     return nullptr;
 }
 
-int EntityManager::entity_create(int num_components, Signature signature)
+inline int EntityManager::entity_create(int num_components, Signature signature)
 {
     Entity entity;
     entity.start = -1;
@@ -169,7 +169,7 @@ int EntityManager::entity_create(int num_components, Signature signature)
     return entities.tail-1;
 }
 
-void EntityManager::entity_remove(int entity_id)
+inline void EntityManager::entity_remove(int entity_id)
 {
     const Entity &entity = entities[entity_id];
 
@@ -224,7 +224,7 @@ void EntityManager::entity_remove(int entity_id)
 }
 
 template <typename T>
-void EntityManager::add_component(int entity_id, int offset, Buffer<T, MAX_COMPONENTS> &buffer, ComponentType component_type, T component)
+inline void EntityManager::add_component(int entity_id, int offset, Buffer<T, MAX_COMPONENTS> &buffer, ComponentType component_type, T component)
 {
     buffer.append(component);
     component_references[entities[entity_id].start + offset].index = buffer.tail-1;
@@ -232,7 +232,7 @@ void EntityManager::add_component(int entity_id, int offset, Buffer<T, MAX_COMPO
 }
 
 template <typename T>
-void EntityManager::remove_component(Buffer<T, MAX_COMPONENTS> &buffer, int index)
+inline void EntityManager::remove_component(Buffer<T, MAX_COMPONENTS> &buffer, int index)
 {
     buffer.remove(index);
     if (index != 0) {

@@ -1,13 +1,13 @@
-#ifndef WORLD_WORLD_H
-#define WORLD_WORLD_H
+#ifndef GAME_GAME_H
+#define GAME_GAME_H
 
 #include <vector>
 
-#include "world/camera.h"
-#include "world/entity.h"
+#include "game/camera.h"
+#include "game/entity.h"
 #include "window/window.h"
 #include "window/input.h"
-#include "world/systems.h"
+#include "game/systems.h"
 
 class Game {
 public:

@@ -1,5 +1,5 @@
-#ifndef WORLD_COMPONENTS_H
-#define WORLD_COMPONENTS_H
+#ifndef GAME_COMPONENTS_H
+#define GAME_COMPONENTS_H
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/transform.hpp>

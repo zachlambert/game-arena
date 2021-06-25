@@ -21,7 +21,7 @@ set(SRC
     src/render/sprite_renderer.cpp
     src/render/mesh_renderer.cpp
 
-    src/world/world.cpp
+    src/game/game.cpp
 )
 
 add_executable(game ${SRC})

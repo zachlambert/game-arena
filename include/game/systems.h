@@ -1,14 +1,14 @@
-#ifndef WORLD_SYSTEMS_H
-#define WORLD_SYSTEMS_H
+#ifndef GAME_SYSTEMS_H
+#define GAME_SYSTEMS_H
 
 #include <array>
 #include <iostream>
 #include <random>
 
 #include "window/input.h"
-#include "world/components.h"
-#include "world/camera.h"
-#include "world/entity.h"
+#include "game/components.h"
+#include "game/camera.h"
+#include "game/entity.h"
 
 // Represent systems by classes instead of just functions, in case a system
 // needs to store some state.

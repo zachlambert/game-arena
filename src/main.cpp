@@ -15,7 +15,7 @@
 #include "window/input.h"
 #include "window/clock.h"
 #include "render/renderer.h"
-#include "world/game.h"
+#include "game/game.h"
 
 int main()
 {
