@@ -108,7 +108,7 @@ void SystemEnemy::update_entity(component::Physics &physics)
     physics.twist.z = physics.twist.z*0.99 + distribution(generator)*0.5;
 }
 
-void SystemRenderGunRay::update(EntityManager &entity_manager)
+void SystemRenderGunRay::update(EntityManager &entity_manager, const Camera &camera)
 {
     component::Transform *transform;
     component::Gun *gun;
@@ -118,15 +118,17 @@ void SystemRenderGunRay::update(EntityManager &entity_manager)
         transform = entity_manager.get_transform_component(i, 0);
         gun = entity_manager.get_gun_component(i, 0);
         visual = entity_manager.get_visual_static_component(i, 1);
-        update_entity(*transform, *gun, *visual);
+        update_entity(*transform, *gun, *visual, camera);
     }
 }
 
-void SystemRenderGunRay::update_entity(component::Transform &transform, component::Gun &gun, component::VisualStatic &visual_static)
+void SystemRenderGunRay::update_entity(component::Transform &transform, component::Gun &gun, component::VisualStatic &visual_static, const Camera &camera)
 {
-    double gradient =  0.05 * (1 - gun.focus*0.8);
-    double scale_x = 1000;
+    double gradient =  0.02 * (1 - gun.focus*0.8);
+    double scale_x = 2000/camera.zoom;
     double scale_y = gradient * scale_x;
     visual_static.model = glm::translate(glm::vec3(transform.pos.x, transform.pos.y, (double)visual_static.depth))
-        * glm::rotate((float)transform.orientation, glm::vec3(0, 0, 1)) * glm::scale(glm::vec3(scale_x, scale_y, 1));
+        * glm::rotate((float)transform.orientation, glm::vec3(0, 0, 1))
+        * glm::translate(glm::vec3(gun.origin_offset, 0, 0))
+        * glm::scale(glm::vec3(scale_x, scale_y, 1));
 }

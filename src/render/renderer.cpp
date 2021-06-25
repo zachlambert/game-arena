@@ -54,12 +54,17 @@ void initialise_mesh_renderer(MeshRenderer &renderer, const Shaders &shaders)
     // Normalised gun ray
     // x_scale = length
     // y_scale = tan(theta/2)*length
-    vertices.clear();
-    vertices.push_back(glm::vec2(0, 0));
-    vertices.push_back(glm::vec2(1, 1));
-    vertices.push_back(glm::vec2(1, -1));
-    color = glm::vec4(0.5, 0.5, 0.5, 1);
-    renderer.load_mesh(triangulate_mesh(vertices, color));
+    MeshConfig config;
+    config.colors.push_back(glm::vec4(0.7, 0.7, 0.7, 1));
+    config.colors.push_back(glm::vec4(0.7, 0.7, 0.7, -1));
+    config.colors.push_back(glm::vec4(0.7, 0.7, 0.7, -1));
+    config.vertices.push_back(glm::vec2(0, 0));
+    config.vertices.push_back(glm::vec2(1, 1));
+    config.vertices.push_back(glm::vec2(1, -1));
+    config.indices.push_back(0);
+    config.indices.push_back(1);
+    config.indices.push_back(2);
+    renderer.load_mesh(config);
 
     renderer.initialise(shaders.mesh_program_id);
 }

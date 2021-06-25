@@ -43,9 +43,9 @@ private:
 
 class SystemRenderGunRay {
 public:
-    void update(EntityManager &entity_manager);
+    void update(EntityManager &entity_manager, const Camera &camera);
 private:
-    void update_entity(component::Transform &transform, component::Gun &gun, component::VisualStatic &visual_static);
+    void update_entity(component::Transform &transform, component::Gun &gun, component::VisualStatic &visual_static, const Camera &camera);
 };
 
 #endif

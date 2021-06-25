@@ -62,11 +62,12 @@ struct VisualStatic: public BaseComponent {
 // };
 
 struct Gun: public BaseComponent {
+    double origin_offset;
     double focus;
     double max_focus;
     double focus_rate;
     double base_damage;
-    Gun(): focus(0), max_focus(1), focus_rate(0.5), base_damage(10) {}
+    Gun(): origin_offset(150), focus(0), max_focus(1), focus_rate(0.5), base_damage(10) {}
 };
 
 } // namespace component
