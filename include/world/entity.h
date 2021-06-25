@@ -57,6 +57,9 @@ struct Buffer {
 class EntityManager {
 public:
     Buffer<Entity, MAX_ENTITIES> entities;
+    Buffer<component::Transform, MAX_COMPONENTS> transform;
+    Buffer<component::Physics, MAX_COMPONENTS> physics;
+    Buffer<component::VisualStatic, MAX_COMPONENTS> visual_static;
 
     int entity_create(int num_components, Signature signature);
     void entity_remove(int entity_id);
@@ -86,10 +89,6 @@ private:
 
     Buffer<Entity, MAX_ENTITIES> free;
     Buffer<ComponentReference, MAX_COMPONENTS> component_references;
-
-    Buffer<component::Transform, MAX_COMPONENTS> transform;
-    Buffer<component::Physics, MAX_COMPONENTS> physics;
-    Buffer<component::VisualStatic, MAX_COMPONENTS> visual_static;
 
     class SystemManager;
     friend SystemManager;

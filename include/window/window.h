@@ -18,13 +18,11 @@ public:
     bool initialise();
     bool is_running();
     void update();
-private:
+
     const std::string name;
     unsigned int width;
     unsigned int height;
     GLFWwindow *window;
-
-    friend class Input;
 };
 
 #endif
