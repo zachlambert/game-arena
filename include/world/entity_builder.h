@@ -5,6 +5,8 @@
 
 struct PlayerConfig {
     unsigned int sprite_index;
+    glm::vec2 start_pos;
+    double start_orientation;
 };
 void build_player(EntityManager &entity_manager, PlayerConfig config)
 {
@@ -17,6 +19,8 @@ void build_player(EntityManager &entity_manager, PlayerConfig config)
 
     // Component 0 = Transform
     component::Transform transform;
+    transform.pos = config.start_pos;
+    transform.orientation = config.start_orientation;
 
     // Component 1 = Physics
     component::Physics physics;
@@ -39,6 +43,8 @@ void build_player(EntityManager &entity_manager, PlayerConfig config)
 
 struct EnemyConfig {
     unsigned int sprite_index;
+    glm::vec2 start_pos;
+    double start_orientation;
 };
 void build_enemy(EntityManager &entity_manager, EnemyConfig config)
 {
@@ -51,6 +57,8 @@ void build_enemy(EntityManager &entity_manager, EnemyConfig config)
 
     // Component 0 = Transform
     component::Transform transform;
+    transform.pos = config.start_pos;
+    transform.orientation = config.start_orientation;
 
     // Component 1 = Physics
     component::Physics physics;
@@ -73,6 +81,8 @@ void build_enemy(EntityManager &entity_manager, EnemyConfig config)
 
 struct TerrainConfig {
     unsigned int mesh_index;
+    glm::vec2 pos;
+    double orientation;
 };
 void build_terrain(EntityManager &entity_manager, TerrainConfig config)
 {
@@ -83,6 +93,8 @@ void build_terrain(EntityManager &entity_manager, TerrainConfig config)
 
     // Component 0 = Transform
     component::Transform transform;
+    transform.pos = config.pos;
+    transform.orientation = config.orientation;
 
     // Component 1 = Visual static
     component::VisualStatic visual_static;
