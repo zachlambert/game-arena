@@ -41,6 +41,7 @@ struct VisualStatic: public BaseComponent {
     glm::mat4 model;
     unsigned int render_index;
     Type type;
+    unsigned int depth;
 };
 
 struct Human: public BaseComponent {

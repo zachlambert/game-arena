@@ -8,11 +8,15 @@
 constexpr int MAX_COMPONENTS_PER_ENTITY = 16;
 constexpr int MAX_ENTITIES = 1024;
 constexpr int MAX_COMPONENTS = MAX_COMPONENTS_PER_ENTITY*MAX_ENTITIES;
+constexpr int NUM_SYSTEMS = 32;
+
+typedef std::bitset<NUM_SYSTEMS> Signature;
 
 struct Entity {
     // Block of component references
     int start;
     int count;
+    Signature signature;
 };
 
 template <typename T, int N>
