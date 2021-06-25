@@ -58,7 +58,7 @@ class EntityManager {
 public:
     Buffer<Entity, MAX_ENTITIES> entities;
 
-    int entity_create(int num_components);
+    int entity_create(int num_components, Signature signature);
     void entity_remove(int entity_id);
     void entity_add_transform(int entity_id, int offset, component::Transform component) {
         add_component(entity_id, offset, transform, ComponentType::TRANSFORM, component);
@@ -128,11 +128,12 @@ T* EntityManager::get_component(int entity_id, int index, ComponentType type, Bu
     return nullptr;
 }
 
-int EntityManager::entity_create(int num_components)
+int EntityManager::entity_create(int num_components, Signature signature)
 {
     Entity entity;
     entity.start = -1;
     entity.count = num_components;
+    entity.signature = signature;
 
     // STEP 1: Find space for new components, either in a free slot or at
     // the end.

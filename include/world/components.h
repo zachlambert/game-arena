@@ -38,9 +38,9 @@ struct VisualStatic: public BaseComponent {
         SPRITE,
         MESH
     };
+    Type type;
     glm::mat4 model;
     unsigned int render_index;
-    Type type;
     unsigned int depth;
 };
 
