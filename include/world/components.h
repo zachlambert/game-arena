@@ -4,18 +4,36 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/transform.hpp>
 
+enum class ComponentType {
+    TRANSFORM,
+    PHYSICS,
+    VISUAL_STATIC,
+    HUMAN,
+    ENEMY
+};
+
+struct ComponentReference {
+    ComponentType type;
+    int index;
+};
+
 namespace component {
 
-struct Transform {
+struct BaseComponent {
+    // If a component is moved, need to update the index in the reference
+    int ref_id;
+};
+
+struct Transform: public BaseComponent {
     glm::vec2 pos;
     double orientation;
 };
 
-struct Physics {
+struct Physics: public BaseComponent {
     glm::vec3 twist;
 };
 
-struct VisualStatic {
+struct VisualStatic: public BaseComponent {
     enum class Type {
         SPRITE,
         MESH
@@ -25,13 +43,13 @@ struct VisualStatic {
     Type type;
 };
 
-struct Human {
+struct Human: public BaseComponent {
     double move_speed;
     double strafe_speed;
     double turn_speed;
 };
 
-struct Enemy {
+struct Enemy: public BaseComponent {
     glm::vec2 goal_pos;
     glm::vec2 point_target_pos;
 };
