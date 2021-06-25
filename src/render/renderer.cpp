@@ -47,8 +47,8 @@ void initialise_mesh_renderer(MeshRenderer &renderer, const Shaders &shaders)
     // x_scale = length
     // y_scale = tan(theta/2)*length
     vertices.push_back(glm::vec2(0, 0));
-    vertices.push_back(glm::vec2(1, 1));
-    vertices.push_back(glm::vec2(1, -1));
+    vertices.push_back(glm::vec2(100, 100));
+    vertices.push_back(glm::vec2(100, -100));
     color = glm::vec4(0.5, 0.5, 0.5, 1);
     renderer.load_mesh(triangulate_mesh(vertices, color));
 

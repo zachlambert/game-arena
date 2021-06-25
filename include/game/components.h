@@ -27,10 +27,12 @@ struct BaseComponent {
 struct Transform: public BaseComponent {
     glm::vec2 pos;
     double orientation;
+    Transform(): pos(0, 0), orientation(0) {}
 };
 
 struct Physics: public BaseComponent {
     glm::vec3 twist;
+    Physics(): twist(0, 0, 0) {}
 };
 
 struct VisualStatic: public BaseComponent {
@@ -48,11 +50,13 @@ struct Human: public BaseComponent {
     double move_speed;
     double strafe_speed;
     double turn_speed;
+    Human(): move_speed(0), strafe_speed(0), turn_speed(0) {}
 };
 
 struct Enemy: public BaseComponent {
     glm::vec2 goal_pos;
     glm::vec2 point_target_pos;
+    Enemy(): goal_pos(0, 0), point_target_pos(0, 0) {}
 };
 
 } // namespace component

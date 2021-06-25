@@ -127,9 +127,6 @@ inline void EntityManager::add_component(int entity_id, int offset, Buffer<T, MA
     buffer.append(component);
     component_references[entities[entity_id].start + offset].index = buffer.tail-1;
     component_references[entities[entity_id].start + offset].type = component_type;
-    std::cout << "Adding type = " << (int)component_type << std::endl;
-    std::cout << "Pos = " << entities[entity_id].start + offset << std::endl;
-    std::cout << "Comp index = " << buffer.tail - 1 << std::endl;
 }
 
 template <typename T>
