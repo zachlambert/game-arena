@@ -8,6 +8,7 @@ void build_world(EntityManager &entity_manager)
     {
         PlayerConfig config;
         config.sprite_index = 3;
+        config.gun_ray_mesh_index = 1;
         config.start_pos = glm::vec2(0, 0);
         config.start_orientation = 0;
         build_player(entity_manager, config);

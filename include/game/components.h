@@ -8,8 +8,9 @@ enum class ComponentType {
     TRANSFORM,
     PHYSICS,
     VISUAL_STATIC,
-    HUMAN,
-    ENEMY
+    // HUMAN,
+    // ENEMY,
+    GUN
 };
 
 struct ComponentReference {
@@ -47,17 +48,25 @@ struct VisualStatic: public BaseComponent {
     unsigned int depth;
 };
 
-struct Human: public BaseComponent {
-    double move_speed;
-    double strafe_speed;
-    double turn_speed;
-    Human(): move_speed(0), strafe_speed(0), turn_speed(0) {}
-};
+// struct Human: public BaseComponent {
+//     double move_speed;
+//     double strafe_speed;
+//     double turn_speed;
+//     Human(): move_speed(0), strafe_speed(0), turn_speed(0) {}
+// };
+// 
+// struct Enemy: public BaseComponent {
+//     glm::vec2 goal_pos;
+//     glm::vec2 point_target_pos;
+//     Enemy(): goal_pos(0, 0), point_target_pos(0, 0) {}
+// };
 
-struct Enemy: public BaseComponent {
-    glm::vec2 goal_pos;
-    glm::vec2 point_target_pos;
-    Enemy(): goal_pos(0, 0), point_target_pos(0, 0) {}
+struct Gun: public BaseComponent {
+    double focus;
+    double max_focus;
+    double focus_rate;
+    double base_damage;
+    Gun(): focus(0), max_focus(1), focus_rate(0.5), base_damage(10) {}
 };
 
 } // namespace component

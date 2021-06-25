@@ -5,9 +5,10 @@ void build_player(EntityManager &entity_manager, PlayerConfig config)
     Signature signature;
     signature.set((size_t)SystemType::PLAYER);
     signature.set((size_t)SystemType::PHYSICS);
-    signature.set((size_t)SystemType::RENDER_STATIC);
+    signature.set((size_t)SystemType::RENDER_BASE);
+    signature.set((size_t)SystemType::RENDER_GUN_RAY);
 
-    // 4 Components
+    // 5 Components
 
     // Component 0 = Transform
     component::Transform transform;
@@ -23,14 +24,21 @@ void build_player(EntityManager &entity_manager, PlayerConfig config)
     visual_static.render_index = config.sprite_index;
     visual_static.type = component::VisualStatic::Type::SPRITE;
 
-    // Component 3 = Human (TODO)
-    // component::Human human;
+    // Component 3 = Gun
+    component::Gun gun;
 
-    int id = entity_manager.entity_create(3, signature);
+    // Component 4 = Gun visual static
+    component::VisualStatic gun_visual_static;
+    gun_visual_static.depth = 5;
+    gun_visual_static.render_index = config.gun_ray_mesh_index;
+    gun_visual_static.type = component::VisualStatic::Type::MESH;
+
+    int id = entity_manager.entity_create(5, signature);
     entity_manager.entity_add_transform(id, 0, transform);
     entity_manager.entity_add_physics(id, 1, physics);
     entity_manager.entity_add_visual_static(id, 2, visual_static);
-    // entity_manager.entity_add_human(id, 3, human);
+    entity_manager.entity_add_gun(id, 3, gun);
+    entity_manager.entity_add_visual_static(id, 4, gun_visual_static);
 }
 
 void build_enemy(EntityManager &entity_manager, EnemyConfig config)
@@ -38,9 +46,9 @@ void build_enemy(EntityManager &entity_manager, EnemyConfig config)
     Signature signature;
     signature.set((size_t)SystemType::ENEMY);
     signature.set((size_t)SystemType::PHYSICS);
-    signature.set((size_t)SystemType::RENDER_STATIC);
+    signature.set((size_t)SystemType::RENDER_BASE);
 
-    // 4 Components
+    // 3 Components
 
     // Component 0 = Transform
     component::Transform transform;
@@ -56,20 +64,16 @@ void build_enemy(EntityManager &entity_manager, EnemyConfig config)
     visual_static.render_index = config.sprite_index;
     visual_static.type = component::VisualStatic::Type::SPRITE;
 
-    // Component 3 = Human (TODO)
-    // component::Human human;
-
     int id = entity_manager.entity_create(3, signature);
     entity_manager.entity_add_transform(id, 0, transform);
     entity_manager.entity_add_physics(id, 1, physics);
     entity_manager.entity_add_visual_static(id, 2, visual_static);
-    // entity_manager.entity_add_human(id, 3, human);
 }
 
 void build_terrain(EntityManager &entity_manager, TerrainConfig config)
 {
     Signature signature;
-    signature.set((size_t)SystemType::RENDER_STATIC);
+    signature.set((size_t)SystemType::RENDER_BASE);
 
     // 2 Components
 

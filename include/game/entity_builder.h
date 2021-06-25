@@ -5,6 +5,7 @@
 
 struct PlayerConfig {
     unsigned int sprite_index;
+    unsigned int gun_ray_mesh_index;
     glm::vec2 start_pos;
     double start_orientation;
 };

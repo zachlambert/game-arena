@@ -22,18 +22,18 @@ void SystemPhysics::update_entity(component::Transform &transform, component::Ph
 }
 
 
-void SystemRenderStatic::update(EntityManager &entity_manager) {
+void SystemRenderBase::update(EntityManager &entity_manager) {
     component::Transform *transform;
     component::VisualStatic *visual_static;
     for (int i = 0; i < entity_manager.entities.tail; i++) {
-        if (!entity_manager.entity_supports_system(i, SystemType::RENDER_STATIC)) continue;
+        if (!entity_manager.entity_supports_system(i, SystemType::RENDER_BASE)) continue;
         transform = entity_manager.get_transform_component(i, 0);
         visual_static = entity_manager.get_visual_static_component(i, 0);
         update_entity(*transform, *visual_static);
     }
 };
 
-void SystemRenderStatic::update_entity(component::Transform &transform, component::VisualStatic &visual_static) {
+void SystemRenderBase::update_entity(component::Transform &transform, component::VisualStatic &visual_static) {
     visual_static.model = glm::translate(glm::vec3(transform.pos.x, transform.pos.y, (double)visual_static.depth))
         * glm::rotate((float)transform.orientation, glm::vec3(0, 0, 1)) * glm::scale(glm::vec3(transform.scale.x, transform.scale.y, 1));
 }
@@ -42,16 +42,23 @@ void SystemRenderStatic::update_entity(component::Transform &transform, componen
 void SystemPlayer::update(EntityManager &entity_manager, const Input &input, Camera &camera) {
     component::Transform *transform;
     component::Physics *physics;
+    component::Gun *gun;
     for (int i = 0; i < entity_manager.entities.tail; i++) {
         if (!entity_manager.entity_supports_system(i, SystemType::PLAYER)) continue;
         Entity &entity = entity_manager.entities[i];
         transform = entity_manager.get_transform_component(i, 0);
         physics = entity_manager.get_physics_component(i, 0);
-        update_entity(*transform, *physics, input, camera);
+        gun = entity_manager.get_gun_component(i, 0);
+        update_entity(*transform, *physics, *gun, input, camera);
     }
 };
 
-void SystemPlayer::update_entity(component::Transform &transform, component::Physics &physics, const Input &input, Camera &camera)
+void SystemPlayer::update_entity(
+    component::Transform &transform,
+    component::Physics &physics,
+    component::Gun &gun,
+    const Input &input,
+    Camera &camera)
 {
     physics.twist.x = 0;
     if (input.input_down(InputType::MOVE_RIGHT)) {
@@ -81,7 +88,8 @@ void SystemPlayer::update_entity(component::Transform &transform, component::Phy
 }
 
 
-void SystemEnemy::update(EntityManager &entity_manager) {
+void SystemEnemy::update(EntityManager &entity_manager)
+{
     component::Transform *transform;
     component::Physics *physics;
     for (int i = 0; i < entity_manager.entities.tail; i++) {
@@ -98,4 +106,27 @@ void SystemEnemy::update_entity(component::Physics &physics)
     physics.twist.x = physics.twist.x*0.99 + distribution(generator)*25;
     physics.twist.y = physics.twist.y*0.99 + distribution(generator)*25;
     physics.twist.z = physics.twist.z*0.99 + distribution(generator)*0.5;
+}
+
+void SystemRenderGunRay::update(EntityManager &entity_manager)
+{
+    component::Transform *transform;
+    component::Gun *gun;
+    component::VisualStatic *visual;
+    for (int i = 0; i < entity_manager.entities.tail; i++) {
+        if (!entity_manager.entity_supports_system(i, SystemType::RENDER_GUN_RAY)) continue;
+        transform = entity_manager.get_transform_component(i, 0);
+        gun = entity_manager.get_gun_component(i, 0);
+        visual = entity_manager.get_visual_static_component(i, 1);
+        update_entity(*transform, *gun, *visual);
+    }
+}
+
+void SystemRenderGunRay::update_entity(component::Transform &transform, component::Gun &gun, component::VisualStatic &visual_static)
+{
+    double gradient =  0.05 * (1 - gun.focus*0.8);
+    double scale_x = 1000;
+    double scale_y = gradient * scale_x;
+    visual_static.model = glm::translate(glm::vec3(transform.pos.x, transform.pos.y, (double)visual_static.depth))
+        * glm::rotate((float)transform.orientation, glm::vec3(0, 0, 1)) * glm::scale(glm::vec3(scale_x, scale_y, 1));
 }

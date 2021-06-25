@@ -15,9 +15,10 @@ constexpr int NUM_SYSTEMS = 32;
 typedef std::bitset<NUM_SYSTEMS> Signature;
 enum class SystemType {
     PHYSICS,
-    RENDER_STATIC,
+    RENDER_BASE,
     PLAYER,
-    ENEMY
+    ENEMY,
+    RENDER_GUN_RAY
 };
 
 struct Entity {
@@ -62,6 +63,7 @@ public:
     Buffer<component::Transform, MAX_COMPONENTS> transform;
     Buffer<component::Physics, MAX_COMPONENTS> physics;
     Buffer<component::VisualStatic, MAX_COMPONENTS> visual_static;
+    Buffer<component::Gun, MAX_COMPONENTS> gun;
 
     int entity_create(int num_components, Signature signature);
     void entity_remove(int entity_id);
@@ -74,6 +76,9 @@ public:
     void entity_add_visual_static(int entity_id, int offset, component::VisualStatic component) {
         add_component(entity_id, offset, visual_static, ComponentType::VISUAL_STATIC, component);
     }
+    void entity_add_gun(int entity_id, int offset, component::Gun component) {
+        add_component(entity_id, offset, gun, ComponentType::GUN, component);
+    }
 
     component::Transform* get_transform_component(int entity_id, int index=0) {
         return get_component(entity_id, index, ComponentType::TRANSFORM, transform);
@@ -83,6 +88,9 @@ public:
     }
     component::VisualStatic* get_visual_static_component(int entity_id, int index=0) {
         return get_component(entity_id, index, ComponentType::VISUAL_STATIC, visual_static);
+    }
+    component::Gun* get_gun_component(int entity_id, int index=0) {
+        return get_component(entity_id, index, ComponentType::GUN, gun);
     }
 
     bool entity_supports_system(int entity_id, SystemType type){ return entities[entity_id].signature.test((std::size_t)type); }

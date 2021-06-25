@@ -20,7 +20,7 @@ private:
     void update_entity(component::Transform &transform, component::Physics &physics, double dt);
 };
 
-class SystemRenderStatic {
+class SystemRenderBase {
 public:
     void update(EntityManager &entity_manager) ;
 private:
@@ -31,7 +31,7 @@ class SystemPlayer {
 public:
     void update(EntityManager &entity_manager, const Input &input, Camera &camera);
 private:
-    void update_entity(component::Transform &transform, component::Physics &physics, const Input &input, Camera &camera);
+    void update_entity(component::Transform &transform, component::Physics &physics, component::Gun &gun, const Input &input, Camera &camera);
 };
 
 class SystemEnemy {
@@ -39,6 +39,13 @@ public:
     void update(EntityManager &entity_manager);
 private:
     void update_entity(component::Physics &physics);
+};
+
+class SystemRenderGunRay {
+public:
+    void update(EntityManager &entity_manager);
+private:
+    void update_entity(component::Transform &transform, component::Gun &gun, component::VisualStatic &visual_static);
 };
 
 #endif

@@ -15,8 +15,6 @@ public:
 
     void create_default_world();
     void update(double dt);
-    // const Camera &get_camera()const{ return camera; }
-    // const Buffer<component::VisualStatic, MAX_COMPONENTS> &get_visuals()const{ ... ; }
 
     Input input;
     Camera camera;
@@ -25,7 +23,8 @@ public:
     SystemPlayer system_player;
     SystemEnemy system_enemy;
     SystemPhysics system_physics;
-    SystemRenderStatic system_render_static;
+    SystemRenderBase system_render_static;
+    SystemRenderGunRay system_render_gun_ray;
 };
 
 #endif

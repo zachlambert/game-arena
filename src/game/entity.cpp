@@ -83,12 +83,8 @@ void EntityManager::entity_remove(int entity_id)
             case ComponentType::VISUAL_STATIC:
                 visual_static.remove(component_references[i].index);
                 break;
-            case ComponentType::HUMAN:
-                // TODO
-                break;
-            case ComponentType::ENEMY:
-                // TODO
-                break;
+            case ComponentType::GUN:
+                gun.remove(component_references[i].index);
         }
     }
 
