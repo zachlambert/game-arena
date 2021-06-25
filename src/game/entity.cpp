@@ -1,5 +1,17 @@
 #include "game/entity.h"
 
+void EntityManager::remove_entities()
+{
+    int i = 0;
+    while (i < entities.tail) {
+        if (entities[i].to_remove) {
+            entity_remove(i);
+        } else {
+            i++;
+        }
+    }
+}
+
 int EntityManager::entity_create(int num_components, Signature signature)
 {
     Entity entity;
@@ -86,6 +98,10 @@ void EntityManager::entity_remove(int entity_id)
                 break;
             case ComponentType::GUN:
                 gun.remove(component_references[i].index);
+                break;
+            case ComponentType::ENEMY_SPAWNER:
+                enemy_spawner.remove(component_references[i].index);
+                break;
         }
     }
 

@@ -10,7 +10,8 @@ enum class ComponentType {
     VISUAL_STATIC,
     // HUMAN,
     // ENEMY,
-    GUN
+    GUN,
+    ENEMY_SPAWNER
 };
 
 struct ComponentReference {
@@ -77,6 +78,13 @@ struct Gun: public BaseComponent {
     Gun():
         origin_offset(150), focus(0), max_focus(1), focus_rate(0.5), base_damage(10),
         fire_event(false), fire_visual_on(false), fire_visual_timer(0), fire_visual_timeout(0.04) {}
+};
+
+struct EnemySpawner: public BaseComponent {
+    glm::vec2 pos;
+    double spawn_timer;
+    double spawn_timeout;
+    EnemySpawner(): pos(0, 0), spawn_timer(0), spawn_timeout(1) {}
 };
 
 } // namespace component

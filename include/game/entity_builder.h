@@ -26,4 +26,10 @@ struct TerrainConfig {
 };
 void build_terrain(EntityManager &entity_manager, TerrainConfig config);
 
+struct EnemySpawnerConfig {
+    double spawn_timeout;
+    glm::vec2 pos;
+};
+void build_enemy_spawner(EntityManager &entity_manager, EnemySpawnerConfig config);
+
 #endif

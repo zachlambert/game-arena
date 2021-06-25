@@ -97,3 +97,19 @@ void build_terrain(EntityManager &entity_manager, TerrainConfig config)
     entity_manager.entity_add_transform(id, 0, transform);
     entity_manager.entity_add_visual_static(id, 1, visual_static);
 }
+
+void build_enemy_spawner(EntityManager &entity_manager, EnemySpawnerConfig config)
+{
+    Signature signature;
+    signature.set((size_t)SystemType::ENEMY_SPAWNER);
+
+    // 1 Component
+
+    // Component 0 = Enemy spawner
+    component::EnemySpawner enemy_spawner;
+    enemy_spawner.pos = config.pos;
+    enemy_spawner.spawn_timeout = config.spawn_timeout;
+
+    int id = entity_manager.entity_create(1, signature);
+    entity_manager.entity_add_enemy_spawner(id, 0, enemy_spawner);
+}

@@ -10,8 +10,7 @@ void Game::create_default_world()
 
 void Game::update(double dt)
 {
-    // Randomly spawn enemies
-    // TODO
+    system_enemy_spawner(entity_manager, dt);
 
     system_player(entity_manager, input, camera);
     system_enemy(entity_manager);
@@ -20,15 +19,7 @@ void Game::update(double dt)
     system_render_base(entity_manager);
     system_render_gun_ray(entity_manager, camera, dt);
 
-    // Remove entities if marked for removal
-    int i = 0;
-    while (i < entity_manager.entities.tail) {
-        if (entity_manager.entities[i].to_remove) {
-            entity_manager.entity_remove(i);
-        } else {
-            i++;
-        }
-    }
+    entity_manager.remove_entities();
     
     // Update camera
     for (int i = 0; i < entity_manager.entities.tail; i++) {

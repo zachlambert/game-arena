@@ -20,7 +20,8 @@ enum class SystemType {
     ENEMY,
     RENDER_GUN_RAY,
     GUNSHOT_SOURCE,
-    GUNSHOT_TARGET
+    GUNSHOT_TARGET,
+    ENEMY_SPAWNER
 };
 
 struct Entity {
@@ -67,6 +68,9 @@ public:
     Buffer<component::Physics, MAX_COMPONENTS> physics;
     Buffer<component::VisualStatic, MAX_COMPONENTS> visual_static;
     Buffer<component::Gun, MAX_COMPONENTS> gun;
+    Buffer<component::EnemySpawner, MAX_COMPONENTS> enemy_spawner;
+
+    void remove_entities();
 
     int entity_create(int num_components, Signature signature);
     void entity_remove(int entity_id);
@@ -82,6 +86,9 @@ public:
     void entity_add_gun(int entity_id, int offset, component::Gun component) {
         add_component(entity_id, offset, gun, ComponentType::GUN, component);
     }
+    void entity_add_enemy_spawner(int entity_id, int offset, component::EnemySpawner component) {
+        add_component(entity_id, offset, enemy_spawner, ComponentType::ENEMY_SPAWNER, component);
+    }
 
     component::Transform* get_transform_component(int entity_id, int index=0) {
         return get_component(entity_id, index, ComponentType::TRANSFORM, transform);
@@ -94,6 +101,9 @@ public:
     }
     component::Gun* get_gun_component(int entity_id, int index=0) {
         return get_component(entity_id, index, ComponentType::GUN, gun);
+    }
+    component::EnemySpawner* get_enemy_spawner_component(int entity_id, int index=0) {
+        return get_component(entity_id, index, ComponentType::ENEMY_SPAWNER, enemy_spawner);
     }
 
     bool entity_supports_system(int entity_id, SystemType type){ return entities[entity_id].signature.test((std::size_t)type); }

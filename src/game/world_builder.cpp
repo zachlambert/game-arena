@@ -34,6 +34,15 @@ void build_world(EntityManager &entity_manager)
         config.orientation = M_PI/2;
         build_terrain(entity_manager, config);
     }
+
+    // Create an enemy spawner
+    {
+        EnemySpawnerConfig config;
+        config.pos.x = 0;
+        config.pos.y = -100;
+        config.spawn_timeout = 2;
+        build_enemy_spawner(entity_manager, config);
+    }
     return;
 }
 

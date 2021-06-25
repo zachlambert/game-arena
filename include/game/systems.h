@@ -10,6 +10,8 @@
 #include "game/camera.h"
 #include "game/entity.h"
 
+void system_enemy_spawner(EntityManager &entity_manager, double dt);
+
 void system_player(EntityManager &entity_manager, const Input &input, Camera &camera);
 void system_enemy(EntityManager &entity_manager);
 void system_gunshot(EntityManager &entity_manager);
