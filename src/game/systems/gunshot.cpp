@@ -6,9 +6,8 @@ struct Gunshot {
     double focus;
     int entity_id;
 };
-static std::vector<Gunshot> gunshots;
 
-void check_for_gunshot(const component::Transform &transform, const component::Gun &gun, int entity_id)
+void check_for_gunshot(const component::Transform &transform, const component::Gun &gun, int entity_id, std::vector<Gunshot> &gunshots)
 {
     if (!gun.fire_event) return;
     Gunshot gunshot;
@@ -21,7 +20,7 @@ void check_for_gunshot(const component::Transform &transform, const component::G
     gunshots.push_back(gunshot);
 }
 
-bool update_entity(component::Transform &transform, int entity_id)
+bool check_for_gunshot_hit(component::Transform &transform, int entity_id, const std::vector<Gunshot> &gunshots)
 {
     // TODO: In future, subtract health. For now, just mark for removal.
     for (const auto &gunshot: gunshots) {
@@ -34,19 +33,19 @@ bool update_entity(component::Transform &transform, int entity_id)
 
 void system_gunshot(EntityManager &entity_manager)
 {
-    gunshots.clear();
+    std::vector<Gunshot> gunshots;
     component::Transform *transform;
     component::Gun *gun;
     for (int i = 0; i < entity_manager.entities.tail; i++) {
         if (!entity_manager.entity_supports_system(i, SystemType::GUNSHOT_SOURCE)) continue;
         transform = entity_manager.get_transform_component(i, 0);
         gun = entity_manager.get_gun_component(i, 0);
-        check_for_gunshot(*transform, *gun, i);
+        check_for_gunshot(*transform, *gun, i, gunshots);
     }
 
     for (int i = 0; i < entity_manager.entities.tail; i++) {
         if (!entity_manager.entity_supports_system(i, SystemType::GUNSHOT_TARGET)) continue;
         transform = entity_manager.get_transform_component(i, 0);
-        entity_manager.entities[i].to_remove |= update_entity(*transform, i);
+        entity_manager.entities[i].to_remove |= check_for_gunshot_hit(*transform, i, gunshots);
     }
 }

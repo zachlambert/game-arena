@@ -10,6 +10,9 @@ void Game::create_default_world()
 
 void Game::update(double dt)
 {
+    // Randomly spawn enemies
+    // TODO
+
     system_player(entity_manager, input, camera);
     system_enemy(entity_manager);
     system_gunshot(entity_manager);
@@ -28,7 +31,6 @@ void Game::update(double dt)
     }
     
     // Update camera
-
     for (int i = 0; i < entity_manager.entities.tail; i++) {
         if (!entity_manager.entity_supports_system(i, SystemType::PLAYER)) continue;
         component::Transform &transform = *entity_manager.get_transform_component(i);
