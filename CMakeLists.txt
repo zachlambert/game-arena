@@ -11,19 +11,22 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 set(SRC
     src/main.cpp
 
-    src/window/clock.cpp
-    src/window/window.cpp
-    src/window/input.cpp
-
-    src/render/textures.cpp
-    src/render/shaders.cpp
-    src/render/renderer.cpp
-    src/render/sprite_renderer.cpp
-    src/render/mesh_renderer.cpp
-
-    src/game/game.cpp
     src/game/camera.cpp
     src/game/entity.cpp
+    src/game/entity_builder.cpp
+    src/game/game.cpp
+    src/game/systems.cpp
+    src/game/world_builder.cpp
+
+    src/render/mesh_renderer.cpp
+    src/render/renderer.cpp
+    src/render/shaders.cpp
+    src/render/sprite_renderer.cpp
+    src/render/textures.cpp
+
+    src/window/clock.cpp
+    src/window/input.cpp
+    src/window/window.cpp
 )
 
 add_executable(game ${SRC})
