@@ -15,7 +15,7 @@
 #include "window/input.h"
 #include "window/clock.h"
 #include "render/renderer.h"
-#include "world/world.h"
+#include "world/game.h"
 
 int main()
 {
@@ -27,24 +27,20 @@ int main()
     Renderer renderer("data/");
     renderer.initialise();
 
-    Camera camera(1080, 720);
-    World world(camera);
-    world.create_default_world();
+    Game game(window);
+
+    game.input.register_key(InputType::MOVE_RIGHT, GLFW_KEY_D);
+    game.input.register_key(InputType::MOVE_LEFT, GLFW_KEY_A);
+    game.input.register_key(InputType::MOVE_UP, GLFW_KEY_W);
+    game.input.register_key(InputType::MOVE_DOWN, GLFW_KEY_S);
+    game.input.register_mouse_button(InputType::CLICK_LEFT, GLFW_MOUSE_BUTTON_LEFT);
 
     Clock clock;
-    Input input(window);
-    
-    input.register_key(InputType::MOVE_RIGHT, GLFW_KEY_D);
-    input.register_key(InputType::MOVE_LEFT, GLFW_KEY_A);
-    input.register_key(InputType::MOVE_UP, GLFW_KEY_W);
-    input.register_key(InputType::MOVE_DOWN, GLFW_KEY_S);
-
-    input.register_mouse_button(InputType::CLICK_LEFT, GLFW_MOUSE_BUTTON_LEFT);
 
     while (window.is_running()) {
         window.update();
-        world.update(clock.sample_dt(), input);
-        renderer.render(world);
+        game.update(clock.sample_dt());
+        renderer.render(game);
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
