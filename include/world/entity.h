@@ -9,17 +9,20 @@ constexpr int MAX_COMPONENTS_PER_ENTITY = 16;
 constexpr int MAX_ENTITIES = 1024;
 constexpr int MAX_COMPONENTS = MAX_COMPONENTS_PER_ENTITY*MAX_ENTITIES;
 
-enum class EntityType {
+constexpr int NUM_SYSTEMS = 32;
+typedef std::bitset<NUM_SYSTEMS> Signature;
+enum class SystemType {
+    PHYSICS,
+    RENDER_STATIC,
     PLAYER,
-    ENEMY,
-    OBJECT
+    ENEMY
 };
 
 struct Entity {
     // Block of component references
     int start;
     int count;
-    EntityType type;
+    Signature signature;
 };
 
 template <typename T, int N>
@@ -54,11 +57,6 @@ struct Buffer {
 class EntityManager {
 public:
     Buffer<Entity, MAX_ENTITIES> entities;
-    Buffer<ComponentReference, MAX_COMPONENTS> component_references;
-
-    Buffer<component::Transform, MAX_COMPONENTS> transform;
-    Buffer<component::Physics, MAX_COMPONENTS> physics;
-    Buffer<component::VisualStatic, MAX_COMPONENTS> visual_static;
 
     int entity_create(int num_components);
     void entity_remove(int entity_id);
@@ -76,6 +74,8 @@ public:
     component::Physics* get_physics_component(int entity_id, int index=0);
     component::VisualStatic* get_visual_static_component(int entity_id, int index=0);
 
+    bool entity_supports_system(int entity_id, SystemType type){ return entities[entity_id].signature.test((std::size_t)type); }
+
 private:
     template <typename T>
     T* get_component(int entity_id, int index, ComponentType type, Buffer<T, MAX_COMPONENTS> &buffer);
@@ -85,6 +85,11 @@ private:
     void remove_component(Buffer<T, MAX_COMPONENTS> &buffer, int index);
 
     Buffer<Entity, MAX_ENTITIES> free;
+    Buffer<ComponentReference, MAX_COMPONENTS> component_references;
+
+    Buffer<component::Transform, MAX_COMPONENTS> transform;
+    Buffer<component::Physics, MAX_COMPONENTS> physics;
+    Buffer<component::VisualStatic, MAX_COMPONENTS> visual_static;
 
     class SystemManager;
     friend SystemManager;
