@@ -19,7 +19,14 @@ void Game::update(double dt)
     system_render_gun_ray.update(entity_manager, camera, dt);
 
     // Remove entities if marked for removal
-    // TODO
+    int i = 0;
+    while (i < entity_manager.entities.tail) {
+        if (entity_manager.entities[i].to_remove) {
+            entity_manager.entity_remove(i);
+        } else {
+            i++;
+        }
+    }
     
     // Update camera
 

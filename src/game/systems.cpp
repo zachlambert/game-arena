@@ -164,10 +164,7 @@ void SystemGunshot::update(EntityManager &entity_manager)
     for (int i = 0; i < entity_manager.entities.tail; i++) {
         if (!entity_manager.entity_supports_system(i, SystemType::GUNSHOT_TARGET)) continue;
         transform = entity_manager.get_transform_component(i, 0);
-        // entity_manager.entities[i].to_remove |= update_entity(*transform, i);
-        if (update_entity(*transform, i)) {
-            std::cout << "Entity hit" << std::endl;
-        }
+        entity_manager.entities[i].to_remove |= update_entity(*transform, i);
     }
 }
 
