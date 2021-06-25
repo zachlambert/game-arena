@@ -72,6 +72,8 @@ void Renderer::render(const Game &game)
     glClearColor(0.9f, 0.9f, 0.9f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    game.camera.update_view_matrix();
+
     // Render sprites
     {
         SpriteRenderer::Params params;

@@ -15,4 +15,14 @@ void Game::update(double dt)
     system_enemy.update(entity_manager);
     system_physics.update(entity_manager, dt);
     system_render_static.update(entity_manager);
+    
+    // Update camera
+
+    for (int i = 0; i < entity_manager.entities.tail; i++) {
+        if (!entity_manager.entity_supports_system(i, SystemType::PLAYER)) continue;
+        component::Transform &transform = *entity_manager.get_transform_component(i);
+        camera.pos = transform.pos;
+        break;
+    }
+    camera.update_view_matrix();
 }
