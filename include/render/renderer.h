@@ -12,8 +12,7 @@
 #include "render/shaders.h"
 #include "render/sprite_renderer.h"
 #include "render/mesh_renderer.h"
-
-class World;
+#include "world/game.h"
 
 class Renderer {
 public:
@@ -23,7 +22,7 @@ public:
     {}
 
     void initialise();
-    void render(const World &world);
+    void render(const Game &game);
 private:
     TextureManager texture_manager;
     Shaders shaders;

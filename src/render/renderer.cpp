@@ -1,5 +1,4 @@
 #include "render/renderer.h"
-#include "world/world.h"
 
 #include <iostream>
 
@@ -68,7 +67,7 @@ void Renderer::initialise()
     initialise_mesh_renderer(mesh_renderer, shaders);
 }
 
-void Renderer::render(const World &world)
+void Renderer::render(const Game &game)
 {
     glClearColor(0.9f, 0.9f, 0.9f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -76,14 +75,15 @@ void Renderer::render(const World &world)
     // Render sprites
     {
         SpriteRenderer::Params params;
-        params.view = &world.get_camera().view;
+        params.view = &game.camera.view;
         sprite_renderer.enable(params);
 
         SpriteRenderer::Command command;
-        for (const auto &visual: world.get_visuals()) {
-            if (visual.type == VisualType::SPRITE) {
-                command.sprite_index = visual.render_index;
-                command.model = &visual.model;
+        for (int i = 0; i < game.entity_manager.visual_static.tail; i++) {
+            const component::VisualStatic &visual_static = game.entity_manager.visual_static[i];
+            if (visual_static.type == component::VisualStatic::Type::SPRITE) {
+                command.sprite_index = visual_static.render_index;
+                command.model = &visual_static.model;
                 sprite_renderer.render(command);
             }
         }
@@ -92,14 +92,15 @@ void Renderer::render(const World &world)
     // Render meshes
     {
         MeshRenderer::Params params;
-        params.view = &world.get_camera().view;
+        params.view = &game.camera.view;
         mesh_renderer.enable(params);
 
         MeshRenderer::Command command;
-        for (const auto &visual: world.get_visuals()) {
-            if (visual.type == VisualType::MESH) {
-                command.mesh_index = visual.render_index;
-                command.model = &visual.model;
+        for (int i = 0; i < game.entity_manager.visual_static.tail; i++) {
+            const component::VisualStatic &visual_static = game.entity_manager.visual_static[i];
+            if (visual_static.type == component::VisualStatic::Type::MESH) {
+                command.mesh_index = visual_static.render_index;
+                command.model = &visual_static.model;
                 mesh_renderer.render(command);
             }
         }
