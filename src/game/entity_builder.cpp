@@ -26,11 +26,13 @@ void build_player(EntityManager &entity_manager, PlayerConfig config)
 
     // Component 3 = Gun
     component::Gun gun;
+    gun.mesh_index_aiming = config.gun_ray_mesh_index_aiming;
+    gun.mesh_index_fired = config.gun_ray_mesh_index_fired;
 
     // Component 4 = Gun visual static
     component::VisualStatic gun_visual_static;
     gun_visual_static.depth = 5;
-    gun_visual_static.render_index = config.gun_ray_mesh_index;
+    gun_visual_static.render_index = gun.mesh_index_aiming;
     gun_visual_static.type = component::VisualStatic::Type::MESH;
 
     int id = entity_manager.entity_create(5, signature);

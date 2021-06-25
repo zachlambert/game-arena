@@ -62,12 +62,20 @@ struct VisualStatic: public BaseComponent {
 // };
 
 struct Gun: public BaseComponent {
+    unsigned int mesh_index_aiming;
+    unsigned int mesh_index_fired;
     double origin_offset;
     double focus;
     double max_focus;
     double focus_rate;
     double base_damage;
-    Gun(): origin_offset(150), focus(0), max_focus(1), focus_rate(0.5), base_damage(10) {}
+    bool fire_event;
+    bool fire_visual_on;
+    double fire_visual_timer;
+    double fire_visual_timeout;
+    Gun():
+        origin_offset(150), focus(0), max_focus(1), focus_rate(0.5), base_damage(10),
+        fire_event(false), fire_visual_on(false), fire_visual_timer(0), fire_visual_timeout(0.04) {}
 };
 
 } // namespace component

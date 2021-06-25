@@ -40,23 +40,25 @@ void initialise_mesh_renderer(MeshRenderer &renderer, const Shaders &shaders)
 {
     // Remember: Define meshes clockwise !
 
+    // Terrain element
+    {
     std::vector<glm::vec2> vertices;
     glm::vec4 color;
-
-    // Terrain element
     vertices.push_back(glm::vec2(-100, 0));
     vertices.push_back(glm::vec2(-80, 200));
     vertices.push_back(glm::vec2(20, 240));
     vertices.push_back(glm::vec2(0, -150));
     color = glm::vec4(0, 0, 0.1, 1);
     renderer.load_mesh(triangulate_mesh(vertices, color));
+    }
 
-    // Normalised gun ray
+    // Normalised gun ray (aiming)
     // x_scale = length
     // y_scale = tan(theta/2)*length
+    {
     MeshConfig config;
     config.colors.push_back(glm::vec4(0.7, 0.7, 0.7, 1));
-    config.colors.push_back(glm::vec4(0.7, 0.7, 0.7, -1));
+    config.colors.push_back(glm::vec4(0.7, 0.7, 0.7, -1)); // Negative opacity means it faded to 0 more quickly
     config.colors.push_back(glm::vec4(0.7, 0.7, 0.7, -1));
     config.vertices.push_back(glm::vec2(0, 0));
     config.vertices.push_back(glm::vec2(1, 1));
@@ -65,6 +67,22 @@ void initialise_mesh_renderer(MeshRenderer &renderer, const Shaders &shaders)
     config.indices.push_back(1);
     config.indices.push_back(2);
     renderer.load_mesh(config);
+    }
+
+    // Normalised gun ray (fired)
+    {
+    MeshConfig config;
+    config.colors.push_back(glm::vec4(0, 0, 0, 1)); // Darker
+    config.colors.push_back(glm::vec4(0, 0, 0, -1));
+    config.colors.push_back(glm::vec4(0, 0, 0, -1));
+    config.vertices.push_back(glm::vec2(0, 0)); // Thinner
+    config.vertices.push_back(glm::vec2(1, 0.8)); 
+    config.vertices.push_back(glm::vec2(1, -0.8));
+    config.indices.push_back(0);
+    config.indices.push_back(1);
+    config.indices.push_back(2);
+    renderer.load_mesh(config);
+    }
 
     renderer.initialise(shaders.mesh_program_id);
 }

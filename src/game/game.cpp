@@ -15,7 +15,7 @@ void Game::update(double dt)
     system_enemy.update(entity_manager);
     system_physics.update(entity_manager, dt);
     system_render_static.update(entity_manager);
-    system_render_gun_ray.update(entity_manager, camera);
+    system_render_gun_ray.update(entity_manager, camera, dt);
     
     // Update camera
 
