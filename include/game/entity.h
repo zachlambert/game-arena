@@ -145,16 +145,18 @@ inline T* EntityManager::get_component(int entity_id, int index, ComponentType t
 template <typename T>
 inline void EntityManager::add_component(int entity_id, int offset, Buffer<T, MAX_COMPONENTS> &buffer, ComponentType component_type, T component)
 {
+    int ref_index = entities[entity_id].start + offset;
+    component.ref_id = ref_index;
     buffer.append(component);
-    component_references[entities[entity_id].start + offset].index = buffer.tail-1;
-    component_references[entities[entity_id].start + offset].type = component_type;
+    component_references[ref_index].index = buffer.tail-1;
+    component_references[ref_index].type = component_type;
 }
 
 template <typename T>
 inline void EntityManager::remove_component(Buffer<T, MAX_COMPONENTS> &buffer, int index)
 {
     buffer.remove(index);
-    if (index != 0) {
+    if (buffer.tail != 0) {
         // When removing a component, it will move the end component to the empty
         // slot.
         // Need to update the index stored in the component reference.

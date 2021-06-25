@@ -86,21 +86,22 @@ void EntityManager::entity_remove(int entity_id)
     // Can still access the component references, they aren't removed just marked as
     // available for use by new entities
     for (int i = entity.start; i < entity.start + entity.count; i++) {
+        int comp_index = component_references[i].index;
         switch (component_references[i].type) {
             case ComponentType::TRANSFORM:
-                transform.remove(component_references[i].index);
+                remove_component(transform, comp_index);
                 break;
             case ComponentType::PHYSICS:
-                physics.remove(component_references[i].index);
+                remove_component(physics, comp_index);
                 break;
             case ComponentType::VISUAL_STATIC:
-                visual_static.remove(component_references[i].index);
+                remove_component(visual_static, comp_index);
                 break;
             case ComponentType::GUN:
-                gun.remove(component_references[i].index);
+                remove_component(gun, comp_index);
                 break;
             case ComponentType::ENEMY_SPAWNER:
-                enemy_spawner.remove(component_references[i].index);
+                remove_component(enemy_spawner, comp_index);
                 break;
         }
     }
