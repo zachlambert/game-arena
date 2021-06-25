@@ -38,7 +38,7 @@ int EntityManager::entity_create(int num_components, Signature signature)
         }
         if (min_index != -1) {
             entity.start = free[min_index].start;
-            free[min_index].count -= min_excess;
+            free[min_index].count -= entity.count;
             free[min_index].start += entity.count;
             if (free[min_index].count == 0) {
                 free.remove(min_index);
