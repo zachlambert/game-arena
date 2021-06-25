@@ -15,8 +15,14 @@ set(SRC
     src/game/entity.cpp
     src/game/entity_builder.cpp
     src/game/game.cpp
-    src/game/systems.cpp
     src/game/world_builder.cpp
+
+    src/game/systems/enemy.cpp
+    src/game/systems/gunshot.cpp
+    src/game/systems/physics.cpp
+    src/game/systems/player.cpp
+    src/game/systems/render_base.cpp
+    src/game/systems/render_gun_ray.cpp
 
     src/render/mesh_renderer.cpp
     src/render/renderer.cpp

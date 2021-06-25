@@ -1,8 +1,7 @@
 #include "game/game.h"
 
 #include "game/world_builder.h"
-#include <iostream>
-#include <random>
+#include "game/systems.h"
 
 void Game::create_default_world()
 {
@@ -11,12 +10,12 @@ void Game::create_default_world()
 
 void Game::update(double dt)
 {
-    system_player.update(entity_manager, input, camera);
-    system_enemy.update(entity_manager);
-    system_gunshot.update(entity_manager);
-    system_physics.update(entity_manager, dt);
-    system_render_static.update(entity_manager);
-    system_render_gun_ray.update(entity_manager, camera, dt);
+    system_player(entity_manager, input, camera);
+    system_enemy(entity_manager);
+    system_gunshot(entity_manager);
+    system_physics(entity_manager, dt);
+    system_render_base(entity_manager);
+    system_render_gun_ray(entity_manager, camera, dt);
 
     // Remove entities if marked for removal
     int i = 0;

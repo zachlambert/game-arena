@@ -2,10 +2,10 @@
 #include "window/window.h"
 
 #include <unordered_map>
-std::unordered_map<InputType, InputState> inputs;
-std::unordered_map<int, InputType> key_mappings;
-std::unordered_map<int, InputType> mouse_button_mappings;
-double scroll_yoffset;
+static std::unordered_map<InputType, InputState> inputs;
+static std::unordered_map<int, InputType> key_mappings;
+static std::unordered_map<int, InputType> mouse_button_mappings;
+static double scroll_yoffset;
 
 void key_callback(
     GLFWwindow* window,

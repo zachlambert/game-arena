@@ -7,7 +7,6 @@
 #include "game/entity.h"
 #include "window/window.h"
 #include "window/input.h"
-#include "game/systems.h"
 
 class Game {
 public:
@@ -19,13 +18,6 @@ public:
     Input input;
     Camera camera;
     EntityManager entity_manager;
-
-    SystemPlayer system_player;
-    SystemEnemy system_enemy;
-    SystemPhysics system_physics;
-    SystemRenderBase system_render_static;
-    SystemRenderGunRay system_render_gun_ray;
-    SystemGunshot system_gunshot;
 };
 
 #endif
