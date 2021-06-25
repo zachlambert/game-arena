@@ -13,7 +13,9 @@ public:
 
     void clear();
     int entity_create();
-    Action &entity_create_action(int id);
+    Action &entity_get_action(int id);
+    State &entity_get_state(int id);
+    Entity &entity_get_visual(int id, int index);
     unsigned int create_entity();
     void create_default_world();
     void create_entity(

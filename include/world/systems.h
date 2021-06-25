@@ -9,10 +9,10 @@
 #include "world/camera.h"
 
 enum class SystemType {
-    RENDER_STATIC,
-    PHYSICS,
     ENEMY,
-    PLAYER
+    PLAYER,
+    PHYSICS,
+    RENDER_STATIC
 };
 
 void system_render_static(component::Transform transform, component::VisualStatic visual_static)
