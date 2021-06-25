@@ -83,6 +83,7 @@ void SystemPlayer::update_entity(
     if (input.query_input_state(InputType::CLICK_LEFT) == InputState::PRESSED)
     {
         gun.fire_event = true;
+        gun.fire_point = mouse_pos_world;
     }
 }
 
@@ -145,4 +146,51 @@ void SystemRenderGunRay::update_entity(component::Transform &transform, componen
         * glm::rotate((float)transform.orientation, glm::vec3(0, 0, 1))
         * glm::translate(glm::vec3(gun.origin_offset, 0, 0))
         * glm::scale(glm::vec3(scale_x, scale_y, 1));
+}
+
+void SystemGunshot::update(EntityManager &entity_manager)
+{
+    gunshots.clear();
+
+    component::Transform *transform;
+    component::Gun *gun;
+    for (int i = 0; i < entity_manager.entities.tail; i++) {
+        if (!entity_manager.entity_supports_system(i, SystemType::GUNSHOT_SOURCE)) continue;
+        transform = entity_manager.get_transform_component(i, 0);
+        gun = entity_manager.get_gun_component(i, 0);
+        check_for_gunshot(*transform, *gun, i);
+    }
+
+    for (int i = 0; i < entity_manager.entities.tail; i++) {
+        if (!entity_manager.entity_supports_system(i, SystemType::GUNSHOT_TARGET)) continue;
+        transform = entity_manager.get_transform_component(i, 0);
+        // entity_manager.entities[i].to_remove |= update_entity(*transform, i);
+        if (update_entity(*transform, i)) {
+            std::cout << "Entity hit" << std::endl;
+        }
+    }
+}
+
+void SystemGunshot::check_for_gunshot(const component::Transform &transform, const component::Gun &gun, int entity_id)
+{
+    if (!gun.fire_event) return;
+    Gunshot gunshot;
+    gunshot.origin = transform.pos +
+        glm::vec2(gun.origin_offset * cos(transform.orientation),
+                  gun.origin_offset * sin(transform.orientation));
+    gunshot.fire_point = gun.fire_point;
+    gunshot.focus = gun.focus;
+    gunshot.entity_id = entity_id;
+    gunshots.push_back(gunshot);
+}
+
+bool SystemGunshot::update_entity(component::Transform &transform, int entity_id)
+{
+    // TODO: In future, subtract health. For now, just mark for removal.
+    for (const auto &gunshot: gunshots) {
+        if (gunshot.entity_id == entity_id) continue;
+        glm::vec2 disp = gunshot.fire_point - transform.pos;
+        if (std::hypot(disp.x, disp.y) < 50) return true;
+    }
+    return false;
 }

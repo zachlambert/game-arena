@@ -48,4 +48,19 @@ private:
     void update_entity(component::Transform &transform, component::Gun &gun, component::VisualStatic &visual_static, const Camera &camera, double dt);
 };
 
+class SystemGunshot {
+public:
+    void update(EntityManager &entity_manager);
+private:
+    struct Gunshot {
+        glm::vec2 origin;
+        glm::vec2 fire_point;
+        double focus;
+        int entity_id;
+    };
+    std::vector<Gunshot> gunshots;
+    void check_for_gunshot(const component::Transform &transform, const component::Gun &gun, int entity_id);
+    bool update_entity(component::Transform &transform, int entity_id);
+};
+
 #endif

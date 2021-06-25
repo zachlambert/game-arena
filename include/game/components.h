@@ -69,6 +69,7 @@ struct Gun: public BaseComponent {
     double max_focus;
     double focus_rate;
     double base_damage;
+    glm::vec2 fire_point;
     bool fire_event;
     bool fire_visual_on;
     double fire_visual_timer;

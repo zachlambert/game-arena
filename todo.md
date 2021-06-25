@@ -19,7 +19,7 @@ Walls and collisions
 - Add a collision system which holds collision polygon for entities.
 - Handle wall collisions such that entities slide along the edge instead
   of stopping completely.
-- Have enemies only get hit when you click on them.
+- Have enemies only get hit when you click on them (using the mesh, instead of just distance away).
 
 # Objective 3
 

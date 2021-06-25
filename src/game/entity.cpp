@@ -6,6 +6,7 @@ int EntityManager::entity_create(int num_components, Signature signature)
     entity.start = -1;
     entity.count = num_components;
     entity.signature = signature;
+    entity.to_remove = false;
 
     // STEP 1: Find space for new components, either in a free slot or at
     // the end.

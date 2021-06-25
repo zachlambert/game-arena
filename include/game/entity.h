@@ -18,7 +18,9 @@ enum class SystemType {
     RENDER_BASE,
     PLAYER,
     ENEMY,
-    RENDER_GUN_RAY
+    RENDER_GUN_RAY,
+    GUNSHOT_SOURCE,
+    GUNSHOT_TARGET
 };
 
 struct Entity {
@@ -26,6 +28,7 @@ struct Entity {
     int start;
     int count;
     Signature signature;
+    bool to_remove;
 };
 
 template <typename T, int N>
