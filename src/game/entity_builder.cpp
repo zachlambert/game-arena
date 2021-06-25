@@ -7,6 +7,8 @@ void build_player(EntityManager &entity_manager, PlayerConfig config)
     signature.set((size_t)SystemType::PHYSICS);
     signature.set((size_t)SystemType::RENDER_BASE);
     signature.set((size_t)SystemType::RENDER_GUN_RAY);
+    signature.set((size_t)SystemType::GUNSHOT_SOURCE);
+    signature.set((size_t)SystemType::GUNSHOT_TARGET);
 
     // 5 Components
 
@@ -49,6 +51,7 @@ void build_enemy(EntityManager &entity_manager, EnemyConfig config)
     signature.set((size_t)SystemType::ENEMY);
     signature.set((size_t)SystemType::PHYSICS);
     signature.set((size_t)SystemType::RENDER_BASE);
+    signature.set((size_t)SystemType::GUNSHOT_TARGET);
 
     // 3 Components
 

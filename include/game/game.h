@@ -25,6 +25,7 @@ public:
     SystemPhysics system_physics;
     SystemRenderBase system_render_static;
     SystemRenderGunRay system_render_gun_ray;
+    SystemGunshot system_gunshot;
 };
 
 #endif
