@@ -4,20 +4,22 @@
 #include <array>
 #include <bitset>
 #include "world/components.h"
-#include "world/systems.h"
 
 constexpr int MAX_COMPONENTS_PER_ENTITY = 16;
 constexpr int MAX_ENTITIES = 1024;
 constexpr int MAX_COMPONENTS = MAX_COMPONENTS_PER_ENTITY*MAX_ENTITIES;
-constexpr int NUM_SYSTEMS = 32;
 
-typedef std::bitset<NUM_SYSTEMS> Signature;
+enum class EntityType {
+    PLAYER,
+    ENEMY,
+    OBJECT
+};
 
 struct Entity {
     // Block of component references
     int start;
     int count;
-    Signature signature;
+    EntityType type;
 };
 
 template <typename T, int N>
@@ -51,6 +53,13 @@ struct Buffer {
 
 class EntityManager {
 public:
+    Buffer<Entity, MAX_ENTITIES> entities;
+    Buffer<ComponentReference, MAX_COMPONENTS> component_references;
+
+    Buffer<component::Transform, MAX_COMPONENTS> transform;
+    Buffer<component::Physics, MAX_COMPONENTS> physics;
+    Buffer<component::VisualStatic, MAX_COMPONENTS> visual_static;
+
     int entity_create(int num_components);
     void entity_remove(int entity_id);
     void entity_add_transform(int entity_id, int offset, component::Transform component) {
@@ -63,26 +72,56 @@ public:
         add_component(entity_id, offset, visual_static, ComponentType::VISUAL_STATIC, component);
     }
 
-    void update(const Input &input, Camera &camera, double dt);
+    component::Transform* get_transform_component(int entity_id, int index=0);
+    component::Physics* get_physics_component(int entity_id, int index=0);
+    component::VisualStatic* get_visual_static_component(int entity_id, int index=0);
 
 private:
     template <typename T>
-    T &get_component(int entity_id, int offset, Buffer<T, MAX_COMPONENTS> &buffer);
-    template <typename T>
-    const T &get_component(int entity_id, int offset, const Buffer<T, MAX_COMPONENTS> &buffer)const;
+    T* get_component(int entity_id, int index, ComponentType type, Buffer<T, MAX_COMPONENTS> &buffer);
     template <typename T>
     void add_component(int entity_id, int offset, Buffer<T, MAX_COMPONENTS> &buffer, ComponentType component_type, T component);
     template <typename T>
     void remove_component(Buffer<T, MAX_COMPONENTS> &buffer, int index);
 
-    Buffer<Entity, MAX_ENTITIES> entities;
     Buffer<Entity, MAX_ENTITIES> free;
-    Buffer<ComponentReference, MAX_COMPONENTS> component_references;
 
-    Buffer<component::Transform, MAX_COMPONENTS> transform;
-    Buffer<component::Physics, MAX_COMPONENTS> physics;
-    Buffer<component::VisualStatic, MAX_COMPONENTS> visual_static;
+    class SystemManager;
+    friend SystemManager;
+    class System;
+    friend System;
 };
+
+component::Transform* EntityManager::get_transform_component(int entity_id, int index)
+{
+    return get_component(entity_id, index, ComponentType::TRANSFORM, transform);
+}
+
+component::Physics* EntityManager::get_physics_component(int entity_id, int index)
+{
+    return get_component(entity_id, index, ComponentType::PHYSICS, physics);
+}
+
+component::VisualStatic* EntityManager::get_visual_static_component(int entity_id, int index)
+{
+    return get_component(entity_id, index, ComponentType::VISUAL_STATIC, visual_static);
+}
+
+template <typename T>
+T* EntityManager::get_component(int entity_id, int index, ComponentType type, Buffer<T, MAX_COMPONENTS> &buffer)
+{
+    // If index = 0, return the first occurance of the component
+    // If index = 1, return the second occurance of the component
+    // etc
+    // Countdown the number of components encountered
+    int countdown = index+1;
+    Entity &entity = entities[entity_id];
+    for (int i = entity.start; i < entity.start+entity.count; i++) {
+        if (component_references[i].type == type) countdown--;
+        if (countdown == 0) return &buffer[component_references[i].index];
+    }
+    return nullptr;
+}
 
 int EntityManager::entity_create(int num_components)
 {
@@ -180,18 +219,6 @@ void EntityManager::entity_remove(int entity_id)
 }
 
 template <typename T>
-T &EntityManager::get_component(int entity_id, int offset, Buffer<T, MAX_COMPONENTS> &buffer)
-{
-    return buffer[component_references[entities[entity_id].start + offset].index];
-}
-
-template <typename T>
-const T &EntityManager::get_component(int entity_id, int offset, const Buffer<T, MAX_COMPONENTS> &buffer)const
-{
-    return buffer[component_references[entities[entity_id].start + offset].index];
-}
-
-template <typename T>
 void EntityManager::add_component(int entity_id, int offset, Buffer<T, MAX_COMPONENTS> &buffer, ComponentType component_type, T component)
 {
     buffer.append(component);
@@ -208,56 +235,6 @@ void EntityManager::remove_component(Buffer<T, MAX_COMPONENTS> &buffer, int inde
         // slot.
         // Need to update the index stored in the component reference.
         component_references[buffer[index].ref_id].index = index;
-    }
-}
-
-void EntityManager::update(const Input &input, Camera &camera, double dt)
-{
-    for (int i = 0; i < entities.tail; i++) {
-        const Entity &entity = entities[i];
-
-        if (entity.signature.test((std::size_t)SystemType::ENEMY)) {
-            // System = ENEMY
-            // Physics: 1
-            system_enemy(get_component(i, 1, physics));
-        }
-
-        if (entity.signature.test((std::size_t)SystemType::PLAYER)) {
-            // System = PLAYER
-            // Transform: 0
-            // Physics: 1
-            system_player(
-                get_component(i, 0, transform),
-                get_component(i, 1, physics),
-                input, camera
-            );
-        }
-
-        if (entity.signature.test((std::size_t)SystemType::PHYSICS)) {
-            // System = PHYSICS
-            // Transform: 0
-            // Physics: 1
-            system_physics(
-                get_component(i, 0, transform),
-                get_component(i, 1, physics),
-                dt
-            );
-        }
-
-        if (entity.signature.test((std::size_t)SystemType::PHYSICS)) {
-            // System = VISUAL_STATIC
-            // Transform: 0
-            // VisualStatic: 2
-            system_physics(
-                get_component(i, 0, transform),
-                get_component(i, 2, physics),
-                dt
-            );
-        }
-
-        // TODO: Add an entity type (another enum)
-        // Have the offsets depend on entity type.
-        // The entity is responsible for defining the component layout.
     }
 }
 

@@ -1,18 +1,50 @@
 #ifndef WORLD_SYSTEMS_H
 #define WORLD_SYSTEMS_H
 
+#include <array>
 #include <iostream>
 #include <random>
 
 #include "window/input.h"
 #include "world/components.h"
 #include "world/camera.h"
+#include "world/entity.h"
 
-enum class SystemType {
-    ENEMY,
-    PLAYER,
-    PHYSICS,
-    RENDER_STATIC
+// Represent systems by classes instead of just functions, in case a system
+// needs to store some state.
+
+class SystemPhysics {
+
+    void update(EntityManager &entity_manager, double dt) {
+        component::Transform *transform;
+        component::Physics *physics;
+        for (int i = 0; i < entity_manager.entities.tail; i++) {
+            transform = nullptr;
+            physics = nullptr;
+            Entity &entity = entity_manager.entities[i];
+            for (int j = entity.start; j < entity.start+entity.count; j++) {
+                if (transform==nullptr && entity_manager.component_references[j].type == ComponentType::TRANSFORM) {
+                    transform = &entity_manager.transform[entity_manager.component_references[j].index];
+                    continue;
+                }
+                if (physics==nullptr && entity_manager.component_references[j].type == ComponentType::PHYSICS) {
+                    physics = &entity_manager.physics[entity_manager.component_references[j].index];
+                    continue;
+                }
+            }
+            if (transform!=nullptr && physics!=nullptr) {
+                update_entity(*transform, *physics, dt);
+            }
+        }
+    };
+
+    void update_entity(component::Transform &transform, component::Physics &physics, double dt) {
+        transform.pos.x += physics.twist.x * dt;
+        transform.pos.y += physics.twist.y * dt;
+        transform.orientation += physics.twist.z * dt;
+        if (transform.orientation < -M_PI) transform.orientation += 2*M_PI;
+        if (transform.orientation > M_PI) transform.orientation -= 2*M_PI;
+    }
 };
 
 void system_render_static(component::Transform transform, component::VisualStatic visual_static)
@@ -23,11 +55,6 @@ void system_render_static(component::Transform transform, component::VisualStati
 
 void system_physics(component::Transform transform, component::Physics physics, double dt)
 {
-    transform.pos.x += physics.twist.x * dt;
-    transform.pos.y += physics.twist.y * dt;
-    transform.orientation += physics.twist.z * dt;
-    if (transform.orientation < -M_PI) transform.orientation += 2*M_PI;
-    if (transform.orientation > M_PI) transform.orientation -= 2*M_PI;
 }
 
 void system_player(component::Transform &transform, component::Physics &physics, const Input &input, Camera &camera)
