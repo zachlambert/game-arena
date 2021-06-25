@@ -22,6 +22,8 @@ set(SRC
     src/render/mesh_renderer.cpp
 
     src/game/game.cpp
+    src/game/camera.cpp
+    src/game/entity.cpp
 )
 
 add_executable(game ${SRC})

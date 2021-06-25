@@ -73,9 +73,15 @@ public:
         add_component(entity_id, offset, visual_static, ComponentType::VISUAL_STATIC, component);
     }
 
-    component::Transform* get_transform_component(int entity_id, int index=0);
-    component::Physics* get_physics_component(int entity_id, int index=0);
-    component::VisualStatic* get_visual_static_component(int entity_id, int index=0);
+    component::Transform* get_transform_component(int entity_id, int index=0) {
+        return get_component(entity_id, index, ComponentType::TRANSFORM, transform);
+    }
+    component::Physics* get_physics_component(int entity_id, int index=0) {
+        return get_component(entity_id, index, ComponentType::PHYSICS, physics);
+    }
+    component::VisualStatic* get_visual_static_component(int entity_id, int index=0) {
+        return get_component(entity_id, index, ComponentType::VISUAL_STATIC, visual_static);
+    }
 
     bool entity_supports_system(int entity_id, SystemType type){ return entities[entity_id].signature.test((std::size_t)type); }
 
@@ -96,21 +102,6 @@ private:
     friend System;
 };
 
-inline component::Transform* EntityManager::get_transform_component(int entity_id, int index)
-{
-    return get_component(entity_id, index, ComponentType::TRANSFORM, transform);
-}
-
-inline component::Physics* EntityManager::get_physics_component(int entity_id, int index)
-{
-    return get_component(entity_id, index, ComponentType::PHYSICS, physics);
-}
-
-inline component::VisualStatic* EntityManager::get_visual_static_component(int entity_id, int index)
-{
-    return get_component(entity_id, index, ComponentType::VISUAL_STATIC, visual_static);
-}
-
 template <typename T>
 inline T* EntityManager::get_component(int entity_id, int index, ComponentType type, Buffer<T, MAX_COMPONENTS> &buffer)
 {
@@ -125,102 +116,6 @@ inline T* EntityManager::get_component(int entity_id, int index, ComponentType t
         if (countdown == 0) return &buffer[component_references[i].index];
     }
     return nullptr;
-}
-
-inline int EntityManager::entity_create(int num_components, Signature signature)
-{
-    Entity entity;
-    entity.start = -1;
-    entity.count = num_components;
-    entity.signature = signature;
-
-    // STEP 1: Find space for new components, either in a free slot or at
-    // the end.
-    if (free.tail != 0) {
-        // Choose the smallest available slot.
-        int min_index = -1;
-        int min_excess = MAX_COMPONENTS;
-        int excess;
-        for (int i = free.tail-1; i >= 0; i--) {
-            if (free[i].count >= num_components) {
-                excess = free[i].count - num_components;
-                if (excess < min_excess) {
-                    min_excess = excess;
-                    min_index = i;
-                }
-            }
-        }
-        if (min_index != -1) {
-            entity.start = free[min_index].start;
-            free[min_index].count -= min_excess;
-            free[min_index].start += entity.count;
-            if (free[min_index].count == 0) {
-                free.remove(min_index);
-            }
-        }
-    }
-
-    if (entity.start == -1) {
-        entity.start = entities.tail;
-        component_references.reserve(entity.count);
-    }
-
-    entities.append(entity);
-    return entities.tail-1;
-}
-
-inline void EntityManager::entity_remove(int entity_id)
-{
-    const Entity &entity = entities[entity_id];
-
-    // ----- 1. Update free slots ------
-
-    // Combine on the left if possible, and remove merged free slot
-    Entity combination = entity;
-    for (int i = 0; i < free.tail; i++) {
-        if (free[i].start+free[i].count == combination.start) {
-            combination.start = free[i].start;
-            combination.count += free[i].count;
-            free.remove(i);
-            break;
-        }
-    }
-    // Combine on the right if possible, and remove merged free slot
-    for (int i = 0; i < free.tail; i++) {
-        if (combination.start+combination.count == free[i].start) {
-            combination.count += free[i].count;
-            free.remove(i);
-            break;
-        }
-    }
-    // Now add the new free slot to the end of the buffer
-    free.append(combination);
-
-    // ----- 2. Remove component references used by entity ------
-    // Can still access the component references, they aren't removed just marked as
-    // available for use by new entities
-    for (int i = entity.start; i < entity.start + entity.count; i++) {
-        switch (component_references[i].type) {
-            case ComponentType::TRANSFORM:
-                transform.remove(component_references[i].index);
-                break;
-            case ComponentType::PHYSICS:
-                physics.remove(component_references[i].index);
-                break;
-            case ComponentType::VISUAL_STATIC:
-                visual_static.remove(component_references[i].index);
-                break;
-            case ComponentType::HUMAN:
-                // TODO
-                break;
-            case ComponentType::ENEMY:
-                // TODO
-                break;
-        }
-    }
-
-    // ----- 3. Remove the entity struct itself -----
-    entities.remove(entity_id);
 }
 
 template <typename T>
