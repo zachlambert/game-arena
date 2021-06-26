@@ -57,6 +57,7 @@ struct Buffer {
             data[index] = data[tail];
         }
     }
+    bool full(){ return tail == N; }
 
     Buffer(): tail(0) {}
 };
@@ -145,6 +146,7 @@ inline T* EntityManager::get_component(int entity_id, int index, ComponentType t
 template <typename T>
 inline void EntityManager::add_component(int entity_id, int offset, Buffer<T, MAX_COMPONENTS> &buffer, ComponentType component_type, T component)
 {
+    if (entity_id == -1) return;
     int ref_index = entities[entity_id].start + offset;
     component.ref_id = ref_index;
     buffer.append(component);

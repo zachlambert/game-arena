@@ -14,6 +14,8 @@ void EntityManager::remove_entities()
 
 int EntityManager::entity_create(int num_components, Signature signature)
 {
+    if (entities.full()) return -1;
+
     Entity entity;
     entity.start = -1;
     entity.count = num_components;

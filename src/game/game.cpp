@@ -30,11 +30,4 @@ void Game::update(double dt)
     }
     camera.adjust_zoom(input.get_scroll_amount());
     camera.update_view_matrix();
-
-    static int asdf = 0;
-    asdf++;
-    if (asdf > 200) {
-        std::cout << entity_manager.entities.tail << std::endl;
-        asdf = 0;
-    }
 }
