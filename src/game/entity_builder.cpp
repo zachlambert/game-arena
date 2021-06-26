@@ -76,10 +76,11 @@ void build_enemy(EntityManager &entity_manager, const CollisionManager &collisio
     // Component 3 = Hitbox
     component::Hitbox hitbox = collision_manager.get_entity_hitbox(config.hitbox_mesh_index);
 
-    int id = entity_manager.entity_create(3, signature);
+    int id = entity_manager.entity_create(4, signature);
     entity_manager.entity_add_transform(id, 0, transform);
     entity_manager.entity_add_physics(id, 1, physics);
     entity_manager.entity_add_visual_static(id, 2, visual_static);
+    entity_manager.entity_add_hitbox(id, 3, hitbox);
 }
 
 void build_enemy_spawner(EntityManager &entity_manager, EnemySpawnerConfig config)

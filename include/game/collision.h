@@ -80,10 +80,10 @@ namespace component {
 
 class CollisionManager {
 public:
-    void initialise(glm::vec2 centre, glm::vec2 size, const Terrain &terrain);
     void add_entity_vertices(const std::vector<glm::vec2> &vertices, bool closed=true);
     component::Hitbox get_entity_hitbox(int index)const;
-    bool check_terrain_entity(const component::Transform &transform, const component::Hitbox &hitbox, std::vector<Intersection> &intersections);
+    void initialise_terrain(glm::vec2 centre, glm::vec2 size, const Terrain &terrain);
+    void check_terrain_entity(const component::Transform &transform, const component::Hitbox &hitbox, std::vector<Intersection> &intersections);
 private:
     void add_terrain_edge(const BoundedEdge &edge);
     void transform_entity_edges(const component::Transform &transform, const component::Hitbox &hitbox);

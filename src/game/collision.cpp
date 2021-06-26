@@ -1,5 +1,6 @@
 #include "game/collision.h"
 #include <stack>
+#include <iostream>
 
 #include "game/components.h"
 
@@ -86,6 +87,7 @@ static void check_edge_edge(const Edge &edge1, const Edge &edge2, std::vector<In
     dif /= dif.length();
     perp /= perp.length();
     intersection.pos = edge2.a + dif * glm::dot(edge2.a - edge1.a, perp) / glm::dot(edge1.b - edge1.a, perp);
+    intersections.push_back(intersection);
 }
 
 static bool check_box_box(const BoundingBox &box1, const BoundingBox &box2)
@@ -128,7 +130,7 @@ void CollisionManager::add_terrain_edge(const BoundedEdge &edge)
     }
 }
 
-void CollisionManager::initialise(glm::vec2 centre, glm::vec2 size, const Terrain &terrain)
+void CollisionManager::initialise_terrain(glm::vec2 centre, glm::vec2 size, const Terrain &terrain)
 {
     this->centre = centre;
     this->size = size;
@@ -213,7 +215,7 @@ void CollisionManager::transform_entity_edges(const component::Transform &transf
     }
 }
 
-bool CollisionManager::check_terrain_entity(
+void CollisionManager::check_terrain_entity(
     const component::Transform &transform,
     const component::Hitbox &hitbox,
     std::vector<Intersection> &intersections)
@@ -228,6 +230,7 @@ bool CollisionManager::check_terrain_entity(
     while (!nodes.empty()) {
         // 1. Check edges at node
         Octree* node = nodes.top();
+        nodes.pop();
         for (const auto &bounded_edge: node->edges) {
             // 1a. Check that bounding boxes collide
             if (!check_box_box(bounded_edge.box, hitbox.box)) continue;
@@ -248,6 +251,4 @@ bool CollisionManager::check_terrain_entity(
             nodes.push(node->nodes[i]);
         }
     }
-
-    return false;
 }

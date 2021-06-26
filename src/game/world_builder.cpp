@@ -8,6 +8,7 @@ void build_world(EntityManager &entity_manager, Terrain &terrain, const Collisio
     {
         PlayerConfig config;
         config.sprite_index = 3;
+        config.hitbox_mesh_index = 0;
         config.gun_ray_mesh_index_aiming = 1;
         config.gun_ray_mesh_index_fired = 2;
         config.start_pos = glm::vec2(0, 0);

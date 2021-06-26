@@ -3,18 +3,20 @@
 #include "game/world_builder.h"
 #include "game/systems.h"
 
+#include <iostream>
+
 void Game::initialise()
 {
+    std::vector<glm::vec2> vertices;
+    vertices.push_back(glm::vec2(-200, 0));
+    vertices.push_back(glm::vec2(0, 300));
+    vertices.push_back(glm::vec2(200, 0));
+    vertices.push_back(glm::vec2(0, -300));
+    collision_manager.add_entity_vertices(vertices);
+
     build_world(entity_manager, terrain, collision_manager);
 
-    collision_manager.initialise(glm::vec2(0, 0), glm::vec2(2000, 2000), terrain);
-
-    std::vector<glm::vec2> vertices;
-    vertices.push_back(glm::vec2(-100, 0));
-    vertices.push_back(glm::vec2(0, 100));
-    vertices.push_back(glm::vec2(100, 0));
-    vertices.push_back(glm::vec2(0, -100));
-    collision_manager.add_entity_vertices(vertices);
+    collision_manager.initialise_terrain(glm::vec2(0, 0), glm::vec2(2000, 2000), terrain);
 }
 
 void Game::update(double dt)
