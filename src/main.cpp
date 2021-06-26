@@ -14,6 +14,7 @@
 #include "window/window.h"
 #include "window/input.h"
 #include "window/clock.h"
+#include "window/fps_counter.h"
 #include "render/renderer.h"
 #include "game/game.h"
 
@@ -37,12 +38,14 @@ int main()
     game.input.register_mouse_button(InputType::CLICK_LEFT, GLFW_MOUSE_BUTTON_LEFT);
 
     Clock clock;
+    FpsCounter fps_counter;
 
     while (window.is_running()) {
         window.update();
         game.update(clock.sample_dt());
         renderer.render(game);
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        fps_counter.update();
+        // std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
     return 0;

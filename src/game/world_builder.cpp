@@ -40,7 +40,7 @@ void build_world(EntityManager &entity_manager)
         EnemySpawnerConfig config;
         config.pos.x = 0;
         config.pos.y = -100;
-        config.spawn_timeout = 2;
+        config.spawn_timeout = 0.01;
         build_enemy_spawner(entity_manager, config);
     }
     return;

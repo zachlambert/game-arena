@@ -26,7 +26,7 @@ bool check_for_gunshot_hit(component::Transform &transform, int entity_id, const
     for (const auto &gunshot: gunshots) {
         if (gunshot.entity_id == entity_id) continue;
         glm::vec2 disp = gunshot.fire_point - transform.pos;
-        if (std::hypot(disp.x, disp.y) < 50) return true;
+        if (std::hypot(disp.x, disp.y) < 200) return true;
     }
     return false;
 }

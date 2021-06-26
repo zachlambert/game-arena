@@ -35,7 +35,7 @@ bool Window::initialise()
     // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // Disable vsync
-    // glfwSwapInterval(0);
+    glfwSwapInterval(0);
 
     return true;
 }

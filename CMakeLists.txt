@@ -32,6 +32,7 @@ set(SRC
     src/render/textures.cpp
 
     src/window/clock.cpp
+    src/window/fps_counter.cpp
     src/window/input.cpp
     src/window/window.cpp
 )
