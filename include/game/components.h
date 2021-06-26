@@ -4,6 +4,8 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/transform.hpp>
 
+#include "game/collision.h"
+
 enum class ComponentType {
     TRANSFORM,
     PHYSICS,
@@ -90,8 +92,10 @@ struct EnemySpawner: public BaseComponent {
 // For moving entities. Collision handling will treat static objects (terrain)
 // differently.
 struct Hitbox: public BaseComponent {
-    double left, bot, right, top; // Axis-aligned bounding box
-    unsigned int mesh_index;
+    BoundingBox original_box;
+    BoundingBox box; // Transformed
+    unsigned int edges_start;
+    unsigned int edges_count;
 };
 
 } // namespace component

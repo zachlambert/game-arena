@@ -12,6 +12,7 @@ set(SRC
     src/main.cpp
 
     src/game/camera.cpp
+    src/game/collision.cpp
     src/game/entity.cpp
     src/game/entity_builder.cpp
     src/game/game.cpp
