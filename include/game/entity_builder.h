@@ -19,13 +19,6 @@ struct EnemyConfig {
 };
 void build_enemy(EntityManager &entity_manager, EnemyConfig config);
 
-struct TerrainConfig {
-    unsigned int mesh_index;
-    glm::vec2 pos;
-    double orientation;
-};
-void build_terrain(EntityManager &entity_manager, TerrainConfig config);
-
 struct EnemySpawnerConfig {
     double spawn_timeout;
     glm::vec2 pos;

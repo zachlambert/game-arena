@@ -87,6 +87,13 @@ struct EnemySpawner: public BaseComponent {
     EnemySpawner(): pos(0, 0), spawn_timer(0), spawn_timeout(1) {}
 };
 
+// For moving entities. Collision handling will treat static objects (terrain)
+// differently.
+struct Hitbox: public BaseComponent {
+    double left, bot, right, top; // Axis-aligned bounding box
+    unsigned int mesh_index;
+};
+
 } // namespace component
 
 #endif

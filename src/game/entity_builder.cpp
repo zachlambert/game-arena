@@ -75,29 +75,6 @@ void build_enemy(EntityManager &entity_manager, EnemyConfig config)
     entity_manager.entity_add_visual_static(id, 2, visual_static);
 }
 
-void build_terrain(EntityManager &entity_manager, TerrainConfig config)
-{
-    Signature signature;
-    signature.set((size_t)SystemType::RENDER_BASE);
-
-    // 2 Components
-
-    // Component 0 = Transform
-    component::Transform transform;
-    transform.pos = config.pos;
-    transform.orientation = config.orientation;
-
-    // Component 1 = Visual static
-    component::VisualStatic visual_static;
-    visual_static.depth = 8;
-    visual_static.render_index = config.mesh_index;
-    visual_static.type = component::VisualStatic::Type::MESH;
-
-    int id = entity_manager.entity_create(2, signature);
-    entity_manager.entity_add_transform(id, 0, transform);
-    entity_manager.entity_add_visual_static(id, 1, visual_static);
-}
-
 void build_enemy_spawner(EntityManager &entity_manager, EnemySpawnerConfig config)
 {
     Signature signature;
