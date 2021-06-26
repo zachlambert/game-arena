@@ -3,7 +3,8 @@
 
 #include "game/entity.h"
 #include "game/entity_builder.h"
+#include "game/terrain.h"
 
-void build_world(EntityManager &entity_manager);
+void build_world(EntityManager &entity_manager, Terrain &terrain);
 
 #endif

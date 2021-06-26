@@ -22,7 +22,7 @@ public:
         shaders(base_dir)
     {}
 
-    void initialise();
+    void initialise(const Game &game);
     void render(const Game &game);
 private:
     TextureManager texture_manager;

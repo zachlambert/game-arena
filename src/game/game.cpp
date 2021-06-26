@@ -3,9 +3,9 @@
 #include "game/world_builder.h"
 #include "game/systems.h"
 
-void Game::create_default_world()
+void Game::initialise()
 {
-    build_world(entity_manager);
+    build_world(entity_manager, terrain);
 }
 
 void Game::update(double dt)

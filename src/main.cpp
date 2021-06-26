@@ -25,17 +25,17 @@ int main()
         return 1;
     }
 
-    Renderer renderer("data/");
-    renderer.initialise();
-
     Game game(window);
-    game.create_default_world();
+    game.initialise();
 
     game.input.register_key(InputType::MOVE_RIGHT, GLFW_KEY_D);
     game.input.register_key(InputType::MOVE_LEFT, GLFW_KEY_A);
     game.input.register_key(InputType::MOVE_UP, GLFW_KEY_W);
     game.input.register_key(InputType::MOVE_DOWN, GLFW_KEY_S);
     game.input.register_mouse_button(InputType::CLICK_LEFT, GLFW_MOUSE_BUTTON_LEFT);
+
+    Renderer renderer("data/");
+    renderer.initialise(game);
 
     Clock clock;
     FpsCounter fps_counter;

@@ -44,7 +44,7 @@ static bool triangle_valid(unsigned short i, unsigned short j, unsigned short k,
     return true;
 }
 
-void TerrainRenderer::add_terrain_element(const TerrainElement &element)
+void TerrainRenderer::load_terrain_element(const TerrainElement &element)
 {
     // Assumes the vertices to be provided in a clockwise order.
     // Works on any mesh
@@ -54,7 +54,7 @@ void TerrainRenderer::add_terrain_element(const TerrainElement &element)
         static_vertices.push_back(TerrainVertex(
             element.pos + element.vertices[i],
             element.color,
-            element.depth
+            element.visual_depth
         ));
     }
 
@@ -106,6 +106,13 @@ void TerrainRenderer::add_terrain_element(const TerrainElement &element)
             }
             stack.push(new_indices);
         }
+    }
+}
+
+void TerrainRenderer::load_terrain(const Terrain &terrain)
+{
+    for (const auto &element: terrain.elements) {
+        load_terrain_element(element);
     }
 }
 

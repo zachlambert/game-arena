@@ -5,12 +5,7 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-struct TerrainElement {
-    glm::vec2 pos;
-    std::vector<glm::vec2> vertices;
-    glm::vec4 color; // For now, just a single colour
-    int depth;
-};
+#include "game/terrain.h"
 
 struct TerrainVertex {
     glm::vec<3, GLfloat> position;
@@ -22,7 +17,7 @@ class TerrainRenderer {
 public:
     TerrainRenderer() {}
 
-    void add_terrain_element(const TerrainElement &element);
+    void load_terrain(const Terrain &terrain);
     void initialise(unsigned int program_id);
 
     struct Params {
@@ -33,6 +28,8 @@ public:
     void render();
 
 private:
+    void load_terrain_element(const TerrainElement &element);
+
     // OpenGL data
     std::vector<TerrainVertex> static_vertices;
     std::vector<unsigned short> static_indices;
