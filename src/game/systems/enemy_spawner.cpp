@@ -17,7 +17,7 @@ void check_for_spawn(component::EnemySpawner &enemy_spawner, double dt, std::vec
     spawn_commands.push_back(command);
 }
 
-void system_enemy_spawner(EntityManager &entity_manager, double dt) {
+void system_enemy_spawner(EntityManager &entity_manager, const CollisionManager &collision_manager, double dt) {
     std::vector<SpawnCommand> spawn_commands;
 
     component::EnemySpawner *enemy_spawner;
@@ -32,6 +32,6 @@ void system_enemy_spawner(EntityManager &entity_manager, double dt) {
         config.start_pos = spawn_command.pos;
         config.start_orientation = 0;
         config.sprite_index = 0;
-        build_enemy(entity_manager, config);
+        build_enemy(entity_manager, collision_manager,config);
     }
 };

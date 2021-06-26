@@ -20,6 +20,7 @@ public:
     Camera camera;
     EntityManager entity_manager;
     Terrain terrain;
+    CollisionManager collision_manager;
 };
 
 #endif

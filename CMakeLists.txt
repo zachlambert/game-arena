@@ -18,6 +18,7 @@ set(SRC
     src/game/game.cpp
     src/game/world_builder.cpp
 
+    src/game/systems/collision.cpp
     src/game/systems/enemy.cpp
     src/game/systems/enemy_spawner.cpp
     src/game/systems/gunshot.cpp

@@ -5,22 +5,34 @@
 
 void Game::initialise()
 {
-    build_world(entity_manager, terrain);
+    build_world(entity_manager, terrain, collision_manager);
+
+    collision_manager.initialise(glm::vec2(0, 0), glm::vec2(2000, 2000), terrain);
+
+    std::vector<glm::vec2> vertices;
+    vertices.push_back(glm::vec2(-100, 0));
+    vertices.push_back(glm::vec2(0, 100));
+    vertices.push_back(glm::vec2(100, 0));
+    vertices.push_back(glm::vec2(0, -100));
+    collision_manager.add_entity_vertices(vertices);
 }
 
 void Game::update(double dt)
 {
-    system_enemy_spawner(entity_manager, dt);
+    system_enemy_spawner(entity_manager, collision_manager, dt);
 
     system_player(entity_manager, input, camera);
     system_enemy(entity_manager);
     system_gunshot(entity_manager);
+
     system_physics(entity_manager, dt);
+    system_collision(entity_manager, collision_manager);
+
     system_render_base(entity_manager);
     system_render_gun_ray(entity_manager, camera, dt);
 
     entity_manager.remove_entities();
-    
+
     // Update camera
     for (int i = 0; i < entity_manager.entities.tail; i++) {
         if (!entity_manager.entity_supports_system(i, SystemType::PLAYER)) continue;

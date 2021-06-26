@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-void build_world(EntityManager &entity_manager, Terrain &terrain)
+void build_world(EntityManager &entity_manager, Terrain &terrain, const CollisionManager &collision_manager)
 {
     // Create player
     {
@@ -12,7 +12,7 @@ void build_world(EntityManager &entity_manager, Terrain &terrain)
         config.gun_ray_mesh_index_fired = 2;
         config.start_pos = glm::vec2(0, 0);
         config.start_orientation = 0;
-        build_player(entity_manager, config);
+        build_player(entity_manager, collision_manager, config);
     }
 
     // Create an enemy spawner

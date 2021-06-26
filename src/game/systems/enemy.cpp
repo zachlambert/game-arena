@@ -12,7 +12,6 @@ void update_entity(component::Physics &physics)
 
 void system_enemy(EntityManager &entity_manager)
 {
-    component::Transform *transform;
     component::Physics *physics;
     for (int i = 0; i < entity_manager.entities.tail; i++) {
         if (!entity_manager.entity_supports_system(i, SystemType::ENEMY)) continue;

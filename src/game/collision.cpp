@@ -128,8 +128,11 @@ void CollisionManager::add_terrain_edge(const BoundedEdge &edge)
     }
 }
 
-void CollisionManager::initialise_terrain(const Terrain &terrain)
+void CollisionManager::initialise(glm::vec2 centre, glm::vec2 size, const Terrain &terrain)
 {
+    this->centre = centre;
+    this->size = size;
+
     // TODO: If allowing re-initialisation with new terrain, will need to delete previous octree
 
     root = new Octree();
@@ -164,7 +167,29 @@ void CollisionManager::add_entity_vertices(const std::vector<glm::vec2> &vertice
         entity_edges.push_back(Edge(vertices.back(), vertices[0]));
         edge_block.edges_count++;
     }
+
+    // Also find the bounding box, which bounds the mesh over all orientations
+    double max_dist = hypot(vertices[0].x, vertices[1].x);
+    double dist;
+    for (int i = 1; i < vertices.size(); i++) {
+        dist = hypot(vertices[i].x, vertices[i].y);
+        if (dist > max_dist) max_dist = dist;
+    }
+    edge_block.original_box.right = max_dist;
+    edge_block.original_box.top = max_dist;
+    edge_block.original_box.bot = -max_dist;
+    edge_block.original_box.left = -max_dist;
+
     edge_blocks.push_back(edge_block);
+}
+
+component::Hitbox CollisionManager::get_entity_hitbox(int index)const
+{
+    component::Hitbox hitbox;
+    hitbox.edges_start = edge_blocks[index].edges_start;
+    hitbox.edges_count = edge_blocks[index].edges_count;
+    hitbox.original_box = edge_blocks[index].original_box;
+    return hitbox;
 }
 
 static void transform_point(const component::Transform &transform, const glm::vec2 &original, glm::vec2 &transformed)

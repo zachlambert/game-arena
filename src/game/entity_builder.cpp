@@ -1,6 +1,6 @@
 #include "game/entity_builder.h"
 
-void build_player(EntityManager &entity_manager, PlayerConfig config)
+void build_player(EntityManager &entity_manager, const CollisionManager &collision_manager, PlayerConfig config)
 {
     Signature signature;
     signature.set((size_t)SystemType::PLAYER);
@@ -9,8 +9,7 @@ void build_player(EntityManager &entity_manager, PlayerConfig config)
     signature.set((size_t)SystemType::RENDER_GUN_RAY);
     signature.set((size_t)SystemType::GUNSHOT_SOURCE);
     signature.set((size_t)SystemType::GUNSHOT_TARGET);
-
-    // 5 Components
+    signature.set((size_t)SystemType::COLLISION);
 
     // Component 0 = Transform
     component::Transform transform;
@@ -37,21 +36,26 @@ void build_player(EntityManager &entity_manager, PlayerConfig config)
     gun_visual_static.render_index = gun.mesh_index_aiming;
     gun_visual_static.type = component::VisualStatic::Type::MESH;
 
-    int id = entity_manager.entity_create(5, signature);
+    // Component 5 = Hitbox
+    component::Hitbox hitbox = collision_manager.get_entity_hitbox(config.hitbox_mesh_index);
+
+    int id = entity_manager.entity_create(6, signature);
     entity_manager.entity_add_transform(id, 0, transform);
     entity_manager.entity_add_physics(id, 1, physics);
     entity_manager.entity_add_visual_static(id, 2, visual_static);
     entity_manager.entity_add_gun(id, 3, gun);
     entity_manager.entity_add_visual_static(id, 4, gun_visual_static);
+    entity_manager.entity_add_hitbox(id, 5, hitbox);
 }
 
-void build_enemy(EntityManager &entity_manager, EnemyConfig config)
+void build_enemy(EntityManager &entity_manager, const CollisionManager &collision_manager, EnemyConfig config)
 {
     Signature signature;
     signature.set((size_t)SystemType::ENEMY);
     signature.set((size_t)SystemType::PHYSICS);
     signature.set((size_t)SystemType::RENDER_BASE);
     signature.set((size_t)SystemType::GUNSHOT_TARGET);
+    signature.set((size_t)SystemType::COLLISION);
 
     // 3 Components
 
@@ -68,6 +72,9 @@ void build_enemy(EntityManager &entity_manager, EnemyConfig config)
     visual_static.depth = 5;
     visual_static.render_index = config.sprite_index;
     visual_static.type = component::VisualStatic::Type::SPRITE;
+
+    // Component 3 = Hitbox
+    component::Hitbox hitbox = collision_manager.get_entity_hitbox(config.hitbox_mesh_index);
 
     int id = entity_manager.entity_create(3, signature);
     entity_manager.entity_add_transform(id, 0, transform);

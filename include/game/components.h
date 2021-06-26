@@ -13,7 +13,8 @@ enum class ComponentType {
     // HUMAN,
     // ENEMY,
     GUN,
-    ENEMY_SPAWNER
+    ENEMY_SPAWNER,
+    HITBOX
 };
 
 struct ComponentReference {

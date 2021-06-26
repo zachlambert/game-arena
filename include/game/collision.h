@@ -58,6 +58,7 @@ struct Octree {
 struct EdgeBlock {
     unsigned int edges_start;
     unsigned int edges_count;
+    BoundingBox original_box;
 };
 
 struct EdgePair {
@@ -79,9 +80,9 @@ namespace component {
 
 class CollisionManager {
 public:
-    CollisionManager(glm::vec2 centre, glm::vec2 size): centre(centre), size(size) {}
-    void initialise_terrain(const Terrain &terrain);
+    void initialise(glm::vec2 centre, glm::vec2 size, const Terrain &terrain);
     void add_entity_vertices(const std::vector<glm::vec2> &vertices, bool closed=true);
+    component::Hitbox get_entity_hitbox(int index)const;
     bool check_terrain_entity(const component::Transform &transform, const component::Hitbox &hitbox, std::vector<Intersection> &intersections);
 private:
     void add_terrain_edge(const BoundedEdge &edge);
