@@ -111,4 +111,8 @@ Shaders::Shaders(const std::string &base_dir)
         base_dir + "shaders/mesh.vs",
         base_dir + "shaders/mesh.fs"
     );
+    terrain_program_id = load_shader(
+        base_dir + "shaders/terrain.vs",
+        base_dir + "shaders/terrain.fs"
+    );
 }

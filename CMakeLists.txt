@@ -29,6 +29,7 @@ set(SRC
     src/render/renderer.cpp
     src/render/shaders.cpp
     src/render/sprite_renderer.cpp
+    src/render/terrain_renderer.cpp
     src/render/textures.cpp
 
     src/window/clock.cpp

@@ -87,6 +87,28 @@ void initialise_mesh_renderer(MeshRenderer &renderer, const Shaders &shaders)
     renderer.initialise(shaders.mesh_program_id);
 }
 
+void initialise_terrain_renderer(TerrainRenderer &renderer, const Shaders &shaders)
+{
+
+    // Remember: Define meshes clockwise !
+
+    TerrainElement element;
+    element.pos.x = 0;
+    element.pos.y = 0;
+    element.depth = 10;
+    element.color = glm::vec4(0, 0, 0.2, 1);
+
+    element.vertices.push_back(glm::vec2(-100, 0));
+    element.vertices.push_back(glm::vec2(-80, 200));
+    element.vertices.push_back(glm::vec2(20, 240));
+    element.vertices.push_back(glm::vec2(0, -150));
+    element.color = glm::vec4(0, 0, 0.2, 1);
+
+    renderer.add_terrain_element(element);
+
+    renderer.initialise(shaders.terrain_program_id);
+}
+
 void Renderer::initialise()
 {
     glEnable(GL_BLEND);
@@ -97,6 +119,7 @@ void Renderer::initialise()
     initialise_texture_manager(texture_manager);
     initialise_sprite_renderer(sprite_renderer, texture_manager, shaders);
     initialise_mesh_renderer(mesh_renderer, shaders);
+    initialise_terrain_renderer(terrain_renderer, shaders);
 }
 
 void Renderer::render(const Game &game)
@@ -105,6 +128,14 @@ void Renderer::render(const Game &game)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     game.camera.update_view_matrix();
+    
+    // Render terrain
+    {
+        TerrainRenderer::Params params;
+        params.view = &game.camera.view;
+        terrain_renderer.enable(params);
+        terrain_renderer.render();
+    }
 
     // Render sprites
     {

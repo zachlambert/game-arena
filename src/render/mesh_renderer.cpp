@@ -16,7 +16,7 @@ struct MeshComponent {
     glm::vec4 color;
 };
 
-bool vertex_on_the_left(glm::vec2 first, glm::vec2 second, glm::vec2 query)
+static bool vertex_on_the_left(glm::vec2 first, glm::vec2 second, glm::vec2 query)
 {
     glm::vec2 dif = second - first;
     glm::vec3 perp = glm::cross(glm::vec3(0, 0, 1), glm::vec3(dif.x, dif.y, 0));
@@ -27,7 +27,7 @@ bool vertex_on_the_left(glm::vec2 first, glm::vec2 second, glm::vec2 query)
     return (component > 0);
 }
 
-bool triangle_valid(int a, int b, int c, const std::vector<MeshComponent> mesh)
+static bool triangle_valid(int a, int b, int c, const std::vector<MeshComponent> mesh)
 {
     // 1. Triangle is clockwise
     if (vertex_on_the_left(mesh[a].vertex, mesh[b].vertex, mesh[c].vertex)) return false;

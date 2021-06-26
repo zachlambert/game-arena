@@ -12,6 +12,7 @@
 #include "render/shaders.h"
 #include "render/sprite_renderer.h"
 #include "render/mesh_renderer.h"
+#include "render/terrain_renderer.h"
 #include "game/game.h"
 
 class Renderer {
@@ -28,6 +29,7 @@ private:
     Shaders shaders;
     SpriteRenderer sprite_renderer;
     MeshRenderer mesh_renderer;
+    TerrainRenderer terrain_renderer;
 };
 
 #endif
