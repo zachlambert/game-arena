@@ -13,17 +13,28 @@ SpriteVertex::SpriteVertex(glm::vec3 position, glm::vec2 tex_coords)
         glm::clamp(tex_coords.y, 0.0f, 1.0f) * (float)0xFFFF);
 }
 
-void SpriteRenderer::load_sprite(const SpriteConfig &config)
+void SpriteRenderer::load_spritesheets(const std::vector<SpritesheetConfig> spritesheets)
+{
+    Texture diffuse_texture;
+    for (const auto &spritesheet: spritesheets) {
+        diffuse_texture = load_texture(spritesheet.diffuse_texture_file_name);
+        for (const auto &sprite_config: spritesheet.sprites) {
+            load_sprite(sprite_config, diffuse_texture);
+        }
+    }
+}
+
+void SpriteRenderer::load_sprite(const SpriteConfig &config, const Texture &diffuse_texture)
 {
     double left = -config.size[0]/2 - config.offset[0];
     double top = config.size[1]/2 - config.offset[1];
     double right = config.size[0]/2 - config.offset[0];
     double bot = -config.size[1]/2 - config.offset[1];
 
-    double uv_left = (double)config.pos[0]/config.diffuse_texture.width;
-    double uv_top = (double)(config.pos[1])/config.diffuse_texture.height;
-    double uv_right = (double)(config.pos[0]+config.size[0])/config.diffuse_texture.width;
-    double uv_bot = (double)(config.pos[1] + config.size[1])/config.diffuse_texture.height;
+    double uv_left = (double)config.pos[0]/diffuse_texture.width;
+    double uv_top = (double)(config.pos[1])/diffuse_texture.height;
+    double uv_right = (double)(config.pos[0]+config.size[0])/diffuse_texture.width;
+    double uv_bot = (double)(config.pos[1] + config.size[1])/diffuse_texture.height;
 
     unsigned int vertices_offset = static_vertices.size();
 
@@ -53,8 +64,10 @@ void SpriteRenderer::load_sprite(const SpriteConfig &config)
     static_indices.push_back(2);
     static_indices.push_back(3);
 
+    sprite_indices[config.name] = sprites.size();
+
     Sprite sprite;
-    sprite.diffuse_texture_id = config.diffuse_texture.id;
+    sprite.diffuse_texture_id = diffuse_texture.id;
     sprite.vertices_offset = vertices_offset;
     sprite.indices_offset = indices_offset;
     sprites.push_back(sprite);

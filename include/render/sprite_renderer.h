@@ -6,13 +6,8 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-#include "render/textures.h"
-
-// Passed to renderer to configure sprite
-struct SpriteConfig {
-    glm::vec<2, GLint> pos, size, offset;
-    Texture diffuse_texture;
-};
+#include "setup/sprite_config.h"
+#include "render/texture.h"
 
 // Stored information for sprite
 struct Sprite {
@@ -33,8 +28,9 @@ class SpriteRenderer {
 public:
     SpriteRenderer() {}
 
-    void load_sprite(const SpriteConfig &config);
+    void load_spritesheets(const std::vector<SpritesheetConfig> spritesheets);
     void initialise(unsigned int program_id);
+    int get_sprite_index(const std::string &name){ return sprite_indices[name]; }
 
     struct Params {
         const glm::mat4 *view;
@@ -48,6 +44,9 @@ public:
     void render(const Command &command);
 
 private:
+    void load_sprite(const SpriteConfig &sprite, const Texture &diffuse_texture);
+    std::unordered_map<std::string, int> sprite_indices;
+
     // OpenGL data
     std::vector<SpriteVertex> static_vertices;
     std::vector<unsigned short> static_indices;

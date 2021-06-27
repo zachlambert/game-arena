@@ -1,4 +1,4 @@
-#include "render/textures.h"
+#include "setup/texture.h"
 
 #include <iostream>
 
@@ -6,20 +6,18 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-bool TextureManager::load_texture(const std::string &name, const std::string &relative_path)
+Texture load_texture(const std::string texture_path)
 {
-    const std::string texture_path = base_dir + relative_path;
-
     Texture texture;
+    texture.id = 0; // Default parameters if fails to load texture
+    texture.width = 1;
+    texture.height = 1;
+
     unsigned char *data = stbi_load(texture_path.c_str(), &texture.width, &texture.height, &texture.num_channels, 0);
+
     if (!data) {
         std::cout << "Failed to load " << texture_path << std::endl;
-        texture.id = 0;
-        texture.width = 1;
-        texture.height = 1;
-        std::pair<std::string, Texture> new_pair(name, texture);
-        textures.insert(new_pair);
-        return false;
+        return texture;
     } else {
         glGenTextures(1, &texture.id);
         glBindTexture(GL_TEXTURE_2D, texture.id);
@@ -43,7 +41,8 @@ bool TextureManager::load_texture(const std::string &name, const std::string &re
                     GL_UNSIGNED_BYTE, data);
                 break;
             default:
-                return 0;
+                std::cout << "Unsupported numer of channels: " << texture.num_channels << std::endl;
+                return texture;
         }
         glGenerateMipmap(GL_TEXTURE_2D);
         // Avoid repeating images. Only works if tex_coords are allowed
@@ -55,8 +54,5 @@ bool TextureManager::load_texture(const std::string &name, const std::string &re
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         stbi_image_free(data);
     }
-
-    std::pair<std::string, Texture> new_pair(name, texture);
-    textures.insert(new_pair);
-    return true;
+    return texture;
 }
