@@ -10,7 +10,7 @@ void load_spritesheets(std::vector<SpritesheetConfig> spritesheets)
     spritesheet.diffuse_texture_file_name = "spritesheet1.png";
     spritesheet.sprites.clear();
 
-    sprite.name = "human_1_still";
+    sprite.id = SpriteId::HUMAN_STILL;
     sprite.pos = {0, 0};
     sprite.size = {256, 256};
     sprite.offset = {0, 0};
@@ -22,7 +22,7 @@ void load_spritesheets(std::vector<SpritesheetConfig> spritesheets)
     };
     spritesheet.sprites.push_back(sprite);
 
-    sprite.name = "human_1_walk_a";
+    sprite.id = SpriteId::HUMAN_WALK_0;
     sprite.pos = {256, 0};
     sprite.size = {256, 256};
     sprite.offset = {0, 0};
@@ -34,7 +34,7 @@ void load_spritesheets(std::vector<SpritesheetConfig> spritesheets)
     };
     spritesheet.sprites.push_back(sprite);
 
-    sprite.name = "human_1_walk_b";
+    sprite.id = SpriteId::HUMAN_WALK_1;
     sprite.pos = {768, 0};
     sprite.size = {256, 256};
     sprite.offset = {0, 0};
@@ -46,7 +46,7 @@ void load_spritesheets(std::vector<SpritesheetConfig> spritesheets)
     };
     spritesheet.sprites.push_back(sprite);
 
-    sprite.name = "human_1_gun";
+    sprite.id = SpriteId::HUMAN_GUN;
     sprite.pos = {0, 256};
     sprite.size = {512, 256};
     sprite.offset = {-128, 0};
@@ -58,7 +58,7 @@ void load_spritesheets(std::vector<SpritesheetConfig> spritesheets)
     };
     spritesheet.sprites.push_back(sprite);
 
-    sprite.name = "gun";
+    sprite.id = SpriteId::GUN;
     sprite.pos = {512, 256};
     sprite.size = {256, 256};
     sprite.offset = {0, 0};

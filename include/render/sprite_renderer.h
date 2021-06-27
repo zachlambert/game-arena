@@ -30,7 +30,6 @@ public:
 
     void load_spritesheets(const std::vector<SpritesheetConfig> spritesheets);
     void initialise(unsigned int program_id);
-    int get_sprite_index(const std::string &name){ return sprite_indices[name]; }
 
     struct Params {
         const glm::mat4 *view;
@@ -39,7 +38,7 @@ public:
 
     struct Command {
         const glm::mat4 *model;
-        std::size_t sprite_index;
+        SpriteId sprite_id;
     };
     void render(const Command &command);
 

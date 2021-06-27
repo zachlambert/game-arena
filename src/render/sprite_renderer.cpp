@@ -64,13 +64,15 @@ void SpriteRenderer::load_sprite(const SpriteConfig &config, const Texture &diff
     static_indices.push_back(2);
     static_indices.push_back(3);
 
-    sprite_indices[config.name] = sprites.size();
-
     Sprite sprite;
     sprite.diffuse_texture_id = diffuse_texture.id;
     sprite.vertices_offset = vertices_offset;
     sprite.indices_offset = indices_offset;
-    sprites.push_back(sprite);
+
+    if ((int)config.id >= sprites.size()) {
+        sprites.resize((int)config.id+1);
+    }
+    sprites[(int)config.id] = sprite;
 }
 
 void SpriteRenderer::initialise(unsigned int program_id)
@@ -133,7 +135,7 @@ void SpriteRenderer::enable(const Params &params)
 
 void SpriteRenderer::render(const Command &command)
 {
-    const Sprite &sprite = sprites[command.sprite_index];
+    const Sprite &sprite = sprites[(int)command.sprite_id];
 
     glBindTexture(GL_TEXTURE_2D, sprite.diffuse_texture_id);
     glUniformMatrix4fv(m_loc, 1, GL_FALSE, &(*command.model)[0][0]);
