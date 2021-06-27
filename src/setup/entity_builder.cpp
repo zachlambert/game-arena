@@ -1,4 +1,4 @@
-#include "game/entity_builder.h"
+#include "setup/entity_builder.h"
 
 void build_player(EntityManager &entity_manager, const CollisionManager &collision_manager, PlayerConfig config)
 {

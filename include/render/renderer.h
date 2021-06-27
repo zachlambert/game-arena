@@ -24,7 +24,7 @@ public:
 
     void initialise(const Game &game);
     void render(const Game &game);
-private:
+
     TextureManager texture_manager;
     Shaders shaders;
     SpriteRenderer sprite_renderer;

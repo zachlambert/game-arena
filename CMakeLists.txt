@@ -14,9 +14,7 @@ set(SRC
     src/game/camera.cpp
     src/game/collision.cpp
     src/game/entity.cpp
-    src/game/entity_builder.cpp
     src/game/game.cpp
-    src/game/world_builder.cpp
 
     src/game/systems/collision.cpp
     src/game/systems/enemy.cpp
@@ -33,6 +31,9 @@ set(SRC
     src/render/sprite_renderer.cpp
     src/render/terrain_renderer.cpp
     src/render/textures.cpp
+
+    src/setup/entity_builder.cpp
+    src/setup/world_builder.cpp
 
     src/window/clock.cpp
     src/window/fps_counter.cpp

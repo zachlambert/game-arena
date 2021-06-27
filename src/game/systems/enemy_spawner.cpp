@@ -1,5 +1,5 @@
 #include "game/systems.h"
-#include "game/entity_builder.h"
+#include "setup/entity_builder.h"
 
 struct SpawnCommand {
     glm::vec2 pos;

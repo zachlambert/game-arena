@@ -1,4 +1,4 @@
-#include "game/world_builder.h"
+#include "setup/world_builder.h"
 
 #include <iostream>
 

@@ -1,12 +1,13 @@
 #include "game/game.h"
 
-#include "game/world_builder.h"
+#include "setup/world_builder.h"
 #include "game/systems.h"
 
 #include <iostream>
 
 void Game::initialise()
 {
+    // Temporary
     std::vector<glm::vec2> vertices;
     vertices.push_back(glm::vec2(-200, 0));
     vertices.push_back(glm::vec2(0, 300));
