@@ -157,7 +157,21 @@ void CollisionManager::initialise_terrain(glm::vec2 centre, glm::vec2 size, cons
     }
 }
 
-void CollisionManager::add_entity_vertices(const std::vector<glm::vec2> &vertices, bool closed)
+void CollisionManager::load_sprite_polygons(const std::vector<SpritesheetConfig> &spritesheets)
+{
+    EdgeBlock edge_block;
+    for (const auto &spritesheet: spritesheets) {
+        for (const auto &sprite: spritesheet.sprites) {
+            edge_block = load_polygon(sprite.collision_polygon);
+            if ((int)sprite.id >= sprite_edge_blocks.size()) {
+                sprite_edge_blocks.resize((int)sprite.id+1);
+            }
+            sprite_edge_blocks[(int)sprite.id] = edge_block;
+        }
+    }
+}
+
+EdgeBlock CollisionManager::load_polygon(const std::vector<glm::vec2> &vertices)
 {
     EdgeBlock edge_block;
     edge_block.edges_start = entity_edges.size();
@@ -165,10 +179,8 @@ void CollisionManager::add_entity_vertices(const std::vector<glm::vec2> &vertice
     for (int i = 0; i < vertices.size()-1; i++) {
         entity_edges.push_back(Edge(vertices[i], vertices[i+1]));
     }
-    if (closed) {
-        entity_edges.push_back(Edge(vertices.back(), vertices[0]));
-        edge_block.edges_count++;
-    }
+    entity_edges.push_back(Edge(vertices.back(), vertices[0]));
+    edge_block.edges_count++;
 
     // Also find the bounding box, which bounds the mesh over all orientations
     double max_dist = hypot(vertices[0].x, vertices[1].x);
@@ -182,15 +194,15 @@ void CollisionManager::add_entity_vertices(const std::vector<glm::vec2> &vertice
     edge_block.original_box.bot = -max_dist;
     edge_block.original_box.left = -max_dist;
 
-    edge_blocks.push_back(edge_block);
+    return edge_block;
 }
 
-component::Hitbox CollisionManager::get_entity_hitbox(int index)const
+component::Hitbox CollisionManager::get_sprite_hitbox(SpriteId sprite_id)const
 {
     component::Hitbox hitbox;
-    hitbox.edges_start = edge_blocks[index].edges_start;
-    hitbox.edges_count = edge_blocks[index].edges_count;
-    hitbox.original_box = edge_blocks[index].original_box;
+    hitbox.edges_start = sprite_edge_blocks[(int)sprite_id].edges_start;
+    hitbox.edges_count = sprite_edge_blocks[(int)sprite_id].edges_count;
+    hitbox.original_box = sprite_edge_blocks[(int)sprite_id].original_box;
     return hitbox;
 }
 

@@ -5,6 +5,7 @@
 #include <glm/gtx/transform.hpp>
 
 #include "game/collision.h"
+#include "setup/sprite_id.h"
 
 enum class ComponentType {
     TRANSFORM,

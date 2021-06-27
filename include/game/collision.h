@@ -4,9 +4,10 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
+#include "setup/sprite_config.h"
 #include "game/terrain.h"
 
-/* In future, may be worth with using more memory-efficient structures 
+/* In future, may be worth with using more memory-efficient structures
  * (ie: using contiguous memory), but for now a simple implementation is fine.
  *
  * One octree will be used for checking entity-terrain collisions.
@@ -80,11 +81,14 @@ namespace component {
 
 class CollisionManager {
 public:
-    void add_entity_vertices(const std::vector<glm::vec2> &vertices, bool closed=true);
-    component::Hitbox get_entity_hitbox(int index)const;
+    void load_sprite_polygons(const std::vector<SpritesheetConfig> &spritesheets);
+    component::Hitbox get_sprite_hitbox(SpriteId sprite_id)const;
+
     void initialise_terrain(glm::vec2 centre, glm::vec2 size, const Terrain &terrain);
     void check_terrain_entity(const component::Transform &transform, const component::Hitbox &hitbox, std::vector<Intersection> &intersections);
+
 private:
+    EdgeBlock load_polygon(const std::vector<glm::vec2> &vertices);
     void add_terrain_edge(const BoundedEdge &edge);
     void transform_entity_edges(const component::Transform &transform, const component::Hitbox &hitbox);
 
@@ -92,11 +96,13 @@ private:
 
     Octree *root;
 
-    std::vector<EdgeBlock>  edge_blocks;
     // Store collision meshes for entities as a listof edges.
     // Use EdgePairs such that each edge stores an original edge and a transformed
     // edge which is updated from the position and orientation of the current edge.
     std::vector<EdgePair> entity_edges;
+
+    // Edge blocks for sprites, indexed by sprite_id
+    std::vector<EdgeBlock>  sprite_edge_blocks;
 };
 
 #endif
