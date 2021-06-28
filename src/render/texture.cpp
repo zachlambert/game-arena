@@ -1,4 +1,4 @@
-#include "setup/texture.h"
+#include "render/texture.h"
 
 #include <iostream>
 
@@ -6,7 +6,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-Texture load_texture(const std::string texture_path)
+Texture load_texture(const std::string &texture_path)
 {
     Texture texture;
     texture.id = 0; // Default parameters if fails to load texture

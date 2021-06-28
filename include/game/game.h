@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "setup/resources.h"
 #include "setup/sprite_config.h"
 #include "game/camera.h"
 #include "game/entity.h"
@@ -14,7 +15,7 @@ class Game {
 public:
     Game(const Window &window): input(window), camera(window.width, window.height) {}
 
-    void initialise(const std::vector<SpritesheetConfig> &spritesheets);
+    void initialise(const Resources &resources);
     void update(double dt);
 
     Input input;

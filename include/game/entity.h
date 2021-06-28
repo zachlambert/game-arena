@@ -19,8 +19,7 @@ enum class SystemType {
     PHYSICS,
     PLAYER,
     ENEMY,
-    RENDER_GUN_RAY,
-    GUNSHOT_SOURCE,
+    GUN,
     GUNSHOT_TARGET,
     ENEMY_SPAWNER,
     COLLISION

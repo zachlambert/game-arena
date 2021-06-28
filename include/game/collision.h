@@ -84,7 +84,7 @@ public:
     void load_sprite_polygons(const std::vector<SpritesheetConfig> &spritesheets);
     component::Hitbox get_sprite_hitbox(SpriteId sprite_id)const;
 
-    void initialise_terrain(glm::vec2 centre, glm::vec2 size, const Terrain &terrain);
+    void initialise_terrain(const Terrain &terrain);
     void check_terrain_entity(const component::Transform &transform, const component::Hitbox &hitbox, std::vector<Intersection> &intersections);
 
 private:

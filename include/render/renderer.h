@@ -9,9 +9,9 @@
 #include <glm/glm.hpp>
 
 #include "setup/resources.h"
-#include "render/shaders.h"
+#include "render/shader.h"
 #include "render/sprite_renderer.h"
-#include "render/mesh_renderer.h"
+// #include "render/mesh_renderer.h"
 #include "render/terrain_renderer.h"
 #include "game/game.h"
 

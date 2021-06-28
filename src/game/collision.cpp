@@ -130,10 +130,10 @@ void CollisionManager::add_terrain_edge(const BoundedEdge &edge)
     }
 }
 
-void CollisionManager::initialise_terrain(glm::vec2 centre, glm::vec2 size, const Terrain &terrain)
+void CollisionManager::initialise_terrain(const Terrain &terrain)
 {
-    this->centre = centre;
-    this->size = size;
+    centre = terrain.centre;
+    size = terrain.size;
 
     // TODO: If allowing re-initialisation with new terrain, will need to delete previous octree
 

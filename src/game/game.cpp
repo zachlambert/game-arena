@@ -5,13 +5,13 @@
 
 #include <iostream>
 
-void Game::initialise(const std::vector<SpritesheetConfig> &spritesheets)
+void Game::initialise(const Resources &resources)
 {
-    collision_manager.load_sprite_polygons(spritesheets);
+    collision_manager.load_sprite_polygons(resources.spritesheets);
 
     build_world(entity_manager, terrain);
 
-    collision_manager.initialise_terrain(glm::vec2(0, 0), glm::vec2(2000, 2000), terrain);
+    collision_manager.initialise_terrain(terrain);
 }
 
 void Game::update(double dt)

@@ -1,4 +1,4 @@
-#include "game/systems.h"
+#include "game/system.h"
 #include "setup/entity_builder.h"
 
 struct SpawnCommand {

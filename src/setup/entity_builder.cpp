@@ -5,9 +5,8 @@ void build_player(EntityManager &entity_manager, PlayerConfig config)
     Signature signature;
     signature.set((size_t)SystemType::PLAYER);
     signature.set((size_t)SystemType::PHYSICS);
-    signature.set((size_t)SystemType::RENDER_BASE);
-    signature.set((size_t)SystemType::RENDER_GUN_RAY);
-    signature.set((size_t)SystemType::GUNSHOT_SOURCE);
+    signature.set((size_t)SystemType::RENDER_SPRITE);
+    signature.set((size_t)SystemType::GUN);
     signature.set((size_t)SystemType::GUNSHOT_TARGET);
     signature.set((size_t)SystemType::COLLISION);
 
@@ -19,33 +18,27 @@ void build_player(EntityManager &entity_manager, PlayerConfig config)
     // Component 1 = Physics
     component::Physics physics;
 
-    // Component 2 = Visual static
-    component::VisualStatic visual_static;
-    visual_static.depth = 4;
-    visual_static.render_index = (int)config.sprite_id;
-    visual_static.type = component::VisualStatic::Type::SPRITE;
+    // Component 2 = Sprite
+    component::Sprite sprite;
+    sprite.depth = 4;
+    sprite.sprite_id = config.sprite_id;
 
     // Component 3 = Gun
     component::Gun gun;
-    gun.mesh_index_aiming = config.gun_ray_mesh_index_aiming;
-    gun.mesh_index_fired = config.gun_ray_mesh_index_fired;
 
-    // Component 4 = Gun visual static
-    component::VisualStatic gun_visual_static;
-    gun_visual_static.depth = 5;
-    gun_visual_static.render_index = gun.mesh_index_aiming;
-    gun_visual_static.type = component::VisualStatic::Type::MESH;
+    // Component 4 = Gun ray polygon
+    component::Polygon gun_ray_polygon;
+    // TODO
 
     // Component 5 = Hitbox
     component::Hitbox hitbox;
-    hitbox.initialised = false;
 
     int id = entity_manager.entity_create(6, signature);
     entity_manager.entity_add_transform(id, 0, transform);
     entity_manager.entity_add_physics(id, 1, physics);
-    entity_manager.entity_add_visual_static(id, 2, visual_static);
+    entity_manager.entity_add_sprite(id, 2, sprite);
     entity_manager.entity_add_gun(id, 3, gun);
-    entity_manager.entity_add_visual_static(id, 4, gun_visual_static);
+    entity_manager.entity_add_polygon(id, 4, gun_ray_polygon);
     entity_manager.entity_add_hitbox(id, 5, hitbox);
 }
 
@@ -54,7 +47,7 @@ void build_enemy(EntityManager &entity_manager, const CollisionManager &collisio
     Signature signature;
     signature.set((size_t)SystemType::ENEMY);
     signature.set((size_t)SystemType::PHYSICS);
-    signature.set((size_t)SystemType::RENDER_BASE);
+    signature.set((size_t)SystemType::RENDER_SPRITE);
     signature.set((size_t)SystemType::GUNSHOT_TARGET);
     signature.set((size_t)SystemType::COLLISION);
 
@@ -69,19 +62,17 @@ void build_enemy(EntityManager &entity_manager, const CollisionManager &collisio
     component::Physics physics;
 
     // Component 2 = Visual static
-    component::VisualStatic visual_static;
-    visual_static.depth = 5;
-    visual_static.render_index = (int)config.sprite_id;
-    visual_static.type = component::VisualStatic::Type::SPRITE;
+    component::Sprite sprite;
+    sprite.depth = 5;
+    sprite.sprite_id = config.sprite_id;
 
     // Component 3 = Hitbox
     component::Hitbox hitbox;
-    hitbox.initialised = false;
 
     int id = entity_manager.entity_create(4, signature);
     entity_manager.entity_add_transform(id, 0, transform);
     entity_manager.entity_add_physics(id, 1, physics);
-    entity_manager.entity_add_visual_static(id, 2, visual_static);
+    entity_manager.entity_add_sprite(id, 2, sprite);
     entity_manager.entity_add_hitbox(id, 3, hitbox);
 }
 

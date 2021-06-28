@@ -14,6 +14,8 @@ struct TerrainElement {
 
 struct Terrain {
     std::vector<TerrainElement> elements;
+    glm::vec2 centre;
+    glm::vec2 size;
 };
 
 #endif

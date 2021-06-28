@@ -8,8 +8,6 @@ void build_world(EntityManager &entity_manager, Terrain &terrain)
     {
         PlayerConfig config;
         config.sprite_id = SpriteId::HUMAN_GUN;
-        config.gun_ray_mesh_index_aiming = 1;
-        config.gun_ray_mesh_index_fired = 2;
         config.start_pos = glm::vec2(0, 0);
         config.start_orientation = 0;
         build_player(entity_manager, config);
@@ -42,6 +40,9 @@ void build_world(EntityManager &entity_manager, Terrain &terrain)
         element.color = glm::vec4(0, 0, 0.2, 1);
 
         terrain.elements.push_back(element);
+
+        terrain.centre = {0, 0};
+        terrain.size = {1000, 1000};
     }
     return;
 }
