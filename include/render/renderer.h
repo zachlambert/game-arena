@@ -8,7 +8,7 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-#include "render/textures.h"
+#include "setup/resources.h"
 #include "render/shaders.h"
 #include "render/sprite_renderer.h"
 #include "render/mesh_renderer.h"
@@ -17,19 +17,17 @@
 
 class Renderer {
 public:
-    Renderer(const std::string &base_dir):
-        texture_manager(base_dir),
-        shaders(base_dir)
-    {}
+    Renderer(const std::string &base_dir): base_dir(base_dir) {}
 
-    void initialise(const Game &game);
+    void initialise(const Resources &resources, const Game &game);
     void render(const Game &game);
 
-    TextureManager texture_manager;
-    Shaders shaders;
     SpriteRenderer sprite_renderer;
-    MeshRenderer mesh_renderer;
+    // MeshRenderer mesh_renderer;
     TerrainRenderer terrain_renderer;
+
+private:
+    std::string base_dir;
 };
 
 #endif

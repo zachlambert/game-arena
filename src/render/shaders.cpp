@@ -100,19 +100,3 @@ unsigned int load_shader(const std::string &vs_path, const std::string &fs_path)
 
     return program_id;
 }
-
-Shaders::Shaders(const std::string &base_dir)
-{
-    sprite_program_id = load_shader(
-        base_dir + "shaders/sprite.vs",
-        base_dir + "shaders/sprite.fs"
-    );
-    mesh_program_id = load_shader(
-        base_dir + "shaders/mesh.vs",
-        base_dir + "shaders/mesh.fs"
-    );
-    terrain_program_id = load_shader(
-        base_dir + "shaders/terrain.vs",
-        base_dir + "shaders/terrain.fs"
-    );
-}

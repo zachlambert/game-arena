@@ -11,27 +11,33 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 
-#include "setup/sprite_config.h"
+#include "setup/resources.h"
 
 #include "window/window.h"
 #include "window/input.h"
 #include "window/clock.h"
 #include "window/fps_counter.h"
-#include "render/renderer.h"
+// #include "render/renderer.h"
 #include "game/game.h"
 
 int main()
 {
+    // 1. Create a window
+
     Window window("Arena", 1080, 720);
     if (!window.initialise()) {
         return 1;
     }
 
-    std::vector<SpritesheetConfig> spritesheets;
-    load_spritesheets(spritesheets);
+    // 2. Load resources
+
+    Resources resources;
+    load_spritesheets(resources.spritesheets);
+
+    // 3. Initialise game state
 
     Game game(window);
-    game.initialise(spritesheets);
+    game.initialise(resources);
 
     game.input.register_key(InputType::MOVE_RIGHT, GLFW_KEY_D);
     game.input.register_key(InputType::MOVE_LEFT, GLFW_KEY_A);
@@ -39,8 +45,12 @@ int main()
     game.input.register_key(InputType::MOVE_DOWN, GLFW_KEY_S);
     game.input.register_mouse_button(InputType::CLICK_LEFT, GLFW_MOUSE_BUTTON_LEFT);
 
-    Renderer renderer("data/");
-    renderer.initialise(game);
+    // 4. Initialise renderer
+
+    // Renderer renderer("data/");
+    // renderer.initialise(game);
+
+    // 5. Start game loop
 
     Clock clock;
     FpsCounter fps_counter;
@@ -48,7 +58,7 @@ int main()
     while (window.is_running()) {
         window.update();
         game.update(clock.sample_dt());
-        renderer.render(game);
+        // renderer.render(game);
         fps_counter.update();
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }

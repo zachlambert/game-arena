@@ -93,17 +93,23 @@ void EntityManager::entity_remove(int entity_id)
             case ComponentType::TRANSFORM:
                 remove_component(transform, comp_index);
                 break;
+            case ComponentType::SPRITE:
+                remove_component(sprite, comp_index);
+                break;
+            case ComponentType::POLYGON:
+                remove_component(polygon, comp_index);
+                break;
             case ComponentType::PHYSICS:
                 remove_component(physics, comp_index);
-                break;
-            case ComponentType::VISUAL_STATIC:
-                remove_component(visual_static, comp_index);
                 break;
             case ComponentType::GUN:
                 remove_component(gun, comp_index);
                 break;
             case ComponentType::ENEMY_SPAWNER:
                 remove_component(enemy_spawner, comp_index);
+                break;
+            case ComponentType::HITBOX:
+                remove_component(hitbox, comp_index);
                 break;
         }
     }

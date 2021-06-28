@@ -5,11 +5,6 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-struct Shaders {
-    unsigned int sprite_program_id;
-    unsigned int mesh_program_id;
-    unsigned int terrain_program_id;
-    Shaders(const std::string &base_dir);
-};
+unsigned int load_shader(const std::string &vs_path, const std::string &fs_path);
 
 #endif

@@ -2,16 +2,25 @@
 
 #include <iostream>
 
-void Renderer::initialise(const Game &game)
+void Renderer::initialise(const Resources &resources, const Game &game)
 {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    sprite_renderer.initialise(shaders.sprite_program_id);
-    mesh_renderer.initialise(shaders.mesh_program_id);
-    terrain_renderer.initialise(shaders.terrain_program_id);
+    sprite_renderer.initialise(load_shader(
+        base_dir + "shaders/sprite.vs",
+        base_dir + "shaders/sprite.fs"
+    ));
+    // mesh_renderer.initialise(load_shader(
+    //     base_dir + "shaders/mesh.vs",
+    //     base_dir + "shaders/mesh.fs"
+    // ));
+    terrain_renderer.initialise(load_shader(
+        base_dir + "shaders/terrain.vs",
+        base_dir + "shaders/terrain.fs"
+    ));
 }
 
 void Renderer::render(const Game &game)
@@ -36,17 +45,16 @@ void Renderer::render(const Game &game)
         sprite_renderer.enable(params);
 
         SpriteRenderer::Command command;
-        for (int i = 0; i < game.entity_manager.visual_static.tail; i++) {
-            const component::VisualStatic &visual_static = game.entity_manager.visual_static[i];
-            if (visual_static.type == component::VisualStatic::Type::SPRITE) {
-                command.sprite_index = visual_static.render_index;
-                command.model = &visual_static.model;
-                sprite_renderer.render(command);
-            }
+        for (int i = 0; i < game.entity_manager.sprite.tail; i++) {
+            const component::Sprite &sprite = game.entity_manager.sprite[i];
+            command.sprite_id = sprite.sprite_id;
+            command.model = &sprite.model;
+            sprite_renderer.render(command);
         }
     }
 
     // Render meshes
+    /*
     {
         MeshRenderer::Params params;
         params.view = &game.camera.view;
@@ -62,6 +70,7 @@ void Renderer::render(const Game &game)
             }
         }
     }
+    */
 
     // std::cout << "Error: " << glGetError() << std::endl;
 }

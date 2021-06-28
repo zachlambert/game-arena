@@ -16,21 +16,21 @@ set(SRC
     src/game/entity.cpp
     src/game/game.cpp
 
-    src/game/systems/collision.cpp
-    src/game/systems/enemy.cpp
-    src/game/systems/enemy_spawner.cpp
-    src/game/systems/gunshot.cpp
-    src/game/systems/physics.cpp
-    src/game/systems/player.cpp
-    src/game/systems/render_base.cpp
-    src/game/systems/render_gun_ray.cpp
+    src/game/system/collision.cpp
+    src/game/system/enemy.cpp
+    src/game/system/enemy_spawner.cpp
+    src/game/system/gunshot.cpp
+    src/game/system/physics.cpp
+    src/game/system/player.cpp
+    src/game/system/render_base.cpp
+    src/game/system/render_gun_ray.cpp
 
     src/render/mesh_renderer.cpp
     src/render/renderer.cpp
     src/render/shaders.cpp
     src/render/sprite_renderer.cpp
     src/render/terrain_renderer.cpp
-    src/render/textures.cpp
+    src/render/texture.cpp
 
     src/setup/entity_builder.cpp
     src/setup/world_builder.cpp
