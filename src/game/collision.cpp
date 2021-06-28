@@ -197,13 +197,11 @@ EdgeBlock CollisionManager::load_polygon(const std::vector<glm::vec2> &vertices)
     return edge_block;
 }
 
-component::Hitbox CollisionManager::get_sprite_hitbox(SpriteId sprite_id)const
+void CollisionManager::get_sprite_hitbox(SpriteId sprite_id, component::Hitbox &hitbox)const
 {
-    component::Hitbox hitbox;
     hitbox.edges_start = sprite_edge_blocks[(int)sprite_id].edges_start;
     hitbox.edges_count = sprite_edge_blocks[(int)sprite_id].edges_count;
     hitbox.original_box = sprite_edge_blocks[(int)sprite_id].original_box;
-    return hitbox;
 }
 
 static void transform_point(const component::Transform &transform, const glm::vec2 &original, glm::vec2 &transformed)

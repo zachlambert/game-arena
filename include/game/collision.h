@@ -82,7 +82,7 @@ namespace component {
 class CollisionManager {
 public:
     void load_sprite_polygons(const std::vector<SpritesheetConfig> &spritesheets);
-    component::Hitbox get_sprite_hitbox(SpriteId sprite_id)const;
+    void get_sprite_hitbox(SpriteId sprite_id, component::Hitbox &hitbox)const;
 
     void initialise_terrain(const Terrain &terrain);
     void check_terrain_entity(const component::Transform &transform, const component::Hitbox &hitbox, std::vector<Intersection> &intersections);
