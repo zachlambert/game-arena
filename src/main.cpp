@@ -17,7 +17,7 @@
 #include "window/input.h"
 #include "window/clock.h"
 #include "window/fps_counter.h"
-// #include "render/renderer.h"
+#include "render/renderer.h"
 #include "game/game.h"
 
 int main()
@@ -47,8 +47,8 @@ int main()
 
     // 4. Initialise renderer
 
-    // Renderer renderer("data/");
-    // renderer.initialise(game);
+    Renderer renderer("data/");
+    renderer.initialise(resources, game);
 
     // 5. Start game loop
 
