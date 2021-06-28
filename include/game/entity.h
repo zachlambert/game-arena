@@ -14,8 +14,9 @@ constexpr int MAX_COMPONENTS = MAX_COMPONENTS_PER_ENTITY*MAX_ENTITIES;
 constexpr int NUM_SYSTEMS = 32;
 typedef std::bitset<NUM_SYSTEMS> Signature;
 enum class SystemType {
+    RENDER_SPRITE,
+    RENDER_POLYGON,
     PHYSICS,
-    RENDER_BASE,
     PLAYER,
     ENEMY,
     RENDER_GUN_RAY,
@@ -63,62 +64,31 @@ struct Buffer {
     Buffer(): tail(0) {}
 };
 
+#define CREATE_COMPONENT(Component, name, TYPE, add_func, get_func) \
+    Buffer<component::Component, MAX_COMPONENTS> name; \
+    void add_func(int entity_id, int offset, component::Component component) {\
+        add_component(entity_id, offset, name, ComponentType::TYPE, component);\
+    }\
+    component::Component* get_func(int entity_id, int index=0) {\
+        return get_component(entity_id, index, ComponentType::TYPE, name);\
+    }\
+
 class EntityManager {
 public:
     Buffer<Entity, MAX_ENTITIES> entities;
-    Buffer<component::Transform, MAX_COMPONENTS> transform;
-    Buffer<component::Physics, MAX_COMPONENTS> physics;
-    Buffer<component::VisualStatic, MAX_COMPONENTS> visual_static;
-    Buffer<component::Gun, MAX_COMPONENTS> gun;
-    Buffer<component::EnemySpawner, MAX_COMPONENTS> enemy_spawner;
-    Buffer<component::Hitbox, MAX_COMPONENTS> hitbox;
-
     void remove_entities();
-
     int entity_create(int num_components, Signature signature);
     void entity_remove(int entity_id);
-    void entity_add_transform(int entity_id, int offset, component::Transform component) {
-        add_component(entity_id, offset, transform, ComponentType::TRANSFORM, component);
-    }
-    void entity_add_physics(int entity_id, int offset, component::Physics component) {
-        add_component(entity_id, offset, physics, ComponentType::PHYSICS, component);
-    }
-    void entity_add_visual_static(int entity_id, int offset, component::VisualStatic component) {
-        add_component(entity_id, offset, visual_static, ComponentType::VISUAL_STATIC, component);
-    }
-    void entity_add_gun(int entity_id, int offset, component::Gun component) {
-        add_component(entity_id, offset, gun, ComponentType::GUN, component);
-    }
-    void entity_add_enemy_spawner(int entity_id, int offset, component::EnemySpawner component) {
-        add_component(entity_id, offset, enemy_spawner, ComponentType::ENEMY_SPAWNER, component);
-    }
-    void entity_add_hitbox(int entity_id, int offset, component::Hitbox component) {
-        add_component(entity_id, offset, hitbox, ComponentType::HITBOX, component);
-    }
-
-    component::Transform* get_transform_component(int entity_id, int index=0) {
-        return get_component(entity_id, index, ComponentType::TRANSFORM, transform);
-    }
-    component::Physics* get_physics_component(int entity_id, int index=0) {
-        return get_component(entity_id, index, ComponentType::PHYSICS, physics);
-    }
-    component::VisualStatic* get_visual_static_component(int entity_id, int index=0) {
-        return get_component(entity_id, index, ComponentType::VISUAL_STATIC, visual_static);
-    }
-    component::Gun* get_gun_component(int entity_id, int index=0) {
-        return get_component(entity_id, index, ComponentType::GUN, gun);
-    }
-    component::EnemySpawner* get_enemy_spawner_component(int entity_id, int index=0) {
-        return get_component(entity_id, index, ComponentType::ENEMY_SPAWNER, enemy_spawner);
-    }
-    component::Hitbox* get_hitbox_component(int entity_id, int index=0) {
-        return get_component(entity_id, index, ComponentType::HITBOX, hitbox);
-    }
-
     bool entity_supports_system(int entity_id, SystemType type){ return entities[entity_id].signature.test((std::size_t)type); }
 
-    // TODO: Temporarily public for debugging
-    Buffer<ComponentReference, MAX_COMPONENTS> component_references;
+    CREATE_COMPONENT(Transform, transform, TRANSFORM, entity_add_transform, get_transform_component);
+    CREATE_COMPONENT(Sprite, sprite, SPRITE, entity_add_sprite, get_sprite_component);
+    CREATE_COMPONENT(Polygon, polygon, POLYGON, entity_add_polygon, get_polygon_component);
+    CREATE_COMPONENT(Physics, physics, PHYSICS, entity_add_physics, get_physics_component);
+    CREATE_COMPONENT(Gun, gun, GUN, entity_add_gun, get_gun_component);
+    CREATE_COMPONENT(EnemySpawner, enemy_spawner, ENEMY_SPAWNER, entity_add_enemy_spawner, get_enemy_spawner_component);
+    CREATE_COMPONENT(Hitbox, hitbox, HITBOX, entity_add_hitbox, get_hitbox_component);
+
 private:
     template <typename T>
     T* get_component(int entity_id, int index, ComponentType type, Buffer<T, MAX_COMPONENTS> &buffer);
@@ -127,6 +97,7 @@ private:
     template <typename T>
     void remove_component(Buffer<T, MAX_COMPONENTS> &buffer, int index);
 
+    Buffer<ComponentReference, MAX_COMPONENTS> component_references;
     Buffer<Entity, MAX_ENTITIES> free;
 
     class SystemManager;

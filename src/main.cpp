@@ -11,6 +11,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 
+#include "setup/sprite_config.h"
+
 #include "window/window.h"
 #include "window/input.h"
 #include "window/clock.h"
@@ -25,8 +27,11 @@ int main()
         return 1;
     }
 
+    std::vector<SpritesheetConfig> spritesheets;
+    load_spritesheets(spritesheets);
+
     Game game(window);
-    game.initialise();
+    game.initialise(spritesheets);
 
     game.input.register_key(InputType::MOVE_RIGHT, GLFW_KEY_D);
     game.input.register_key(InputType::MOVE_LEFT, GLFW_KEY_A);

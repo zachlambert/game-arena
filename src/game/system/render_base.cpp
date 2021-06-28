@@ -1,4 +1,4 @@
-#include "game/systems.h"
+#include "game/system.h"
 
 void update_entity(component::Transform &transform, component::VisualStatic &visual_static)
 {
@@ -6,7 +6,7 @@ void update_entity(component::Transform &transform, component::VisualStatic &vis
         * glm::rotate((float)transform.orientation, glm::vec3(0, 0, 1)) * glm::scale(glm::vec3(transform.scale.x, transform.scale.y, 1));
 }
 
-void system_render_base(EntityManager &entity_manager)
+void system_render_sprite(EntityManager &entity_manager)
 {
     component::Transform *transform;
     component::VisualStatic *visual_static;

@@ -1,4 +1,4 @@
-#include "game/systems.h"
+#include "game/system.h"
 
 void update_entity(component::Transform &transform, component::Gun &gun, component::VisualStatic &visual_static, const Camera &camera, double dt)
 {

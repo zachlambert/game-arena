@@ -1,6 +1,6 @@
 #include "setup/entity_builder.h"
 
-void build_player(EntityManager &entity_manager, const CollisionManager &collision_manager, PlayerConfig config)
+void build_player(EntityManager &entity_manager, PlayerConfig config)
 {
     Signature signature;
     signature.set((size_t)SystemType::PLAYER);
@@ -22,7 +22,7 @@ void build_player(EntityManager &entity_manager, const CollisionManager &collisi
     // Component 2 = Visual static
     component::VisualStatic visual_static;
     visual_static.depth = 4;
-    visual_static.render_index = config.sprite_index;
+    visual_static.render_index = (int)config.sprite_id;
     visual_static.type = component::VisualStatic::Type::SPRITE;
 
     // Component 3 = Gun
@@ -37,7 +37,8 @@ void build_player(EntityManager &entity_manager, const CollisionManager &collisi
     gun_visual_static.type = component::VisualStatic::Type::MESH;
 
     // Component 5 = Hitbox
-    component::Hitbox hitbox = collision_manager.get_entity_hitbox(config.hitbox_mesh_index);
+    component::Hitbox hitbox;
+    hitbox.initialised = false;
 
     int id = entity_manager.entity_create(6, signature);
     entity_manager.entity_add_transform(id, 0, transform);
@@ -70,11 +71,12 @@ void build_enemy(EntityManager &entity_manager, const CollisionManager &collisio
     // Component 2 = Visual static
     component::VisualStatic visual_static;
     visual_static.depth = 5;
-    visual_static.render_index = config.sprite_index;
+    visual_static.render_index = (int)config.sprite_id;
     visual_static.type = component::VisualStatic::Type::SPRITE;
 
     // Component 3 = Hitbox
-    component::Hitbox hitbox = collision_manager.get_entity_hitbox(config.hitbox_mesh_index);
+    component::Hitbox hitbox;
+    hitbox.initialised = false;
 
     int id = entity_manager.entity_create(4, signature);
     entity_manager.entity_add_transform(id, 0, transform);

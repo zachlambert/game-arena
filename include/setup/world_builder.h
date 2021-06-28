@@ -5,6 +5,6 @@
 #include "setup/entity_builder.h"
 #include "game/terrain.h"
 
-void build_world(EntityManager &entity_manager, Terrain &terrain, const CollisionManager &collision_manager);
+void build_world(EntityManager &entity_manager, Terrain &terrain);
 
 #endif

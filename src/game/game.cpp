@@ -5,17 +5,11 @@
 
 #include <iostream>
 
-void Game::initialise()
+void Game::initialise(const std::vector<SpritesheetConfig> &spritesheets)
 {
-    // Temporary
-    std::vector<glm::vec2> vertices;
-    vertices.push_back(glm::vec2(-200, 0));
-    vertices.push_back(glm::vec2(0, 300));
-    vertices.push_back(glm::vec2(200, 0));
-    vertices.push_back(glm::vec2(0, -300));
-    collision_manager.add_entity_vertices(vertices);
+    collision_manager.load_sprite_polygons(spritesheets);
 
-    build_world(entity_manager, terrain, collision_manager);
+    build_world(entity_manager, terrain);
 
     collision_manager.initialise_terrain(glm::vec2(0, 0), glm::vec2(2000, 2000), terrain);
 }

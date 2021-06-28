@@ -9,13 +9,12 @@
 
 enum class ComponentType {
     TRANSFORM,
+    SPRITE,
+    POLYGON,
     PHYSICS,
-    VISUAL_STATIC,
-    // HUMAN,
-    // ENEMY,
     GUN,
     ENEMY_SPAWNER,
-    HITBOX
+    HITBOX,
 };
 
 struct ComponentReference {
@@ -37,34 +36,29 @@ struct Transform: public BaseComponent {
     Transform(): pos(0, 0), orientation(0), scale(1, 1) {}
 };
 
+struct Sprite: public BaseComponent {
+    glm::mat4 model;
+    SpriteId sprite_id;
+    unsigned int depth;
+    Sprite(): sprite_id(SpriteId::NONE) {}
+};
+
+struct Polygon: public BaseComponent {
+    glm::mat4 model;
+    // In future, change this to be more efficient, but doing something simple for now
+    std::vector<glm::vec2> vertices;
+    std::vector<glm::vec4> colors;
+    std::vector<unsigned int> indices;
+    unsigned int vertices_offset;
+    unsigned int indices_offset;
+    bool allocated;
+    Polygon(): allocated(false) {}
+};
+
 struct Physics: public BaseComponent {
     glm::vec3 twist;
     Physics(): twist(0, 0, 0) {}
 };
-
-struct VisualStatic: public BaseComponent {
-    enum class Type {
-        SPRITE,
-        MESH
-    };
-    Type type;
-    glm::mat4 model;
-    unsigned int render_index;
-    unsigned int depth;
-};
-
-// struct Human: public BaseComponent {
-//     double move_speed;
-//     double strafe_speed;
-//     double turn_speed;
-//     Human(): move_speed(0), strafe_speed(0), turn_speed(0) {}
-// };
-// 
-// struct Enemy: public BaseComponent {
-//     glm::vec2 goal_pos;
-//     glm::vec2 point_target_pos;
-//     Enemy(): goal_pos(0, 0), point_target_pos(0, 0) {}
-// };
 
 struct Gun: public BaseComponent {
     unsigned int mesh_index_aiming;
@@ -91,13 +85,14 @@ struct EnemySpawner: public BaseComponent {
     EnemySpawner(): pos(0, 0), spawn_timer(0), spawn_timeout(1) {}
 };
 
-// For moving entities. Collision handling will treat static objects (terrain)
-// differently.
+// For sprites only at the moment.
 struct Hitbox: public BaseComponent {
     BoundingBox original_box;
     BoundingBox box; // Transformed
     unsigned int edges_start;
     unsigned int edges_count;
+    SpriteId sprite_id;
+    Hitbox(): sprite_id(SpriteId::NONE) {}
 };
 
 } // namespace component

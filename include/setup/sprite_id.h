@@ -6,7 +6,8 @@ enum class SpriteId {
     HUMAN_WALK_0,
     HUMAN_WALK_1,
     HUMAN_GUN,
-    GUN
+    GUN,
+    NONE
 };
 
 #endif
