@@ -1,6 +1,6 @@
 #include "setup/sprite_config.h"
 
-void load_spritesheets(std::vector<SpritesheetConfig> spritesheets)
+void load_spritesheets(std::vector<SpritesheetConfig> &spritesheets)
 {
     SpritesheetConfig spritesheet;
     SpriteConfig sprite;

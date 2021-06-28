@@ -13,11 +13,12 @@ SpriteVertex::SpriteVertex(glm::vec3 position, glm::vec2 tex_coords)
         glm::clamp(tex_coords.y, 0.0f, 1.0f) * (float)0xFFFF);
 }
 
-void SpriteRenderer::load_spritesheets(const std::vector<SpritesheetConfig> spritesheets)
+void SpriteRenderer::load_spritesheets(const std::string &base_dir, const std::vector<SpritesheetConfig> spritesheets)
 {
     Texture diffuse_texture;
     for (const auto &spritesheet: spritesheets) {
-        diffuse_texture = load_texture(spritesheet.diffuse_texture_file_name);
+        diffuse_texture = load_texture(base_dir + "spritesheets/" + spritesheet.diffuse_texture_file_name);
+        std::cout << "Loaded texture: " << diffuse_texture.id << std::endl;
         for (const auto &sprite_config: spritesheet.sprites) {
             load_sprite(sprite_config, diffuse_texture);
         }

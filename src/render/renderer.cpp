@@ -9,6 +9,9 @@ void Renderer::initialise(const Resources &resources, const Game &game)
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
+    sprite_renderer.load_spritesheets(base_dir, resources.spritesheets);
+    terrain_renderer.load_terrain(game.terrain);
+
     sprite_renderer.initialise(load_shader(
         base_dir + "shaders/sprite.vs",
         base_dir + "shaders/sprite.fs"

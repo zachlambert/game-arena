@@ -20,6 +20,6 @@ struct SpritesheetConfig {
     std::vector<SpriteConfig> sprites;
 };
 
-void load_spritesheets(std::vector<SpritesheetConfig> spritesheets);
+void load_spritesheets(std::vector<SpritesheetConfig> &spritesheets);
 
 #endif

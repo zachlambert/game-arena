@@ -58,7 +58,7 @@ int main()
     while (window.is_running()) {
         window.update();
         game.update(clock.sample_dt());
-        // renderer.render(game);
+        renderer.render(game);
         fps_counter.update();
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }

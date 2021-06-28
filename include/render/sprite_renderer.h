@@ -28,7 +28,7 @@ class SpriteRenderer {
 public:
     SpriteRenderer() {}
 
-    void load_spritesheets(const std::vector<SpritesheetConfig> spritesheets);
+    void load_spritesheets(const std::string &base_dir, const std::vector<SpritesheetConfig> spritesheets);
     void initialise(unsigned int program_id);
 
     struct Params {

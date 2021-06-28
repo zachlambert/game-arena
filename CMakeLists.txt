@@ -20,9 +20,9 @@ set(SRC
     # src/game/system/enemy.cpp
     # src/game/system/enemy_spawner.cpp
     # src/game/system/gunshot.cpp
-    # src/game/system/physics.cpp
-    # src/game/system/player.cpp
-    # src/game/system/render_base.cpp
+    src/game/system/physics.cpp
+    src/game/system/player.cpp
+    src/game/system/sprite.cpp
     # src/game/system/render_gun_ray.cpp
 
     src/render/mesh_renderer.cpp
