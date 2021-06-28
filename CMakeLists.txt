@@ -16,10 +16,10 @@ set(SRC
     src/game/entity.cpp
     src/game/game.cpp
 
-    # src/game/system/collision.cpp
-    # src/game/system/enemy.cpp
-    # src/game/system/enemy_spawner.cpp
-    # src/game/system/gunshot.cpp
+    src/game/system/collision.cpp
+    src/game/system/enemy.cpp
+    src/game/system/enemy_spawner.cpp
+    src/game/system/gunshot.cpp
     src/game/system/physics.cpp
     src/game/system/player.cpp
     src/game/system/sprite.cpp

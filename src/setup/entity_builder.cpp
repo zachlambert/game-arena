@@ -42,7 +42,7 @@ void build_player(EntityManager &entity_manager, PlayerConfig config)
     entity_manager.entity_add_hitbox(id, 5, hitbox);
 }
 
-void build_enemy(EntityManager &entity_manager, const CollisionManager &collision_manager, EnemyConfig config)
+void build_enemy(EntityManager &entity_manager, EnemyConfig config)
 {
     Signature signature;
     signature.set((size_t)SystemType::ENEMY);

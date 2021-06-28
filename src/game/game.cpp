@@ -16,11 +16,11 @@ void Game::initialise(const Resources &resources)
 
 void Game::update(double dt)
 {
-    // system_enemy_spawner(entity_manager, collision_manager, dt);
+    system_enemy_spawner(entity_manager, collision_manager, dt);
 
     system_player(entity_manager, input, camera);
-    // system_enemy(entity_manager);
-    // system_gunshot(entity_manager);
+    system_enemy(entity_manager);
+    system_gunshot(entity_manager, dt);
 
     system_physics(entity_manager, dt);
     // system_collision(entity_manager, collision_manager);
