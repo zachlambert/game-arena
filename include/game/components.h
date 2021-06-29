@@ -51,6 +51,7 @@ struct Polygon: public BaseComponent {
     std::vector<unsigned int> indices;
     unsigned int vertices_offset;
     unsigned int indices_offset;
+    unsigned int element_count;
     bool allocated;
     bool dirty;
     unsigned int depth;
