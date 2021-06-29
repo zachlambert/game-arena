@@ -6,7 +6,7 @@ static void update_entity(component::Transform &transform, component::Polygon &p
         * glm::rotate((float)transform.orientation, glm::vec3(0, 0, 1)) * glm::scale(glm::vec3(transform.scale.x, transform.scale.y, 1));
 }
 
-void system_render_gun_ray(EntityManager &entity_manager)
+void system_render_polygon(EntityManager &entity_manager)
 {
     component::Transform *transform;
     component::Polygon *polygon;

@@ -20,13 +20,13 @@ void Game::update(double dt)
 
     system_player(entity_manager, input, camera);
     system_enemy(entity_manager);
-    system_gunshot(entity_manager, dt);
+    system_gun(entity_manager, dt, camera);
 
     system_physics(entity_manager, dt);
     system_collision(entity_manager, collision_manager);
 
     system_render_sprite(entity_manager);
-    // system_render_gun_ray(entity_manager, camera, dt);
+    system_render_polygon(entity_manager);
 
     entity_manager.remove_entities();
 

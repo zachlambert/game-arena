@@ -93,7 +93,7 @@ static bool check_for_gunshot_hit(component::Transform &transform, int entity_id
     return false;
 }
 
-void system_gunshot(EntityManager &entity_manager, double dt, const Camera &camera)
+void system_gun(EntityManager &entity_manager, double dt, const Camera &camera)
 {
     std::vector<Gunshot> gunshots;
     component::Transform *transform;
