@@ -11,7 +11,7 @@
 #include "setup/resources.h"
 #include "render/shader.h"
 #include "render/sprite_renderer.h"
-// #include "render/mesh_renderer.h"
+#include "render/polygon_renderer.h"
 #include "render/terrain_renderer.h"
 #include "game/game.h"
 
@@ -23,7 +23,7 @@ public:
     void render(const Game &game);
 
     SpriteRenderer sprite_renderer;
-    // MeshRenderer mesh_renderer;
+    PolygonRenderer polygon_renderer;
     TerrainRenderer terrain_renderer;
 
 private:

@@ -16,10 +16,10 @@ void Renderer::initialise(const Resources &resources, const Game &game)
         base_dir + "shaders/sprite.vs",
         base_dir + "shaders/sprite.fs"
     ));
-    // mesh_renderer.initialise(load_shader(
-    //     base_dir + "shaders/mesh.vs",
-    //     base_dir + "shaders/mesh.fs"
-    // ));
+    polygon_renderer.initialise(load_shader(
+        base_dir + "shaders/polygon.vs",
+        base_dir + "shaders/polygon.fs"
+    ));
     terrain_renderer.initialise(load_shader(
         base_dir + "shaders/terrain.vs",
         base_dir + "shaders/terrain.fs"
@@ -57,23 +57,18 @@ void Renderer::render(const Game &game)
     }
 
     // Render meshes
-    /*
     {
-        MeshRenderer::Params params;
-        params.view = &game.camera.view;
-        mesh_renderer.enable(params);
-
-        MeshRenderer::Command command;
-        for (int i = 0; i < game.entity_manager.visual_static.tail; i++) {
-            const component::VisualStatic &visual_static = game.entity_manager.visual_static[i];
-            if (visual_static.type == component::VisualStatic::Type::MESH) {
-                command.mesh_index = visual_static.render_index;
-                command.model = &visual_static.model;
-                mesh_renderer.render(command);
-            }
+        polygon_renderer.enable(game.camera.view);
+        for (int i = 0; i < game.entity_manager.polygon.tail; i++) {
+            const component::Polygon &polygon = game.entity_manager.polygon[i];
+            polygon_renderer.store_polygon(polygon);
+        }
+        polygon_renderer.reinitialise();
+        for (int i = 0; i < game.entity_manager.polygon.tail; i++) {
+            const component::Polygon &polygon = game.entity_manager.polygon[i];
+            polygon_renderer.render(polygon);
         }
     }
-    */
 
     // std::cout << "Error: " << glGetError() << std::endl;
 }

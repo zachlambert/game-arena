@@ -49,11 +49,15 @@ struct Polygon: public BaseComponent {
     std::vector<glm::vec2> vertices;
     std::vector<glm::vec4> colors;
     std::vector<unsigned int> indices;
-    unsigned int vertices_offset;
-    unsigned int indices_offset;
     unsigned int element_count;
-    bool allocated;
-    bool dirty;
+
+    // Leave these handled by the renderer. Let them me mutable, so we can
+    // allow these to change without changing the polygon state.
+    mutable unsigned int vertices_offset;
+    mutable unsigned int indices_offset;
+    mutable bool allocated;
+    mutable bool dirty;
+
     unsigned int depth;
     Polygon(): allocated(false), dirty(true) {}
 };

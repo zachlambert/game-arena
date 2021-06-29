@@ -10,6 +10,7 @@
 struct PolygonVertex {
     glm::vec<3, GLfloat> position;
     glm::vec<4, GLfloat> color; // with opacity
+    PolygonVertex(): position(0, 0, 0), color(0, 0, 0, 0) {}
     PolygonVertex(glm::vec3 position, glm::vec4 color);
 };
 
@@ -20,11 +21,11 @@ public:
     void initialise(unsigned int program_id);
 
     void enable(const glm::mat4 &view);
-    void update_polygon(component::Polygon &polygon);
+    void store_polygon(const component::Polygon &polygon);
+    void reinitialise();
     void render(const component::Polygon &polygon);
 
 private:
-    void reinitialise();
 
     // OpenGL data
     std::vector<PolygonVertex> static_vertices;

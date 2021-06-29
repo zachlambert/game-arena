@@ -28,6 +28,7 @@ void build_player(EntityManager &entity_manager, PlayerConfig config)
 
     // Component 4 = Gun ray polygon
     component::Polygon gun_ray_polygon;
+    gun_ray_polygon.depth = 5;
     // TODO
 
     // Component 5 = Hitbox

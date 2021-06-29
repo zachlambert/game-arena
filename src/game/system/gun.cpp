@@ -11,6 +11,7 @@ static void initialise_gun_ray_polygon(
     component::Polygon &polygon)
 {
     polygon.indices = {0, 1, 2, 0, 2, 3};
+    polygon.element_count = 6;
     polygon.vertices.resize(4);
     polygon.colors.resize(4);
 }
@@ -38,7 +39,7 @@ static void update_gun_ray(
         double gradient =  0.02 * (1 - gun.focus*0.8);
         double x_dist = 2000/camera.zoom;
         double y_dist = gradient * x_dist;
-        double origin_y = 30;
+        static double origin_y = 8;
 
         gun_ray_polygon.vertices[0] = {gun.origin_offset, -origin_y};
         gun_ray_polygon.vertices[1] = {gun.origin_offset, origin_y};
@@ -50,7 +51,7 @@ static void update_gun_ray(
             gun_ray_polygon.colors[1] = {0.2, 0.2, 0.2, 1};
             gun_ray_polygon.colors[2] = {0.2, 0.2, 0.2, 0};
             gun_ray_polygon.colors[3] = {0.2, 0.2, 0.2, 0};
-        } else {
+        } else if (!gun.fire_visual_on) {
             gun_ray_polygon.colors[0] = {0.6, 0.6, 0.6, 1};
             gun_ray_polygon.colors[1] = {0.6, 0.6, 0.6, 1};
             gun_ray_polygon.colors[2] = {0.6, 0.6, 0.6, 0};
@@ -67,6 +68,13 @@ static void update_gun(
     std::vector<Gunshot> &gunshots,
     double dt)
 {
+    if (gun.fire_visual_on) {
+        gun.fire_visual_timer += dt;
+        if (gun.fire_visual_timer > gun.fire_visual_timeout) {
+            gun.fire_visual_on = false;
+        }
+    }
+
     if (!gun.fire_event) return;
 
     gun.fire_visual_on = true;
@@ -103,6 +111,7 @@ void system_gun(EntityManager &entity_manager, double dt, const Camera &camera)
         if (!entity_manager.entity_supports_system(i, SystemType::GUN)) continue;
         transform = entity_manager.get_transform_component(i, 0);
         gun = entity_manager.get_gun_component(i, 0);
+        gun_ray_polygon = entity_manager.get_polygon_component(i, 0);
         update_gun(*transform, *gun, i, gunshots, dt);
         update_gun_ray(*transform, *gun, *gun_ray_polygon, camera);
         gun->fire_event = false;
@@ -114,7 +123,6 @@ void system_gun(EntityManager &entity_manager, double dt, const Camera &camera)
         entity_manager.entities[i].to_remove |= check_for_gunshot_hit(*transform, i, gunshots);
         if (entity_manager.entities[i].to_remove) {
             std::cout << "Removing" << std::endl;
-            std::cout << gunshots.size() << std::endl;
         }
     }
 }

@@ -9,7 +9,7 @@
 
 constexpr int MAX_COMPONENTS_PER_ENTITY = 16;
 constexpr int MAX_ENTITIES = 1024;
-constexpr int MAX_COMPONENTS = MAX_COMPONENTS_PER_ENTITY*MAX_ENTITIES;
+constexpr int MAX_COMPONENTS = 128;
 
 constexpr int NUM_SYSTEMS = 32;
 typedef std::bitset<NUM_SYSTEMS> Signature;
@@ -98,11 +98,6 @@ private:
 
     Buffer<ComponentReference, MAX_COMPONENTS> component_references;
     Buffer<Entity, MAX_ENTITIES> free;
-
-    class SystemManager;
-    friend SystemManager;
-    class System;
-    friend System;
 };
 
 template <typename T>

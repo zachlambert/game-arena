@@ -15,6 +15,11 @@ void PolygonRenderer::initialise(unsigned int program_id)
     this->program_id = program_id;
     m_loc = glGetUniformLocation(program_id, "M");
     v_loc = glGetUniformLocation(program_id, "V");
+    dirty = true;
+
+    glGenVertexArrays(1, &static_VAO);
+    glGenBuffers(1, &static_VBO);
+    glGenBuffers(1, &static_EBO);
 }
 
 void PolygonRenderer::enable(const glm::mat4 &view)
@@ -24,9 +29,10 @@ void PolygonRenderer::enable(const glm::mat4 &view)
     glUniformMatrix4fv(v_loc, 1, GL_FALSE, &view[0][0]);
 }
 
-void PolygonRenderer::update_polygon(component::Polygon &polygon)
+void PolygonRenderer::store_polygon(const component::Polygon &polygon)
 {
     if (!polygon.allocated) {
+        polygon.allocated = true;
         polygon.vertices_offset = static_vertices.size();
         polygon.indices_offset = static_indices.size();
         static_vertices.resize(static_vertices.size() + polygon.vertices.size());
@@ -34,48 +40,45 @@ void PolygonRenderer::update_polygon(component::Polygon &polygon)
         for (std::size_t i = 0; i < polygon.vertices.size(); i++) {
             static_vertices[i].position.z = 0;
         }
+        dirty = true;
     }
 
     if (polygon.dirty) {
         for (std::size_t i = 0; i < polygon.vertices.size(); i++) {
-            static_vertices[i].position.x = polygon.vertices[i].x;
-            static_vertices[i].position.y = polygon.vertices[i].y;
-            static_vertices[i].color = polygon.colors[i];
+            static_vertices[polygon.vertices_offset+i].position.x = polygon.vertices[i].x;
+            static_vertices[polygon.vertices_offset+i].position.y = polygon.vertices[i].y;
+            static_vertices[polygon.vertices_offset+i].color = polygon.colors[i];
+        }
+        for (std::size_t i = 0; i < polygon.indices.size(); i++) {
+            static_indices[polygon.indices_offset+i] = polygon.indices[i];
         }
         polygon.dirty = false;
+        dirty = true;
     }
 }
 
 void PolygonRenderer::reinitialise()
 {
-    // 1. Generate ids
+    if (!dirty) return;
+    dirty = false;
 
-    glGenVertexArrays(1, &static_VAO);
-    glGenBuffers(1, &static_VBO);
-    glGenBuffers(1, &static_EBO);
-
-    // 2. Bind vertex array
     glBindVertexArray(static_VAO);
 
-    // 3. Bind and configure buffer for vertex attributes
     glBindBuffer(GL_ARRAY_BUFFER, static_VBO);
     glBufferData(
         GL_ARRAY_BUFFER,
         static_vertices.size() * sizeof(PolygonVertex),
         &static_vertices[0],
-        GL_STATIC_DRAW
+        GL_DYNAMIC_DRAW
     );
 
-    // 4. Bind and configure buffer for vertex attributes
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, static_EBO);
     glBufferData(
         GL_ELEMENT_ARRAY_BUFFER,
         static_indices.size() * sizeof(unsigned short),
         &static_indices[0],
-        GL_STATIC_DRAW
+        GL_DYNAMIC_DRAW
     );
-
-    // 5. Define the vertex buffer attributes
 
     glVertexAttribPointer(
         0, 3, GL_FLOAT, GL_FALSE, sizeof(PolygonVertex),
@@ -88,7 +91,6 @@ void PolygonRenderer::reinitialise()
         (void*)offsetof(PolygonVertex, color)
     );
     glEnableVertexAttribArray(1);
-
 }
 
 void PolygonRenderer::render(const component::Polygon &polygon)
