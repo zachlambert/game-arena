@@ -20,6 +20,21 @@ void PolygonRenderer::initialise(unsigned int program_id)
     glGenVertexArrays(1, &static_VAO);
     glGenBuffers(1, &static_VBO);
     glGenBuffers(1, &static_EBO);
+
+    glBindVertexArray(static_VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, static_VBO);
+
+    glVertexAttribPointer(
+        0, 3, GL_FLOAT, GL_FALSE, sizeof(PolygonVertex),
+        (void*)0
+    );
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(
+        1, 4, GL_FLOAT, GL_TRUE, sizeof(PolygonVertex),
+        (void*)offsetof(PolygonVertex, color)
+    );
+    glEnableVertexAttribArray(1);
 }
 
 void PolygonRenderer::enable(const glm::mat4 &view)
@@ -53,7 +68,26 @@ void PolygonRenderer::store_polygon(const component::Polygon &polygon)
             static_indices[polygon.indices_offset+i] = polygon.indices[i];
         }
         polygon.dirty = false;
-        dirty = true;
+
+        if (!dirty) {
+            glBindVertexArray(static_VAO);
+            glBindBuffer(GL_ARRAY_BUFFER, static_VBO);
+            glBufferSubData(
+                GL_ARRAY_BUFFER,
+                polygon.vertices_offset*sizeof(PolygonVertex),
+                polygon.vertices.size()*sizeof(PolygonVertex),
+                &static_vertices[polygon.vertices_offset]
+            );
+            // TODO: Have seperate flag for when indices have changed, since
+            // this is more rare.
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, static_EBO);
+            glBufferSubData(
+                GL_ELEMENT_ARRAY_BUFFER,
+                polygon.indices_offset*sizeof(PolygonVertex),
+                polygon.indices.size()*sizeof(PolygonVertex),
+                &static_indices[polygon.vertices_offset]
+            );
+        }
     }
 }
 
@@ -69,7 +103,7 @@ void PolygonRenderer::reinitialise()
         GL_ARRAY_BUFFER,
         static_vertices.size() * sizeof(PolygonVertex),
         &static_vertices[0],
-        GL_DYNAMIC_DRAW
+        GL_STREAM_DRAW
     );
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, static_EBO);
@@ -77,20 +111,8 @@ void PolygonRenderer::reinitialise()
         GL_ELEMENT_ARRAY_BUFFER,
         static_indices.size() * sizeof(unsigned short),
         &static_indices[0],
-        GL_DYNAMIC_DRAW
+        GL_STREAM_DRAW
     );
-
-    glVertexAttribPointer(
-        0, 3, GL_FLOAT, GL_FALSE, sizeof(PolygonVertex),
-        (void*)0
-    );
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(
-        1, 4, GL_FLOAT, GL_TRUE, sizeof(PolygonVertex),
-        (void*)offsetof(PolygonVertex, color)
-    );
-    glEnableVertexAttribArray(1);
 }
 
 void PolygonRenderer::render(const component::Polygon &polygon)
