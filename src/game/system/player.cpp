@@ -1,6 +1,6 @@
 #include "game/system.h"
 
-void update_entity(
+static void update_entity(
     component::Transform &transform,
     component::Physics &physics,
     component::Gun &gun,

@@ -16,14 +16,6 @@ void update_entity(component::Transform &transform, component::Gun &gun, compone
             visual_static.render_index = gun.mesh_index_aiming;
         }
     }
-
-    double gradient =  0.02 * (1 - gun.focus*0.8);
-    double scale_x = 2000/camera.zoom;
-    double scale_y = gradient * scale_x;
-    visual_static.model = glm::translate(glm::vec3(transform.pos.x, transform.pos.y, (double)visual_static.depth))
-        * glm::rotate((float)transform.orientation, glm::vec3(0, 0, 1))
-        * glm::translate(glm::vec3(gun.origin_offset, 0, 0))
-        * glm::scale(glm::vec3(scale_x, scale_y, 1));
 }
 
 void system_render_gun_ray(EntityManager &entity_manager, const Camera &camera, double dt)

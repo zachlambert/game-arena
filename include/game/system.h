@@ -20,6 +20,6 @@ void system_physics(EntityManager &entity_manager, double dt);
 void system_collision(EntityManager &entity_manager, CollisionManager &collision_manager);
 
 void system_render_sprite(EntityManager &entity_manager) ;
-// void system_render_gun_ray(EntityManager &entity_manager, const Camera &camera, double dt);
+void system_render_polygon(EntityManager &entity_manager) ;
 
 #endif

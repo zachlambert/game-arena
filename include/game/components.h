@@ -52,7 +52,9 @@ struct Polygon: public BaseComponent {
     unsigned int vertices_offset;
     unsigned int indices_offset;
     bool allocated;
-    Polygon(): allocated(false) {}
+    bool dirty;
+    unsigned int depth;
+    Polygon(): allocated(false), dirty(true) {}
 };
 
 struct Physics: public BaseComponent {

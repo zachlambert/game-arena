@@ -7,35 +7,82 @@ struct Gunshot {
     int entity_id;
 };
 
-void check_for_gunshot(const component::Transform &transform, component::Gun &gun, int entity_id, std::vector<Gunshot> &gunshots, double dt)
+static void initialise_gun_ray_polygon(
+    component::Polygon &polygon)
+{
+    polygon.indices = {0, 1, 2, 0, 2, 3};
+    polygon.vertices.resize(4);
+    polygon.colors.resize(4);
+}
+
+static void update_gun_ray(
+    const component::Transform &source_transform,
+    component::Gun &gun,
+    component::Polygon &gun_ray_polygon,
+    const Camera &camera)
+{
+    // Set transform to same as source sprite (but with no scaling, and different depth)
+    gun_ray_polygon.model =
+        glm::translate(glm::vec3(source_transform.pos.x, source_transform.pos.y, (double)gun_ray_polygon.depth))
+        * glm::rotate((float)source_transform.orientation, glm::vec3(0, 0, 1));
+
+    if (gun_ray_polygon.indices.size() == 0) {
+        initialise_gun_ray_polygon(gun_ray_polygon);
+    }
+
+    // Update polygon when:
+    // - Aiming, so it adjusts based on focus
+    // - When a shot is fired, such that it stays the same or a bit, and
+    //   darkens.
+    if (!gun.fire_visual_on || gun.fire_event) {
+        double gradient =  0.02 * (1 - gun.focus*0.8);
+        double x_dist = 2000/camera.zoom;
+        double y_dist = gradient * x_dist;
+        double origin_y = 30;
+
+        gun_ray_polygon.vertices[0] = {gun.origin_offset, -origin_y};
+        gun_ray_polygon.vertices[1] = {gun.origin_offset, origin_y};
+        gun_ray_polygon.vertices[2] = {gun.origin_offset + x_dist, origin_y + y_dist};
+        gun_ray_polygon.vertices[3] = {gun.origin_offset + x_dist, -origin_y - y_dist};
+
+        if (gun.fire_event) {
+            gun_ray_polygon.colors[0] = {0.2, 0.2, 0.2, 1};
+            gun_ray_polygon.colors[1] = {0.2, 0.2, 0.2, 1};
+            gun_ray_polygon.colors[2] = {0.2, 0.2, 0.2, 0};
+            gun_ray_polygon.colors[3] = {0.2, 0.2, 0.2, 0};
+        } else {
+            gun_ray_polygon.colors[0] = {0.6, 0.6, 0.6, 1};
+            gun_ray_polygon.colors[1] = {0.6, 0.6, 0.6, 1};
+            gun_ray_polygon.colors[2] = {0.6, 0.6, 0.6, 0};
+            gun_ray_polygon.colors[3] = {0.6, 0.6, 0.6, 0};
+        }
+        gun_ray_polygon.dirty = true;
+    }
+}
+
+static void update_gun(
+    const component::Transform &source_transform,
+    component::Gun &gun,
+    int entity_id, // For recording the source of a gunshot
+    std::vector<Gunshot> &gunshots,
+    double dt)
 {
     if (!gun.fire_event) return;
+
+    gun.fire_visual_on = true;
+    gun.fire_visual_timer = 0;
+
     Gunshot gunshot;
-    gunshot.origin = transform.pos +
-        glm::vec2(gun.origin_offset * cos(transform.orientation),
-                  gun.origin_offset * sin(transform.orientation));
+    gunshot.origin = source_transform.pos +
+        glm::vec2(gun.origin_offset * cos(source_transform.orientation),
+                  gun.origin_offset * sin(source_transform.orientation));
     gunshot.fire_point = gun.fire_point;
     gunshot.focus = gun.focus;
     gunshot.entity_id = entity_id;
     gunshots.push_back(gunshot);
-
-    if (gun.fire_event) {
-        gun.fire_event = false;
-        gun.fire_visual_on = true;
-        // visual_static.render_index = gun.mesh_index_fired;
-        gun.fire_visual_timer = 0;
-    }
-
-    if (gun.fire_visual_on) {
-        gun.fire_visual_timer += dt;
-        if (gun.fire_visual_timer > gun.fire_visual_timeout) {
-            gun.fire_visual_on = false;
-            // visual_static.render_index = gun.mesh_index_aiming;
-        }
-    }
 }
 
-bool check_for_gunshot_hit(component::Transform &transform, int entity_id, const std::vector<Gunshot> &gunshots)
+static bool check_for_gunshot_hit(component::Transform &transform, int entity_id, const std::vector<Gunshot> &gunshots)
 {
     // TODO: In future, subtract health. For now, just mark for removal.
     for (const auto &gunshot: gunshots) {
@@ -46,16 +93,19 @@ bool check_for_gunshot_hit(component::Transform &transform, int entity_id, const
     return false;
 }
 
-void system_gunshot(EntityManager &entity_manager, double dt)
+void system_gunshot(EntityManager &entity_manager, double dt, const Camera &camera)
 {
     std::vector<Gunshot> gunshots;
     component::Transform *transform;
     component::Gun *gun;
+    component::Polygon *gun_ray_polygon;
     for (int i = 0; i < entity_manager.entities.tail; i++) {
         if (!entity_manager.entity_supports_system(i, SystemType::GUN)) continue;
         transform = entity_manager.get_transform_component(i, 0);
         gun = entity_manager.get_gun_component(i, 0);
-        check_for_gunshot(*transform, *gun, i, gunshots, dt);
+        update_gun(*transform, *gun, i, gunshots, dt);
+        update_gun_ray(*transform, *gun, *gun_ray_polygon, camera);
+        gun->fire_event = false;
     }
 
     for (int i = 0; i < entity_manager.entities.tail; i++) {

@@ -1,7 +1,7 @@
 #include "game/system.h"
 #include <random>
 
-void update_entity(component::Physics &physics)
+static void update_entity(component::Physics &physics)
 {
     static std::default_random_engine generator;
     static std::normal_distribution<double> distribution(0, 1);

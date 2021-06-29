@@ -1,6 +1,6 @@
 #include "game/system.h"
 
-void update_entity(component::Transform &transform, component::Physics &physics, double dt) {
+static void update_entity(component::Transform &transform, component::Physics &physics, double dt) {
     transform.pos.x += physics.twist.x * dt;
     transform.pos.y += physics.twist.y * dt;
     transform.orientation += physics.twist.z * dt;
