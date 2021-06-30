@@ -11,6 +11,7 @@ void Renderer::initialise(const Resources &resources, const Game &game)
 
     sprite_renderer.load_spritesheets(base_dir, resources.spritesheets);
     terrain_renderer.load_terrain(game.terrain);
+    collision_renderer.load_spritesheets(base_dir, resources.spritesheets);
 
     sprite_renderer.initialise(load_shader(
         base_dir + "shaders/sprite.vs",
@@ -24,6 +25,12 @@ void Renderer::initialise(const Resources &resources, const Game &game)
         base_dir + "shaders/terrain.vs",
         base_dir + "shaders/terrain.fs"
     ));
+    collision_renderer.initialise(
+        load_shader(base_dir + "shaders/terrain.vs",
+                    base_dir + "shaders/terrain.fs"),
+        load_shader(base_dir + "shaders/polygon.vs",
+                    base_dir + "shaders/polygon.fs")
+    );
 }
 
 void Renderer::render(const Game &game)
@@ -67,6 +74,19 @@ void Renderer::render(const Game &game)
         for (int i = 0; i < game.entity_manager.polygon.tail; i++) {
             const component::Polygon &polygon = game.entity_manager.polygon[i];
             polygon_renderer.render(polygon);
+        }
+    }
+
+    // Debugging
+
+    // Render collision information
+    {
+        collision_renderer.enable_terrain(game.camera.view);
+        collision_renderer.render_terrain();
+        collision_renderer.enable_sprite_polygons(game.camera.view);
+        for (int i = 0; i < game.entity_manager.sprite.tail; i++) {
+            const component::Sprite &sprite = game.entity_manager.sprite[i];
+            collision_renderer.render_sprite_polygon(sprite);
         }
     }
 

@@ -13,6 +13,7 @@
 #include "render/sprite_renderer.h"
 #include "render/polygon_renderer.h"
 #include "render/terrain_renderer.h"
+#include "render/collision_renderer.h"
 #include "game/game.h"
 
 class Renderer {
@@ -25,6 +26,7 @@ public:
     SpriteRenderer sprite_renderer;
     PolygonRenderer polygon_renderer;
     TerrainRenderer terrain_renderer;
+    CollisionRenderer collision_renderer;
 
 private:
     std::string base_dir;
