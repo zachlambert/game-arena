@@ -1,5 +1,6 @@
 #include "render/collision_renderer.h"
 #include <iostream>
+#include <stack>
 
 void CollisionRenderer::load_spritesheets(const std::string &base_dir, const std::vector<SpritesheetConfig> spritesheets)
 {
@@ -47,6 +48,80 @@ void CollisionRenderer::load_spritesheets(const std::string &base_dir, const std
     }
 }
 
+void CollisionRenderer::load_terrain_collision_data(const CollisionManager &collision_manager)
+{
+    terrain_vertex_count = 0;
+    terrain_vertices_offset = static_vertices.size();
+    std::stack<Octree*> nodes;
+    nodes.push(collision_manager.root);
+
+    CollisionVertex vertex;
+    Octree *current;
+    while (!nodes.empty()) {
+        current = nodes.top();
+        nodes.pop();
+        if (current == nullptr) continue;
+
+        vertex.position.z = 2;
+        vertex.color = {0, 0, 1, 1};
+        vertex.position.x = current->box.left;
+        vertex.position.y = current->box.bot;
+        static_vertices.push_back(vertex);
+        vertex.position.y = current->box.top;
+        static_vertices.push_back(vertex);
+        static_vertices.push_back(vertex);
+        vertex.position.x = current->box.right;
+        static_vertices.push_back(vertex);
+        static_vertices.push_back(vertex);
+        vertex.position.y = current->box.bot;
+        static_vertices.push_back(vertex);
+        static_vertices.push_back(vertex);
+        vertex.position.x = current->box.left;
+        static_vertices.push_back(vertex);
+
+        terrain_vertex_count += 8;
+
+        vertex.color = {0, 0, 0, 1};
+        vertex.position.x = current->box.left;
+        vertex.position.y = current->centre.y;
+        static_vertices.push_back(vertex);
+        vertex.position.x = current->box.right;
+        static_vertices.push_back(vertex);
+
+        vertex.position.x = current->centre.x;
+        vertex.position.y = current->box.top;
+        static_vertices.push_back(vertex);
+        vertex.position.y = current->box.bot;
+        static_vertices.push_back(vertex);
+
+        terrain_vertex_count += 4;
+
+        vertex.color = {1, 0, 0, 1};
+        vertex.position.z = 1;
+        for (const auto &edge: current->edges) {
+            vertex.position.x = edge.box.left;
+            vertex.position.y = edge.box.bot;
+            static_vertices.push_back(vertex);
+            vertex.position.y = edge.box.top;
+            static_vertices.push_back(vertex);
+            static_vertices.push_back(vertex);
+            vertex.position.x = edge.box.right;
+            static_vertices.push_back(vertex);
+            static_vertices.push_back(vertex);
+            vertex.position.y = edge.box.bot;
+            static_vertices.push_back(vertex);
+            static_vertices.push_back(vertex);
+            vertex.position.x = edge.box.left;
+            static_vertices.push_back(vertex);
+            terrain_vertex_count += 8;
+        }
+
+        nodes.push(current->nodes[0]);
+        nodes.push(current->nodes[1]);
+        nodes.push(current->nodes[2]);
+        nodes.push(current->nodes[3]);
+    }
+}
 
 void CollisionRenderer::initialise(unsigned int program_id_1, unsigned int program_id_2)
 {
@@ -104,7 +179,7 @@ void CollisionRenderer::enable_terrain(const glm::mat4 &view)
 void CollisionRenderer::render_terrain()
 {
     glDrawArrays(
-        GL_LINES, terrain_offset, terrain_count
+        GL_LINES, terrain_vertices_offset, terrain_vertex_count
     );
 }
 

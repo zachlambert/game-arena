@@ -104,8 +104,7 @@ private:
     // Edge blocks for sprites, indexed by sprite_id
     std::vector<EdgeBlock>  sprite_edge_blocks;
 
-    class CollisionRenderer;
-    friend CollisionRenderer;
+    friend class CollisionRenderer;
 };
 
 #endif

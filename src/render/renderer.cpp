@@ -12,6 +12,7 @@ void Renderer::initialise(const Resources &resources, const Game &game)
     sprite_renderer.load_spritesheets(base_dir, resources.spritesheets);
     terrain_renderer.load_terrain(game.terrain);
     collision_renderer.load_spritesheets(base_dir, resources.spritesheets);
+    collision_renderer.load_terrain_collision_data(game.collision_manager);
 
     sprite_renderer.initialise(load_shader(
         base_dir + "shaders/sprite.vs",

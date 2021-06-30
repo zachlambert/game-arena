@@ -15,11 +15,11 @@ void build_world(EntityManager &entity_manager, Terrain &terrain)
 
     // Create an enemy spawner
     {
-        EnemySpawnerConfig config;
-        config.pos.x = 0;
-        config.pos.y = -100;
-        config.spawn_timeout = 1.5;
-        build_enemy_spawner(entity_manager, config);
+        // EnemySpawnerConfig config;
+        // config.pos.x = 0;
+        // config.pos.y = -100;
+        // config.spawn_timeout = 1.5;
+        // build_enemy_spawner(entity_manager, config);
     }
 
     // Build terrain
@@ -28,21 +28,29 @@ void build_world(EntityManager &entity_manager, Terrain &terrain)
 
         // Remember: Define meshes clockwise !
         TerrainElement element;
-        element.pos.x = 0;
-        element.pos.y = 0;
-        element.visual_depth = 10;
-        element.color = glm::vec4(0, 0, 0.2, 1);
 
+        element.pos.x = 400;
+        element.pos.y = 300;
+        element.visual_depth = 10;
         element.vertices.push_back(glm::vec2(-100, 0));
         element.vertices.push_back(glm::vec2(-80, 200));
         element.vertices.push_back(glm::vec2(20, 240));
         element.vertices.push_back(glm::vec2(0, -150));
         element.color = glm::vec4(0, 0, 0.2, 1);
+        terrain.elements.push_back(element);
+
+        element.pos.x = -800;
+        element.pos.y = 100;
+        element.vertices.clear();
+        element.vertices.push_back(glm::vec2(-100, 0));
+        element.vertices.push_back(glm::vec2(100, 100));
+        element.vertices.push_back(glm::vec2(80, -200));
+        element.color = glm::vec4(0, 0, 0.2, 1);
 
         terrain.elements.push_back(element);
 
         terrain.centre = {0, 0};
-        terrain.size = {1000, 1000};
+        terrain.size = {5000, 5000};
     }
     return;
 }
