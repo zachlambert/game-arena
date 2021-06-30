@@ -20,6 +20,8 @@ Walls and collisions
 - Handle wall collisions such that entities slide along the edge instead
   of stopping completely.
 - Have enemies only get hit when you click on them (using the mesh, instead of just distance away).
+- Also: Add a collision renderer for debugging, which renders collision polygons and the
+  terrain collision octree.
 
 # Objective 3
 

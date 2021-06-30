@@ -25,6 +25,7 @@ set(SRC
     src/game/system/render_sprite.cpp
     src/game/system/render_polygon.cpp
 
+    src/render/collision_renderer.cpp
     src/render/polygon_renderer.cpp
     src/render/renderer.cpp
     src/render/shader.cpp

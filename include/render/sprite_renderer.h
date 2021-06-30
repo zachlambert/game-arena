@@ -44,7 +44,6 @@ public:
 
 private:
     void load_sprite(const SpriteConfig &sprite, const Texture &diffuse_texture);
-    std::unordered_map<std::string, int> sprite_indices;
 
     // OpenGL data
     std::vector<SpriteVertex> static_vertices;
