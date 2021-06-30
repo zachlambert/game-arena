@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <stack>
+#include <iostream>
 
 template <typename T>
 class Heap {
@@ -23,7 +24,9 @@ public:
     std::vector<T> data;
 
     Heap(): root_index(0) {
-        nodes.push_back({true, false, 1, 0, -1, -1, -1});
+        Node root;
+        root.index = 0;
+        nodes.push_back(root);
         data.resize(1);
     }
 
@@ -32,7 +35,7 @@ public:
         if (n > nodes[root_index].capacity) resize(2*n);
 
         std::stack<int> search, path;
-        search.push(nodes[root_index]);
+        search.push(root_index);
         while (!search.empty()) {
             int current = search.top();
             path.push(current);
@@ -45,6 +48,7 @@ public:
             if (nodes[current].capacity == n) {
                 if (!nodes[current].available) continue;
                 nodes[current].allocated = true;
+                nodes[current].available = false;
                 start = nodes[current].index;
                 return;
             }
@@ -69,6 +73,9 @@ public:
             new_root.index = 0;
             new_root.left = root_index;
             new_root.capacity = nodes[root_index].capacity * 2;
+            if (!nodes[root_index].available || nodes[root_index].allocated) {
+                new_root.available = false;
+            }
             nodes[root_index].parent = nodes.size();
             root_index = nodes.size();
             nodes.push_back(new_root);
@@ -78,10 +85,12 @@ public:
             root_right.index = nodes[root_index].capacity/2;
             root_right.capacity = nodes[root_index].capacity/2;
             root_right.parent = root_index;
+            nodes[root_index].right = nodes.size();
+            nodes.push_back(root_right);
 
             std::stack<int> pending;
-            pending.push(nodes.size());
-            nodes.push_back(root_right);
+            pending.push(nodes[root_index].right);
+
             int current;
             while (!pending.empty()) {
                 current = pending.top();
@@ -91,7 +100,7 @@ public:
                 left.capacity = nodes[current].capacity/2;
                 right.capacity = nodes[current].capacity/2;
                 left.index = nodes[current].index;
-                right.capacity = nodes[current].index + nodes[current].capacity/2;
+                right.index = nodes[current].index + nodes[current].capacity/2;
                 left.parent = current;
                 right.parent = current;
                 nodes[current].left = nodes.size();
@@ -106,7 +115,7 @@ public:
 
     void deallocate(int n, int start)
     {
-        int current = nodes[root_index];
+        int current = root_index;
         while (nodes[current].capacity != n) {
             if (start < nodes[current].index + nodes[current].capacity/2) {
                 current = nodes[current].left;
@@ -115,6 +124,7 @@ public:
             }
         }
         nodes[current].allocated = false;
+        nodes[current].available = true;
 
         // Now need to update the available flags for parent nodes
         while (true) {
@@ -122,7 +132,7 @@ public:
             if (current == -1) break;
             if (!nodes[nodes[current].left].available) break;
             if (!nodes[nodes[current].right].available) break;
-            nodes[current].available == true;
+            nodes[current].available = true;
         }
     }
 };
