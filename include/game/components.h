@@ -57,9 +57,10 @@ struct Polygon: public BaseComponent {
     mutable int indices_offset;
     mutable bool allocated;
     mutable bool dirty;
+    bool to_deallocate;
 
     unsigned int depth;
-    Polygon(): allocated(false), dirty(true) {}
+    Polygon(): allocated(false), dirty(true), to_deallocate(false) {}
 };
 
 struct Physics: public BaseComponent {

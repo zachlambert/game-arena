@@ -28,8 +28,6 @@ void Game::update(double dt)
     system_render_sprite(entity_manager);
     system_render_polygon(entity_manager);
 
-    entity_manager.remove_entities();
-
     // Update camera
     for (int i = 0; i < entity_manager.entities.tail; i++) {
         if (!entity_manager.entity_supports_system(i, SystemType::PLAYER)) continue;
@@ -39,4 +37,10 @@ void Game::update(double dt)
     }
     camera.adjust_zoom(input.get_scroll_amount());
     camera.update_view_matrix();
+}
+
+void Game::cleanup()
+{
+    // Putting it here, so can call it after rendering
+    entity_manager.remove_entities();
 }

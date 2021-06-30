@@ -87,6 +87,7 @@ void EntityManager::entity_remove(int entity_id)
     // ----- 2. Remove component references used by entity ------
     // Can still access the component references, they aren't removed just marked as
     // available for use by new entities
+ 
     for (int i = entity.start; i < entity.start + entity.count; i++) {
         int comp_index = component_references[i].index;
         switch (component_references[i].type) {

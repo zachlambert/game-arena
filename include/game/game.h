@@ -17,6 +17,7 @@ public:
 
     void initialise(const Resources &resources);
     void update(double dt);
+    void cleanup();
 
     Input input;
     Camera camera;

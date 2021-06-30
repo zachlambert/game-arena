@@ -15,5 +15,8 @@ void system_render_polygon(EntityManager &entity_manager)
         transform = entity_manager.get_transform_component(i, 0);
         polygon = entity_manager.get_polygon_component(i, 0);
         update_entity(*transform, *polygon);
+        if (entity_manager.entities[i].to_remove) {
+            polygon->to_deallocate = true;
+        }
     }
 }
