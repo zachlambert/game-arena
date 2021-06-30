@@ -10,7 +10,7 @@ struct Gunshot {
 static void initialise_gun_ray_polygon(
     component::Polygon &polygon)
 {
-    polygon.indices = {0, 1, 2, 0, 2, 3};
+    polygon.indices = {0, 1, 2, 0, 2, 3, 0, 0}; // last 2 unused
     polygon.element_count = 6;
     polygon.vertices.resize(4);
     polygon.colors.resize(4);

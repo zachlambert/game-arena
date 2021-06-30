@@ -63,10 +63,10 @@ void Renderer::render(const Game &game)
             const component::Polygon &polygon = game.entity_manager.polygon[i];
             polygon_renderer.store_polygon(polygon);
         }
-        // polygon_renderer.reinitialise();
+        polygon_renderer.reinitialise();
         for (int i = 0; i < game.entity_manager.polygon.tail; i++) {
             const component::Polygon &polygon = game.entity_manager.polygon[i];
-            // polygon_renderer.render(polygon);
+            polygon_renderer.render(polygon);
         }
     }
 
