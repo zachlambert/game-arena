@@ -2,8 +2,13 @@
 
 void update_entity(component::Transform &transform, component::Sprite &sprite)
 {
-    sprite.model = glm::translate(glm::vec3(transform.pos.x, transform.pos.y, (double)sprite.depth))
-        * glm::rotate((float)transform.orientation, glm::vec3(0, 0, 1)) * glm::scale(glm::vec3(transform.scale.x, transform.scale.y, 1));
+    sprite.model =
+        glm::translate(glm::vec3(transform.pos.x, transform.pos.y, (double)sprite.depth))
+        * glm::rotate((float)transform.orientation, glm::vec3(0, 0, 1))
+        * glm::scale(glm::vec3(transform.scale.x, transform.scale.y, 1));
+    sprite.model_unrotated =
+        glm::translate(glm::vec3(transform.pos.x, transform.pos.y, (double)sprite.depth))
+         * glm::scale(glm::vec3(transform.scale.x, transform.scale.y, 1));
 }
 
 void system_render_sprite(EntityManager &entity_manager)

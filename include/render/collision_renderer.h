@@ -14,6 +14,7 @@
 struct SpritePolygon {
     unsigned int vertices_offset;
     unsigned int vertex_count;
+    unsigned int box_vertices_offset;
 };
 
 struct CollisionVertex {

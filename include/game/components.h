@@ -38,6 +38,7 @@ struct Transform: public BaseComponent {
 
 struct Sprite: public BaseComponent {
     glm::mat4 model;
+    glm::mat4 model_unrotated; // Used for drawing hitboxes
     SpriteId sprite_id;
     unsigned int depth;
     Sprite(): sprite_id(SpriteId::NONE) {}

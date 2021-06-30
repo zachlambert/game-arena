@@ -10,13 +10,34 @@ void CollisionRenderer::load_spritesheets(const std::string &base_dir, const std
             sprite_polygon.vertex_count = sprite_config.collision_polygon.size();
 
             CollisionVertex vertex;
+            vertex.color = {1, 0, 0, 1};
+            vertex.position.z = 0;
             for (std::size_t i = 0; i < sprite_config.collision_polygon.size(); i++) {
                 vertex.position.x = sprite_config.collision_polygon[i].x;
                 vertex.position.y = sprite_config.collision_polygon[i].y;
-                vertex.position.z = 0;
-                vertex.color = {1, 0, 0, 1};
                 static_vertices.push_back(vertex);
             }
+
+            double max_dist = hypot(sprite_config.collision_polygon[0].x,
+                                sprite_config.collision_polygon[0].y);
+            double dist;
+            for (std::size_t i = 1; i < sprite_config.collision_polygon.size(); i++) {
+                dist = hypot(sprite_config.collision_polygon[i].x,
+                             sprite_config.collision_polygon[i].y);
+                if (dist > max_dist) max_dist = dist;
+            }
+
+            sprite_polygon.box_vertices_offset = static_vertices.size();
+            vertex.color = {1, 0, 1, 1};
+            vertex.position.x = -max_dist;
+            vertex.position.y = -max_dist;
+            static_vertices.push_back(vertex);
+            vertex.position.y = max_dist;
+            static_vertices.push_back(vertex);
+            vertex.position.x = max_dist;
+            static_vertices.push_back(vertex);
+            vertex.position.y = -max_dist;
+            static_vertices.push_back(vertex);
 
             if ((int)sprite_config.id >= sprite_polygons.size()) {
                 sprite_polygons.resize((int)sprite_config.id+1);
@@ -104,6 +125,14 @@ void CollisionRenderer::render_sprite_polygon(const component::Sprite &sprite)
         GL_LINE_LOOP,
         sprite_polygon.vertices_offset,
         sprite_polygon.vertex_count
+    );
+
+    glUniformMatrix4fv(m_loc_2, 1, GL_FALSE, &sprite.model_unrotated[0][0]);
+
+    glDrawArrays(
+        GL_LINE_LOOP,
+        sprite_polygon.box_vertices_offset,
+        4
     );
 }
 
