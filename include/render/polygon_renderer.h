@@ -5,6 +5,7 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
+#include "data_structures/heap.h"
 #include "game/components.h"
 
 struct PolygonVertex {
@@ -25,13 +26,14 @@ public:
     void reinitialise();
     void render(const component::Polygon &polygon);
 
+    void deallocate_polygon(const component::Polygon &polygon);
+
 private:
 
     // OpenGL data
-    std::vector<PolygonVertex> static_vertices;
-    std::vector<unsigned short> static_indices;
+    Heap<PolygonVertex> vertices;
+    Heap<unsigned short> indices;
     unsigned int static_VAO, static_VBO, static_EBO;
-    bool dirty; // Need to re-initialise
 
     // OpenGL shader parameter locations
     unsigned int program_id;

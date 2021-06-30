@@ -53,8 +53,8 @@ struct Polygon: public BaseComponent {
 
     // Leave these handled by the renderer. Let them me mutable, so we can
     // allow these to change without changing the polygon state.
-    mutable unsigned int vertices_offset;
-    mutable unsigned int indices_offset;
+    mutable int vertices_offset;
+    mutable int indices_offset;
     mutable bool allocated;
     mutable bool dirty;
 

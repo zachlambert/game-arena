@@ -22,8 +22,9 @@ public:
     int root_index;
     std::vector<Node> nodes;
     std::vector<T> data;
+    bool resize_flag;
 
-    Heap(): root_index(0) {
+    Heap(): root_index(0), resize_flag(false) {
         Node root;
         root.index = 0;
         nodes.push_back(root);
@@ -67,6 +68,7 @@ public:
     }
 
     void resize(int n) {
+        resize_flag = true;
         data.resize(n);
         while (nodes[root_index].capacity != n) {
             Node new_root;
