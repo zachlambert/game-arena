@@ -7,15 +7,18 @@ void update_entity(
 {
     if (hitbox.collisions.empty()) return;
 
-    for (const auto &collision: hitbox.collisions) {
-        std::cout << "Collision at (" << collision.pos.x << ", " << collision.pos.y << ")" << std::endl;
-        std::cout << "Depth = " << collision.depth << std::endl;
-    }
     // Resolve collisions
+    if (hitbox.collisions.size() > 1) {
+        transform.pos.x -= physics.displacement.x;
+        transform.pos.y -= physics.displacement.y;
+        transform.orientation -= physics.displacement.z;
+        hitbox.collisions.clear();
+        return;
+    }
+
+    transform.pos.x += hitbox.collisions[0].normal.x * hitbox.collisions[0].depth;
+    transform.pos.y += hitbox.collisions[0].normal.y * hitbox.collisions[0].depth;
     hitbox.collisions.clear();
-    transform.pos.x -= physics.displacement.x;
-    transform.pos.y -= physics.displacement.y;
-    transform.orientation -= physics.displacement.z;
 }
 
 void system_collision_physics(EntityManager &entity_manager)
