@@ -15,11 +15,11 @@ void build_world(EntityManager &entity_manager, Terrain &terrain)
 
     // Create an enemy spawner
     {
-        // EnemySpawnerConfig config;
-        // config.pos.x = 0;
-        // config.pos.y = -100;
-        // config.spawn_timeout = 2;
-        // build_enemy_spawner(entity_manager, config);
+        EnemySpawnerConfig config;
+        config.pos.x = 0;
+        config.pos.y = -100;
+        config.spawn_timeout = 0.5;
+        build_enemy_spawner(entity_manager, config);
     }
 
     // Build terrain
@@ -55,6 +55,16 @@ void build_world(EntityManager &entity_manager, Terrain &terrain)
         element.vertices.push_back(glm::vec2(-400, 40));
         element.vertices.push_back(glm::vec2(300, 40));
         element.vertices.push_back(glm::vec2(300, -40));
+        element.color = glm::vec4(0, 0, 0.2, 1);
+        terrain.elements.push_back(element);
+
+        element.pos.x = -100;
+        element.pos.y = -400;
+        element.vertices.clear();
+        element.vertices.push_back(glm::vec2(-500, 100));
+        element.vertices.push_back(glm::vec2(100, 20));
+        element.vertices.push_back(glm::vec2(400, 80));
+        element.vertices.push_back(glm::vec2(-100, -270));
         element.color = glm::vec4(0, 0, 0.2, 1);
         terrain.elements.push_back(element);
 

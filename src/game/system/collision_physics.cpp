@@ -43,10 +43,18 @@ void update_entity(
     float a = (d1 - d2*dot) / (1 - dot*dot);
     float b = d2 - a*dot;
 
-    std::cout << "d1 = " << d1 << std::endl;
-    std::cout << "d2 = " << d2 << std::endl;
+    glm::vec2 disp = a*n1 + b*n2;
+    if (hypot(disp.x, disp.y) > 50) {
+        // If the required displacement to resolve the collision is large, just
+        // revert the displacement instead. This avoids large jumps when rotating
+        // beteen two walls either side.
+        transform.pos.x -= physics.displacement.x;
+        transform.pos.y -= physics.displacement.y;
+        transform.orientation -= physics.displacement.z;
+    } else {
+        transform.pos += a*n1 + b*n2;
+    }
 
-    transform.pos += a*n1 + b*n2;
     hitbox.collisions.clear();
 }
 

@@ -7,7 +7,7 @@ static void update_entity(component::Physics &physics)
     static std::normal_distribution<double> distribution(0, 1);
     physics.twist.x = physics.twist.x*0.99 + distribution(generator)*25;
     physics.twist.y = physics.twist.y*0.99 + distribution(generator)*25;
-    physics.twist.z = physics.twist.z*0.99 + distribution(generator)*0.5;
+    physics.twist.z = physics.twist.z*0.99 + distribution(generator)*0.3;
 }
 
 void system_enemy(EntityManager &entity_manager)

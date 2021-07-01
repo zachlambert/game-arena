@@ -113,7 +113,7 @@ void CollisionManager::find_collisions(
     std::vector<Intersection> &intersections,
     std::vector<Collision> &collisions)
 {
-    if (intersections.size() == 0) return;
+    if (intersections.size() <= 1) return;
 
     // Just doing bubble sort for now since it is simple.
     // Plus, there probably aren't that many intersections (< 10) so sorting
@@ -153,11 +153,25 @@ void CollisionManager::find_collisions(
     for (int i = 0; i < intersections.size(); i+=2) {
         Intersection &inter1 = intersections[i].type == IntersectionType::ENTITY_1_ENTERING ? intersections[i] : intersections[i+1];
         Intersection &inter2 = intersections[i].type == IntersectionType::ENTITY_1_ENTERING ? intersections[i+1] : intersections[i];
-        assert(inter1.type != inter2.type);
+        // assert(inter1.type != inter2.type);
+        if (inter1.type == inter2.type) return;
 
         // Both intersections should have same polygons
-        assert(inter1.polygon_1_index == inter2.polygon_1_index);
-        assert(inter1.polygon_2_index == inter2.polygon_2_index);
+        // assert(inter1.polygon_1_index == inter2.polygon_1_index);
+        // assert(inter1.polygon_2_index == inter2.polygon_2_index);
+        if (inter1.polygon_1_index != inter2.polygon_1_index) {
+            std::cout << "p1 index different" << std::endl;
+            std::cout << inter1.polygon_1_index << std::endl;
+            std::cout << inter2.polygon_1_index << std::endl;
+            std::cout << intersections.size() << std::endl;
+            return;
+        }
+        if (inter1.polygon_2_index != inter2.polygon_2_index) {
+            std::cout << "p2 index different" << std::endl;
+            std::cout << inter1.polygon_2_index << std::endl;
+            std::cout << inter2.polygon_2_index << std::endl;
+            return;
+        }
         const std::vector<glm::vec2> &vertices1 = polygons[inter1.polygon_1_index].vertices;
         const std::vector<glm::vec2> &vertices2 = polygons[inter1.polygon_2_index].vertices;
 
@@ -254,8 +268,8 @@ void CollisionManager::add_terrain_edge(const BoundedEdge &edge)
 {
     Octree *node = root;
     while (true) {
-        if ((edge.box.right > node->centre.x && edge.box.left < node->centre.x)
-            || (edge.box.top > node->centre.y && edge.box.bot < node->centre.y))
+        if ((edge.box.right >= node->centre.x && edge.box.left <= node->centre.x)
+            || (edge.box.top >= node->centre.y && edge.box.bot <= node->centre.y))
         {
             node->edges.push_back(edge);
             return;
