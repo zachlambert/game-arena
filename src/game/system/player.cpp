@@ -25,7 +25,11 @@ static void update_entity(
 
     glm::vec2 mouse_pos_screen = input.get_mouse_pos();
     glm::vec2 mouse_pos_world = camera.project_point(mouse_pos_screen);
-    transform.orientation = std::atan2(mouse_pos_world.y - transform.pos.y, mouse_pos_world.x - transform.pos.x);
+    double goal_orientation = std::atan2(mouse_pos_world.y - transform.pos.y, mouse_pos_world.x - transform.pos.x);
+    physics.twist.z = goal_orientation - transform.orientation;
+    if (physics.twist.z > M_PI) physics.twist.z -= 2*M_PI;
+    if (physics.twist.z < -M_PI) physics.twist.z += 2*M_PI;
+    physics.twist.z *= 50; // Kp gain
 
     if (input.query_input_state(InputType::CLICK_LEFT) == InputState::PRESSED)
     {
