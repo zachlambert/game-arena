@@ -99,8 +99,6 @@ struct EnemySpawner: public BaseComponent {
 struct Hitbox: public BaseComponent {
     BoundingBox original_box;
     BoundingBox box; // Transformed
-    unsigned int edges_start;
-    unsigned int edges_count;
     SpriteId sprite_id;
     // Could use a fixed size array for intersections, with a max number
     // of intersections that can be handled, but leaving as vector for now

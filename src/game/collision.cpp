@@ -4,7 +4,7 @@
 
 #include "game/components.h"
 
-BoundedEdge::BoundedEdge(const Edge &edge): edge(edge)
+void BoundedEdge::compute_box()
 {
     if (edge.a.x < edge.b.x) {
         box.left = edge.a.x;
@@ -54,7 +54,7 @@ Octree::Octree(glm::vec2 parent_centre, const BoundingBox &parent_box, Quadrant 
     centre.y = 0.5*(box.bot + box.top);
 }
 
-static void check_edge_edge(const Edge &edge1, const Edge &edge2, std::vector<Intersection> &intersections)
+static bool check_edge_edge(const Edge &edge1, const Edge &edge2, Intersection &intersection)
 {
     glm::vec2 dif, perp, dif_a, dif_b;
     double dot_a, dot_b;
@@ -67,8 +67,8 @@ static void check_edge_edge(const Edge &edge1, const Edge &edge2, std::vector<In
     dif_b = edge2.b - edge1.a;
     dot_a = glm::dot(perp, dif_a);
     dot_b = glm::dot(perp, dif_b);
-    if (dot_a < 0 && dot_b < 0) return;
-    if (dot_a > 0 && dot_b > 0) return;
+    if (dot_a < 0 && dot_b < 0) return false;
+    if (dot_a > 0 && dot_b > 0) return false;
 
     // Check that the endpoints of edge1 are either side of the line of edge 2
     dif = edge2.b - edge2.a;
@@ -78,11 +78,10 @@ static void check_edge_edge(const Edge &edge1, const Edge &edge2, std::vector<In
     dif_b = edge1.b - edge2.a;
     dot_a = glm::dot(perp, dif_a);
     dot_b = glm::dot(perp, dif_b);
-    if (dot_a < 0 && dot_b < 0) return;
-    if (dot_a > 0 && dot_b > 0) return;
+    if (dot_a < 0 && dot_b < 0) return false;
+    if (dot_a > 0 && dot_b > 0) return false;
 
     // The edges intersect, so find the intersection of the two lines
-    Intersection intersection;
     // using dif = edge2.b - edge2.a
     dif /= hypot(dif.x, dif.y);
     perp /= hypot(perp.x, perp.y);
@@ -90,16 +89,15 @@ static void check_edge_edge(const Edge &edge1, const Edge &edge2, std::vector<In
         edge1.a - perp * glm::dot(edge1.a - edge2.a, perp)
         + dif * glm::dot(edge1.b - edge1.a, dif) * glm::dot(edge2.a - edge1.a, perp) / glm::dot(edge1.b - edge1.a, perp);
 
-    intersection.entity_1_edge = &edge1;
-    intersection.entity_2_edge = &edge2;
-
     if (glm::dot(edge1.b - edge1.a, perp) > 0) {
         intersection.type = IntersectionType::ENTITY_2_ENTERING;
     } else {
         intersection.type = IntersectionType::ENTITY_1_ENTERING;
     }
 
-    intersections.push_back(intersection);
+    // Outside code responsible for fully defining intersection, with
+    // polygon and vertex indices
+    return true;
 }
 
 static bool check_box_box(const BoundingBox &box1, const BoundingBox &box2)
@@ -117,6 +115,14 @@ static void find_collisions(
 {
     if (intersections.size() == 0) return;
 
+    Collision collision;
+    for (const auto &intersection: intersections) {
+        collision.pos = intersection.pos;
+        collision.depth = 0;
+        collisions.push_back(collision);
+    }
+
+    /*
     // 1. Sort in-place by entity 1 edge index
 
     // Just doing bubble sort for now since it is simple.
@@ -140,7 +146,7 @@ static void find_collisions(
     }
 
     // 3. Create collision for each pair
-    
+
     std::cout << intersections.size() << std::endl;
     Collision collision;
     std::cout << intersections.size() << std::endl;
@@ -200,6 +206,7 @@ static void find_collisions(
         collision.depth = max_depth;
         collisions.push_back(collision);
     }
+    */
 }
 
 void CollisionManager::add_terrain_edge(const BoundedEdge &edge)
@@ -247,85 +254,59 @@ void CollisionManager::initialise_terrain(const Terrain &terrain)
     root->box.top = centre.y + size.y/2;
     root->centre = centre;
 
-    Edge edge;
-    int edge_index = 0;
+    CollisionPolygon polygon;
+    BoundedEdge bounded_edge;
     for (const auto &element: terrain.elements) {
-        // *** Assumes that terrain element remains in the same place in memory ***
-        edge.vertices = &element.vertices;
-        for (int i = 0; i < element.vertices.size()-1; i++) {
-            edge.a = element.vertices[i] + element.pos;
-            edge.b = element.vertices[i+1] + element.pos;
-            edge.index = edge_index;
-            edge_index++;
-            edge.vertex_index = i;
-            add_terrain_edge(BoundedEdge(edge));
+        bounded_edge.polygon_index = polygons.size();
+        polygon.vertices.resize(element.vertices.size());
+        for (int i = 0; i < element.vertices.size(); i++) {
+            bounded_edge.edge.a = element.vertices[i] + element.pos;
+            bounded_edge.edge.b = element.vertices[(i+1)%element.vertices.size()] + element.pos;
+            bounded_edge.vertex_index = i;
+            bounded_edge.compute_box();
+            add_terrain_edge(bounded_edge);
+            polygon.vertices[i] = element.pos + element.vertices[i];
         }
-        edge.a = element.vertices.back() + element.pos;
-        edge.b = element.vertices[0] + element.pos;
-        edge.index = edge_index;
-        edge_index++;
-        edge.vertex_index = element.vertices.size() - 1;
-        add_terrain_edge(BoundedEdge(edge));
+        polygons.push_back(polygon);
     }
 }
 
 void CollisionManager::load_sprite_polygons(const std::vector<SpritesheetConfig> &spritesheets)
 {
-    EdgeBlock edge_block;
+    CollisionPolygon polygon;
     for (const auto &spritesheet: spritesheets) {
         for (const auto &sprite: spritesheet.sprites) {
-            edge_block = load_polygon(sprite.collision_polygon);
-            if ((int)sprite.id >= sprite_edge_blocks.size()) {
-                sprite_edge_blocks.resize((int)sprite.id+1);
+            polygon.vertices = sprite.collision_polygon;
+            if (2*(int)sprite.id+1 >= polygons.size()) {
+                polygons.resize(2*(int)sprite.id+2);
             }
-            sprite_edge_blocks[(int)sprite.id] = edge_block;
+            polygons[2*(int)sprite.id] = polygon; // Original.
+            polygons[2*(int)sprite.id+1] = polygon; // Allowed to be transformed.
+
+            BoundingBox box;
+            double max_dist = hypot(polygon.vertices[0].x, polygon.vertices[0].y);
+            double dist = INFINITY;
+            for (int i = 1; i < polygon.vertices.size(); i++) {
+                dist = hypot(polygon.vertices[i].x, polygon.vertices[i].y);
+                if (dist > max_dist) max_dist = dist;
+            }
+            box.right = max_dist;
+            box.top = max_dist;
+            box.bot = -max_dist;
+            box.left = -max_dist;
+
+            if ((int)sprite.id >= sprite_boxes.size()) {
+                sprite_boxes.resize((int)sprite.id + 1);
+            }
+            sprite_boxes[(int)sprite.id] = box;
         }
     }
 }
 
-EdgeBlock CollisionManager::load_polygon(const std::vector<glm::vec2> &vertices)
-{
-    EdgeBlock edge_block;
-    edge_block.edges_start = entity_edges.size();
-    edge_block.edges_count = vertices.size()-1;
-
-    Edge edge;
-    edge.vertices = &vertices;
-    for (int i = 0; i < vertices.size()-1; i++) {
-        edge.a = vertices[i];
-        edge.b = vertices[i+1];
-        edge.index = i;
-        edge.vertex_index = i;
-        entity_edges.push_back(edge);
-    }
-    edge.a = vertices.back();
-    edge.b = vertices[0];
-    edge.index = vertices.size()-1;
-    edge.vertex_index = vertices.size()-1;
-    entity_edges.push_back(edge);
-
-    edge_block.edges_count++;
-
-    // Also find the bounding box, which bounds the mesh over all orientations
-    double max_dist = hypot(vertices[0].x, vertices[1].x);
-    double dist;
-    for (int i = 1; i < vertices.size(); i++) {
-        dist = hypot(vertices[i].x, vertices[i].y);
-        if (dist > max_dist) max_dist = dist;
-    }
-    edge_block.original_box.right = max_dist;
-    edge_block.original_box.top = max_dist;
-    edge_block.original_box.bot = -max_dist;
-    edge_block.original_box.left = -max_dist;
-
-    return edge_block;
-}
-
 void CollisionManager::get_sprite_hitbox(SpriteId sprite_id, component::Hitbox &hitbox)const
 {
-    hitbox.edges_start = sprite_edge_blocks[(int)sprite_id].edges_start;
-    hitbox.edges_count = sprite_edge_blocks[(int)sprite_id].edges_count;
-    hitbox.original_box = sprite_edge_blocks[(int)sprite_id].original_box;
+    hitbox.original_box = sprite_boxes[(int)sprite_id];
+    hitbox.sprite_id = sprite_id;
 }
 
 static void transform_point(const component::Transform &transform, const glm::vec2 &original, glm::vec2 &transformed)
@@ -341,14 +322,12 @@ static void transform_point(const component::Transform &transform, const glm::ve
         + transform.scale.y * original.y * cos(transform.orientation);
 }
 
-void CollisionManager::transform_entity_edges(const component::Transform &transform, const component::Hitbox &hitbox)
+void CollisionManager::transform_sprite_polygon(const component::Transform &transform, const component::Hitbox &hitbox)
 {
-    for (unsigned int i = hitbox.edges_start; i < hitbox.edges_start + hitbox.edges_count; i++) {
-        transform_point(transform, entity_edges[i].original.a, entity_edges[i].transformed.a);
-        transform_point(transform, entity_edges[i].original.b, entity_edges[i].transformed.b);
-        entity_edges[i].transformed.index = entity_edges[i].original.index;
-        entity_edges[i].transformed.vertex_index = entity_edges[i].original.vertex_index;
-        entity_edges[i].transformed.vertices = entity_edges[i].original.vertices;
+    const std::vector<glm::vec2> &original = polygons[2*(int)hitbox.sprite_id].vertices;
+    std::vector<glm::vec2> &transformed = polygons[2*(int)hitbox.sprite_id+1].vertices;
+    for (int i = 0; i < original.size(); i++) {
+        transform_point(transform, original[i], transformed[i]);
     }
 }
 
@@ -360,7 +339,7 @@ void CollisionManager::check_terrain_entity(
     // Assumes that the bounding box has previously been updated, which should be done
     // by the collision system prior to collision detection.
 
-    bool transformed_edges = false;
+    bool transformed_polygon = false;
 
     std::vector<Intersection> intersections;
 
@@ -374,13 +353,23 @@ void CollisionManager::check_terrain_entity(
             // 1a. Check that bounding boxes collide
             if (!check_box_box(bounded_edge.box, hitbox.box)) continue;
             // 1b. If the bounding mesh hasn't been transformed yet, transform it
-            if (!transformed_edges) {
-                transform_entity_edges(transform, hitbox);
-                transformed_edges = true;
+            if (!transformed_polygon) {
+                transform_sprite_polygon(transform, hitbox);
+                transformed_polygon = true;
             }
             // 1c. Check for intersections between all entity edges with the terrain edge
-            for (unsigned int i = hitbox.edges_start; i < hitbox.edges_start + hitbox.edges_count; i++) {
-                check_edge_edge(entity_edges[i].transformed, bounded_edge.edge, intersections);
+            const std::vector<glm::vec2> &vertices = polygons[2*(int)hitbox.sprite_id+1].vertices;
+            Intersection intersection;
+            Edge sprite_edge;
+            intersection.polygon_1_index = bounded_edge.polygon_index;
+            intersection.vertex_1_index = bounded_edge.vertex_index;
+            intersection.polygon_2_index = 2*(int)hitbox.sprite_id+1;
+            for (int i = 0; i < vertices.size(); i++) {
+                sprite_edge.a = vertices[i];
+                sprite_edge.b = vertices[(i+1)%vertices.size()];
+                if (!check_edge_edge(bounded_edge.edge, sprite_edge, intersection)) continue;
+                intersection.vertex_2_index = i;
+                intersections.push_back(intersection);
             }
         }
         // 2. Check for intersection with sub-regions (nodes)

@@ -21,29 +21,28 @@
  * Make more sense than
  */
 
+struct CollisionPolygon {
+    std::vector<glm::vec2> vertices;
+};
+
 struct BoundingBox {
     double left, bot, right, top;
 };
 
-// If defining the edge of a solid, the solid is to the right of the edge,
-// from the first vertex "a" to second vertex "b".
+// Solid to the right of the edge, if going from first to second.
 struct Edge {
-    glm::vec2 a;
-    glm::vec2 b;
-    int index;
-
-    // Need to record some information to access vertices
-    const std::vector<glm::vec2> *vertices;
-    int vertex_index; // Index of a vertex. b will be the next index
-
+    glm::vec2 a; // First
+    glm::vec2 b; // Second
     Edge(): a(0, 0), b(0, 0) {}
-    Edge(glm::vec2 a, glm::vec2 b, int index): a(a), b(b), index(index) {}
 };
 
+// Used in the octree to store terrain edges
 struct BoundedEdge {
-    Edge edge;
+    Edge edge; // For quick access to edge
     BoundingBox box;
-    BoundedEdge(const Edge &edge);
+    int polygon_index; // For accessing all vertices in polygon
+    int vertex_index;
+    void compute_box();
 };
 
 enum class Quadrant {
@@ -62,18 +61,6 @@ struct Octree {
     Octree(glm::vec2 parent_centre, const BoundingBox &parent_box, Quadrant quadrant);
 };
 
-struct EdgeBlock {
-    unsigned int edges_start;
-    unsigned int edges_count;
-    BoundingBox original_box;
-};
-
-struct EdgePair {
-    const Edge original;
-    Edge transformed;
-    EdgePair(const Edge &edge): original(edge), transformed() {}
-};
-
 // Individual edge intersections
 enum class IntersectionType {
     ENTITY_1_ENTERING, // And entity 2 is leaving
@@ -81,8 +68,10 @@ enum class IntersectionType {
 };
 struct Intersection {
     glm::vec2 pos;
-    const Edge *entity_1_edge;
-    const Edge *entity_2_edge;
+    int polygon_1_index;
+    int vertex_1_index;
+    int polygon_2_index;
+    int vertex_2_index;
     IntersectionType type;
 };
 
@@ -96,6 +85,7 @@ struct Collision {
     // If two intersections occur on the same edge, can slide perpendicular to normal.
 };
 
+// Forward declare components, since components.h includes this header
 namespace component {
     class Transform;
     class Hitbox;
@@ -110,21 +100,15 @@ public:
     void check_terrain_entity(const component::Transform &transform, const component::Hitbox &hitbox, std::vector<Collision> &collisions);
 
 private:
-    EdgeBlock load_polygon(const std::vector<glm::vec2> &vertices);
     void add_terrain_edge(const BoundedEdge &edge);
-    void transform_entity_edges(const component::Transform &transform, const component::Hitbox &hitbox);
+    void transform_sprite_polygon(const component::Transform &transform, const component::Hitbox &hitbox);
 
     glm::vec2 centre, size;
 
     Octree *root;
 
-    // Store collision meshes for entities as a listof edges.
-    // Use EdgePairs such that each edge stores an original edge and a transformed
-    // edge which is updated from the position and orientation of the current edge.
-    std::vector<EdgePair> entity_edges;
-
-    // Edge blocks for sprites, indexed by sprite_id
-    std::vector<EdgeBlock>  sprite_edge_blocks;
+    std::vector<CollisionPolygon> polygons;
+    std::vector<BoundingBox> sprite_boxes;
 
     friend class CollisionRenderer;
 };
