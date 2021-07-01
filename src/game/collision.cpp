@@ -145,7 +145,7 @@ void CollisionManager::find_collisions(
             std::swap(intersections[0], intersections[i]);
         }
     }
-    assert(intersections[0].type == IntersectionType::ENTITY_1_ENTERING);
+    if (intersections[0].type != IntersectionType::ENTITY_1_ENTERING) return;
 
     // 3. Create collision for each pair
 
@@ -156,8 +156,8 @@ void CollisionManager::find_collisions(
         Intersection &inter2 = intersections[i+1];
 
         // Both intersections should have same polygons
-        assert(inter1.polygon_1_index == inter2.polygon_1_index);
-        assert(inter1.polygon_2_index == inter2.polygon_2_index);
+        if (inter1.polygon_1_index != inter2.polygon_1_index) continue;
+        if (inter1.polygon_2_index != inter2.polygon_2_index) continue;
         const std::vector<glm::vec2> &vertices1 = polygons[inter1.polygon_1_index].vertices;
         const std::vector<glm::vec2> &vertices2 = polygons[inter1.polygon_2_index].vertices;
 
@@ -175,19 +175,80 @@ void CollisionManager::find_collisions(
 
         // Now, hard bit is finding the intersection depth...
 
-        int i1, i2;
-        i1 = (inter1.vertex_1_index+1)%vertices1.size();
-        i2 = inter1.vertex_2_index;
+        int i1_start, i2_start;
+        i1_start = (inter1.vertex_1_index+1)%vertices1.size();
+        i2_start = inter1.vertex_2_index;
         int i1_end, i2_end;
         i1_end = (inter2.vertex_1_index+1)%vertices1.size();
         i2_end = inter2.vertex_2_index;
 
-        double s1, s2, s_prev; // Lengths along collision surface
         double depth;
         double max_depth = 0;
 
-        int i1_prev, i2_prev;
-        int asdf = 0;
+        {
+        int i1 = i1_start;
+        int i2_1 = i2_start+1;
+        if (i2_1 == vertices2.size()) i2_1 = 0;
+        int i2_2 = i2_start;
+        while (i1 != i1_end) {
+            double s1, s2_1, s2_2;
+            s1 = glm::dot(dir, vertices1[i1]);
+            while (i2_1 != i2_end) {
+                s2_1 = glm::dot(dir, vertices2[i2_1]);
+                s2_2 = glm::dot(dir, vertices2[i2_2]);
+                if (s2_1 < s1 && s2_2 > s1) break;
+                i2_1--;
+                i2_2--;
+                if (i2_1 == -1) i2_1 = (int)vertices2.size() - 1;
+                if (i2_2 == -1) i2_2 = (int)vertices2.size() - 1;
+            }
+            if (i2_1 == i2_end) break;
+            const glm::vec2 &v1 = vertices1[i1];
+            const glm::vec2 &v2_1 = vertices2[i2_1];
+            const glm::vec2 &v2_2 = vertices2[i2_2];
+            depth = glm::dot(collision.normal, v1 - v2_1);
+            depth -= (s1-s2_1) / (s2_2 - s2_1) * glm::dot(collision.normal, v2_2 - v2_1);
+            if (fabs(depth) > fabs(max_depth)) max_depth = depth;
+            i1++;
+            if (i1 == vertices1.size()) i1 = 0;
+        }
+        }
+
+        {
+        int i2 = i2_start;
+        int i1_1 = i1_start-1;
+        if (i1_1 == -1) i1_1 = (int)vertices1.size() - 1;
+        int i1_2 = i1_start;
+        while (i2 != i2_end) {
+            double s2, s1_1, s1_2;
+            s2 = glm::dot(dir, vertices2[i2]);
+            while (i1_1 != i1_end) {
+                s1_1 = glm::dot(dir, vertices1[i1_1]);
+                s1_2 = glm::dot(dir, vertices1[i1_2]);
+                if (s1_1 < s2 && s1_2 > s2) break;
+                i1_1++;
+                i1_2++;
+                if (i1_1 == vertices1.size()) i1_1 = 0;
+                if (i1_2 == vertices1.size()) i1_2 = 0;
+            }
+            if (i1_1 == i1_end) break;
+            const glm::vec2 &v2 = vertices2[i2];
+            const glm::vec2 &v1_1 = vertices1[i1_1];
+            const glm::vec2 &v1_2 = vertices1[i1_2];
+            depth = glm::dot(collision.normal, v2 - v1_1);
+            depth -= (s2-s1_1) / (s1_2 - s1_1) * glm::dot(collision.normal, v1_2 - v1_1);
+            depth = -depth;
+            if (fabs(depth) > fabs(max_depth)) max_depth = depth;
+            i2--;
+            if (i2 == -1) i2 = (int)vertices2.size()-1;
+        }
+        }
+
+        collision.depth = max_depth;
+        collisions.push_back(collision);
+
+        /*
+        for (int i1 = i1_start; i1 = (i1intr1.vertex_1_index+1
         while (i1 != i1_end || i2 != i2_end) {
             s1 = glm::dot(dir, vertices1[i1]);
             s2 = glm::dot(dir, vertices2[i2]);
@@ -234,11 +295,7 @@ void CollisionManager::find_collisions(
             }
             if (fabs(depth) > fabs(max_depth)) max_depth = depth;
         }
-
-        if (!std::isinf(max_depth) && max_depth != 0) {
-            collision.depth = max_depth;
-            collisions.push_back(collision);
-        }
+        */
     }
 }
 
