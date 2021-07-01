@@ -168,11 +168,13 @@ static void find_collisions(
         // Let the indexes wrap around, but modulo when accessing element
         int i1, i2;
         i1 = inter1.entity_1_edge->vertex_index+1;
-        i2 = inter1.entity_2_edge->vertex_index;
+        i2 = inter2.entity_2_edge->vertex_index;
         double s1, s2, s_prev; // Lengths along collision surface
         double depth;
         double max_depth = INFINITY;
-        while (i1 < inter2.entity_1_edge->vertex_index+1 && i2 > inter2.entity_2_edge->vertex_index) {
+        std::cout << "i1 = " << i1 << " -> " << inter2.entity_1_edge->vertex_index+1 << std::endl;
+        std::cout << "i2 = " << i2 << " -> " << inter1.entity_2_edge->vertex_index << std::endl;
+        while (i1 < inter2.entity_1_edge->vertex_index+1 && i2 > inter1.entity_2_edge->vertex_index) {
             s1 = glm::dot(dir, vertices1[i1 % vertices1.size()]);
             s2 = glm::dot(dir, vertices2[i2 % vertices2.size()]);
             if (s1 > s2) {
@@ -344,6 +346,9 @@ void CollisionManager::transform_entity_edges(const component::Transform &transf
     for (unsigned int i = hitbox.edges_start; i < hitbox.edges_start + hitbox.edges_count; i++) {
         transform_point(transform, entity_edges[i].original.a, entity_edges[i].transformed.a);
         transform_point(transform, entity_edges[i].original.b, entity_edges[i].transformed.b);
+        entity_edges[i].transformed.index = entity_edges[i].original.index;
+        entity_edges[i].transformed.vertex_index = entity_edges[i].original.vertex_index;
+        entity_edges[i].transformed.vertices = entity_edges[i].original.vertices;
     }
 }
 

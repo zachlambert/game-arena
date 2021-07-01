@@ -7,6 +7,10 @@ void update_entity(
 {
     if (hitbox.collisions.empty()) return;
 
+    for (const auto &collision: hitbox.collisions) {
+        std::cout << "Collision at (" << collision.pos.x << ", " << collision.pos.y << ")" << std::endl;
+        std::cout << "Depth = " << collision.depth << std::endl;
+    }
     // Resolve collisions
     hitbox.collisions.clear();
     transform.pos.x -= physics.displacement.x;
