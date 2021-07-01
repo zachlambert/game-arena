@@ -18,8 +18,8 @@ static void update_entity(
     double scale = (transform.scale.x > transform.scale.y ? transform.scale.x : transform.scale.y);
     hitbox.box.right = transform.pos.x + scale * hitbox.original_box.right;
     hitbox.box.left = transform.pos.x + scale * hitbox.original_box.left;
-    hitbox.box.right = transform.pos.y + scale * hitbox.original_box.top;
-    hitbox.box.right = transform.pos.y + scale * hitbox.original_box.bot;
+    hitbox.box.top = transform.pos.y + scale * hitbox.original_box.top;
+    hitbox.box.bot = transform.pos.y + scale * hitbox.original_box.bot;
 
     // 2. Check for intersections
     std::vector<Intersection> intersections;

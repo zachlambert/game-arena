@@ -84,9 +84,11 @@ static void check_edge_edge(const Edge &edge1, const Edge &edge2, std::vector<In
     // The edges intersect, so find the intersection of the two lines
     Intersection intersection;
     // using dif = edge2.b - edge2.a
-    dif /= dif.length();
-    perp /= perp.length();
-    intersection.pos = edge2.a + dif * glm::dot(edge2.a - edge1.a, perp) / glm::dot(edge1.b - edge1.a, perp);
+    dif /= hypot(dif.x, dif.y);
+    perp /= hypot(perp.x, perp.y);
+    intersection.pos =
+        edge1.a - perp * glm::dot(edge1.a - edge2.a, perp)
+        + dif * glm::dot(edge1.b - edge1.a, dif) * glm::dot(edge2.a - edge1.a, perp) / glm::dot(edge1.b - edge1.a, perp);
     intersections.push_back(intersection);
 }
 
@@ -103,7 +105,7 @@ void CollisionManager::add_terrain_edge(const BoundedEdge &edge)
 {
     Octree *node = root;
     while (true) {
-        if ((edge.box.right > node->centre.x && edge.box.left < node->centre.y)
+        if ((edge.box.right > node->centre.x && edge.box.left < node->centre.x)
             || (edge.box.top > node->centre.y && edge.box.bot < node->centre.y))
         {
             node->edges.push_back(edge);
