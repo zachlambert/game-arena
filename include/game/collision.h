@@ -102,6 +102,7 @@ public:
 private:
     void add_terrain_edge(const BoundedEdge &edge);
     void transform_sprite_polygon(const component::Transform &transform, const component::Hitbox &hitbox);
+    void find_collisions(std::vector<Intersection> &intersections, std::vector<Collision> &collisions);
 
     glm::vec2 centre, size;
 

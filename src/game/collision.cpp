@@ -109,21 +109,13 @@ static bool check_box_box(const BoundingBox &box1, const BoundingBox &box2)
     return true;
 }
 
-static void find_collisions(
+void CollisionManager::find_collisions(
     std::vector<Intersection> &intersections,
     std::vector<Collision> &collisions)
 {
     if (intersections.size() == 0) return;
 
-    Collision collision;
-    for (const auto &intersection: intersections) {
-        collision.pos = intersection.pos;
-        collision.depth = 0;
-        collisions.push_back(collision);
-    }
-
-    /*
-    // 1. Sort in-place by entity 1 edge index
+    // 1. Sort in-place by vertex_1_index
 
     // Just doing bubble sort for now since it is simple.
     // Plus, there probably aren't that many intersections (< 10) so sorting
@@ -131,8 +123,13 @@ static void find_collisions(
 
     for (int i = 0; i < (int)intersections.size()-1; i++) {
         for (int j = 0; j < (int)intersections.size()-1; j++) {
-            if (intersections[j].entity_1_edge->index > intersections[j+1].entity_1_edge->index) {
+            if (intersections[j].vertex_1_index > intersections[j+1].vertex_1_index) {
                 std::swap(intersections[j], intersections[j+1]);
+                continue;
+            }
+            if (intersections[j].vertex_2_index < intersections[j+1].vertex_2_index) {
+                std::swap(intersections[j], intersections[j+1]);
+                continue;
             }
         }
     }
@@ -144,19 +141,20 @@ static void find_collisions(
             std::swap(intersections[0], intersections[i]);
         }
     }
+    assert(intersections[0].type == IntersectionType::ENTITY_1_ENTERING);
 
     // 3. Create collision for each pair
 
-    std::cout << intersections.size() << std::endl;
     Collision collision;
-    std::cout << intersections.size() << std::endl;
     glm::vec2 dir;
     for (int i = 0; i < intersections.size(); i+=2) {
         Intersection &inter1 = intersections[i];
         Intersection &inter2 = intersections[i+1];
-        // Both intersections should have same vertices for the same entity
-        const std::vector<glm::vec2> &vertices1 = *inter1.entity_1_edge->vertices;
-        const std::vector<glm::vec2> &vertices2 = *inter1.entity_2_edge->vertices;
+        // Both intersections should have same polygons
+        assert(inter1.polygon_1_index == inter2.polygon_1_index);
+        assert(inter1.polygon_2_index == inter2.polygon_2_index);
+        const std::vector<glm::vec2> &vertices1 = polygons[inter1.polygon_1_index].vertices;
+        const std::vector<glm::vec2> &vertices2 = polygons[inter1.polygon_2_index].vertices;
 
         collision.pos = 0.5f*(inter1.pos + inter2.pos);
         dir = inter2.pos - inter1.pos;
@@ -165,32 +163,36 @@ static void find_collisions(
         // Rotate 90 degrees
         collision.normal = {-dir.y, dir.x};
 
-        if (inter1.entity_1_edge->index == inter2.entity_1_edge->index)
+        if (inter1.vertex_1_index == inter2.vertex_1_index)
             collision.slide = true;
-        if (inter1.entity_2_edge->index == inter2.entity_2_edge->index)
+        if (inter1.vertex_2_index == inter2.vertex_2_index)
             collision.slide = true;
 
         // Now, hard bit is finding the intersection depth...
-        // Let the indexes wrap around, but modulo when accessing element
+
         int i1, i2;
-        i1 = inter1.entity_1_edge->vertex_index+1;
-        i2 = inter2.entity_2_edge->vertex_index;
+        i1 = (inter1.vertex_1_index+1)%vertices1.size();
+        i2 = inter1.vertex_2_index;
+        int i1_end, i2_end;
+        i1_end = (inter2.vertex_1_index+1)%vertices1.size();
+        i2_end = inter2.vertex_2_index;
+
         double s1, s2, s_prev; // Lengths along collision surface
         double depth;
         double max_depth = INFINITY;
-        std::cout << "i1 = " << i1 << " -> " << inter2.entity_1_edge->vertex_index+1 << std::endl;
-        std::cout << "i2 = " << i2 << " -> " << inter1.entity_2_edge->vertex_index << std::endl;
-        while (i1 < inter2.entity_1_edge->vertex_index+1 && i2 > inter1.entity_2_edge->vertex_index) {
-            s1 = glm::dot(dir, vertices1[i1 % vertices1.size()]);
-            s2 = glm::dot(dir, vertices2[i2 % vertices2.size()]);
+
+        int j = 0;
+        while (i1 != i1_end || i2 != i2_end) {
+            s1 = glm::dot(dir, vertices1[i1]);
+            s2 = glm::dot(dir, vertices2[i2]);
             if (s1 > s2) {
                 const glm::vec2 &v1a = vertices1[(i1-1) & vertices1.size()];
-                const glm::vec2 &v1b = vertices1[i1 & vertices1.size()];
-                const glm::vec2 &v2 = vertices2[i2 & vertices2.size()];
+                const glm::vec2 &v1b = vertices1[i1];
+                const glm::vec2 &v2 = vertices2[i2];
                 s_prev = glm::dot(dir, v1a);
                 depth = glm::dot(collision.normal, v1a - v2);
-                depth += s2 / (s1 - s_prev) * glm::dot(collision.normal, v1b - v1a);
-                i2--;
+                depth += (s2 / (s1 - s_prev)) * glm::dot(collision.normal, v1b - v1a);
+                i2 = (i2-1)%vertices2.size();
             } else {
                 const glm::vec2 &v2a = vertices2[(i2+1) & vertices2.size()];
                 const glm::vec2 &v2b = vertices2[i2 & vertices2.size()];
@@ -198,7 +200,7 @@ static void find_collisions(
                 s_prev = glm::dot(dir, v2a);
                 depth = glm::dot(collision.normal, v2a - v1);
                 depth += s1 / (s2 - s_prev) * glm::dot(collision.normal, v2b - v2a);
-                i1++;
+                i1 = (i1+1)%vertices1.size();
             }
             if (depth < max_depth) max_depth = depth;
         }
@@ -206,7 +208,6 @@ static void find_collisions(
         collision.depth = max_depth;
         collisions.push_back(collision);
     }
-    */
 }
 
 void CollisionManager::add_terrain_edge(const BoundedEdge &edge)
