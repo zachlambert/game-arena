@@ -153,6 +153,7 @@ void CollisionManager::find_collisions(
     for (int i = 0; i < intersections.size(); i+=2) {
         Intersection &inter1 = intersections[i].type == IntersectionType::ENTITY_1_ENTERING ? intersections[i] : intersections[i+1];
         Intersection &inter2 = intersections[i].type == IntersectionType::ENTITY_1_ENTERING ? intersections[i+1] : intersections[i];
+        assert(inter1.type != inter2.type);
 
         // Both intersections should have same polygons
         assert(inter1.polygon_1_index == inter2.polygon_1_index);
@@ -162,7 +163,7 @@ void CollisionManager::find_collisions(
 
         collision.pos = 0.5f*(inter1.pos + inter2.pos);
         dir = inter2.pos - inter1.pos;
-        if (hypot(dir.x, dir.y) < 1e-6) continue;
+        if (hypot(dir.x, dir.y) < 1e-12) continue;
         // Normalise
         dir /= hypot(dir.x, dir.y);
         // Rotate 90 degrees

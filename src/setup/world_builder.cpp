@@ -35,7 +35,7 @@ void build_world(EntityManager &entity_manager, Terrain &terrain)
         element.vertices.push_back(glm::vec2(-100, 0));
         element.vertices.push_back(glm::vec2(-80, 200));
         element.vertices.push_back(glm::vec2(20, 240));
-        element.vertices.push_back(glm::vec2(0, -450));
+        element.vertices.push_back(glm::vec2(0, -150));
         element.color = glm::vec4(0, 0, 0.2, 1);
         terrain.elements.push_back(element);
 
