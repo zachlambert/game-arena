@@ -5,10 +5,10 @@ void update_entity(
     const component::Physics &physics,
     component::Hitbox &hitbox)
 {
-    if (hitbox.intersections.empty()) return;
+    if (hitbox.collisions.empty()) return;
 
     // Resolve collisions
-    hitbox.intersections.clear();
+    hitbox.collisions.clear();
     transform.pos.x -= physics.displacement.x;
     transform.pos.y -= physics.displacement.y;
     transform.orientation -= physics.displacement.z;

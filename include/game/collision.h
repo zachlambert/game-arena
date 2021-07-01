@@ -30,8 +30,9 @@ struct BoundingBox {
 struct Edge {
     glm::vec2 a;
     glm::vec2 b;
+    int index;
     Edge(): a(0, 0), b(0, 0) {}
-    Edge(glm::vec2 a, glm::vec2 b): a(a), b(b) {}
+    Edge(glm::vec2 a, glm::vec2 b, int index): a(a), b(b), index(index) {}
 };
 
 struct BoundedEdge {
@@ -68,10 +69,21 @@ struct EdgePair {
     EdgePair(const Edge &edge): original(edge), transformed() {}
 };
 
+// Individual edge intersections
 struct Intersection {
     glm::vec2 pos;
-    // In future, add some more information here
-    // eg: direction, type of object, index, etc
+    int entity_1_edge_index;
+    int entity_2_edge_index;
+};
+
+// Pair of edge intersections indicate overlapping solid
+struct Collision {
+    glm::vec2 pos;
+    glm::vec2 normal;
+    double depth;
+    bool slide; 
+    // Two entities need to move away by a distance "depth" along normal.
+    // If two intersections occur on the same edge, can slide perpendicular to normal.
 };
 
 namespace component {
@@ -85,7 +97,7 @@ public:
     void get_sprite_hitbox(SpriteId sprite_id, component::Hitbox &hitbox)const;
 
     void initialise_terrain(const Terrain &terrain);
-    void check_terrain_entity(const component::Transform &transform, const component::Hitbox &hitbox, std::vector<Intersection> &intersections);
+    void check_terrain_entity(const component::Transform &transform, const component::Hitbox &hitbox, std::vector<Collision> &collisions);
 
 private:
     EdgeBlock load_polygon(const std::vector<glm::vec2> &vertices);

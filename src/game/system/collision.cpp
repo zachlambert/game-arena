@@ -22,8 +22,7 @@ static void update_entity(
     hitbox.box.bot = transform.pos.y + scale * hitbox.original_box.bot;
 
     // 2. Check for intersections
-    std::vector<Intersection> intersections;
-    collision_manager.check_terrain_entity(transform, hitbox, hitbox.intersections);
+    collision_manager.check_terrain_entity(transform, hitbox, hitbox.collisions);
 }
 
 void system_collision(EntityManager &entity_manager, CollisionManager &collision_manager)

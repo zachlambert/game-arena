@@ -89,6 +89,10 @@ static void check_edge_edge(const Edge &edge1, const Edge &edge2, std::vector<In
     intersection.pos =
         edge1.a - perp * glm::dot(edge1.a - edge2.a, perp)
         + dif * glm::dot(edge1.b - edge1.a, dif) * glm::dot(edge2.a - edge1.a, perp) / glm::dot(edge1.b - edge1.a, perp);
+
+    intersection.entity_1_edge_index = edge1.index;
+    intersection.entity_2_edge_index = edge2.index;
+
     intersections.push_back(intersection);
 }
 
@@ -99,6 +103,18 @@ static bool check_box_box(const BoundingBox &box1, const BoundingBox &box2)
     if (box1.top < box2.bot) return false;
     if (box1.bot > box2.top) return false;
     return true;
+}
+
+static void find_collisions(
+    const std::vector<Intersection> &intersections,
+    std::vector<Collision> &collisions)
+{
+    // Temporary
+    Collision collision;
+    for (const auto &intersection: intersections) {
+        collision.pos = intersection.pos;
+        collisions.push_back(collision);
+    }
 }
 
 void CollisionManager::add_terrain_edge(const BoundedEdge &edge)
@@ -147,14 +163,19 @@ void CollisionManager::initialise_terrain(const Terrain &terrain)
     root->centre = centre;
 
     Edge edge;
+    int edge_index = 0;
     for (const auto &element: terrain.elements) {
         for (int i = 0; i < element.vertices.size()-1; i++) {
             edge.a = element.vertices[i] + element.pos;
             edge.b = element.vertices[i+1] + element.pos;
+            edge.index = edge_index;
+            edge_index++;
             add_terrain_edge(BoundedEdge(edge));
         }
         edge.a = element.vertices.back() + element.pos;
         edge.b = element.vertices[0] + element.pos;
+        edge.index = edge_index;
+        edge_index++;
         add_terrain_edge(BoundedEdge(edge));
     }
 }
@@ -179,9 +200,9 @@ EdgeBlock CollisionManager::load_polygon(const std::vector<glm::vec2> &vertices)
     edge_block.edges_start = entity_edges.size();
     edge_block.edges_count = vertices.size()-1;
     for (int i = 0; i < vertices.size()-1; i++) {
-        entity_edges.push_back(Edge(vertices[i], vertices[i+1]));
+        entity_edges.push_back(Edge(vertices[i], vertices[i+1], i));
     }
-    entity_edges.push_back(Edge(vertices.back(), vertices[0]));
+    entity_edges.push_back(Edge(vertices.back(), vertices[0], vertices.size()-1));
     edge_block.edges_count++;
 
     // Also find the bounding box, which bounds the mesh over all orientations
@@ -230,12 +251,14 @@ void CollisionManager::transform_entity_edges(const component::Transform &transf
 void CollisionManager::check_terrain_entity(
     const component::Transform &transform,
     const component::Hitbox &hitbox,
-    std::vector<Intersection> &intersections)
+    std::vector<Collision> &collisions)
 {
     // Assumes that the bounding box has previously been updated, which should be done
     // by the collision system prior to collision detection.
 
     bool transformed_edges = false;
+
+    std::vector<Intersection> intersections;
 
     std::stack<Octree*> nodes;
     nodes.push(root);
@@ -263,4 +286,6 @@ void CollisionManager::check_terrain_entity(
             nodes.push(node->nodes[i]);
         }
     }
+
+    find_collisions(intersections, collisions);
 }

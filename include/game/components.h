@@ -105,7 +105,7 @@ struct Hitbox: public BaseComponent {
     // Could use a fixed size array for intersections, with a max number
     // of intersections that can be handled, but leaving as vector for now
     // to be more flexible.
-    std::vector<Intersection> intersections;
+    std::vector<Collision> collisions;
     Hitbox(): sprite_id(SpriteId::NONE) {}
 };
 
