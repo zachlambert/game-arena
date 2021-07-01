@@ -90,8 +90,8 @@ static void check_edge_edge(const Edge &edge1, const Edge &edge2, std::vector<In
         edge1.a - perp * glm::dot(edge1.a - edge2.a, perp)
         + dif * glm::dot(edge1.b - edge1.a, dif) * glm::dot(edge2.a - edge1.a, perp) / glm::dot(edge1.b - edge1.a, perp);
 
-    intersection.entity_1_edge_index = edge1.index;
-    intersection.entity_2_edge_index = edge2.index;
+    intersection.entity_1_edge = &edge1;
+    intersection.entity_2_edge = &edge2;
 
     intersections.push_back(intersection);
 }
@@ -106,13 +106,66 @@ static bool check_box_box(const BoundingBox &box1, const BoundingBox &box2)
 }
 
 static void find_collisions(
-    const std::vector<Intersection> &intersections,
+    std::vector<Intersection> &intersections,
     std::vector<Collision> &collisions)
 {
-    // Temporary
+    if (intersections.size() == 0) return;
+
+    // 1. Sort in-place by entity 1 edge index
+
+    // Just doing bubble sort for now since it is simple.
+    // Plus, there probably aren't that many intersections (< 10) so sorting
+    // performance isn't critical
+
+    for (int i = 0; i < (int)intersections.size()-1; i++) {
+        for (int j = 0; j < (int)intersections.size()-1; j++) {
+            if (intersections[j].entity_1_edge->index > intersections[j+1].entity_1_edge->index) {
+                std::swap(intersections[j], intersections[j+1]);
+            }
+        }
+    }
+
+    // 2. Create collision for each pair
+    
+    std::cout << intersections.size() << std::endl;
     Collision collision;
-    for (const auto &intersection: intersections) {
-        collision.pos = intersection.pos;
+    std::cout << intersections.size() << std::endl;
+    glm::vec2 dir;
+    for (int i = 0; i < intersections.size(); i+=2) {
+        Intersection &inter1 = intersections[i];
+        Intersection &inter2 = intersections[i+1];
+        // Both intersections should have same vertices for the same entity
+        const std::vector<glm::vec2> &vertices1 = *inter1.entity_1_edge->vertices;
+        const std::vector<glm::vec2> &vertices2 = *inter1.entity_2_edge->vertices;
+
+        collision.pos = 0.5f*(inter1.pos + inter2.pos);
+        dir = inter2.pos - inter1.pos;
+        // Normalise
+        dir /= hypot(dir.x, dir.y);
+        // Rotate 90 degrees
+        collision.normal = {-dir.y, dir.x};
+
+        if (inter1.entity_1_edge->index == inter2.entity_1_edge->index)
+            collision.slide = true;
+        if (inter1.entity_2_edge->index == inter2.entity_2_edge->index)
+            collision.slide = true;
+
+        // Now, hard bit is finding the intersection depth...
+        // Let the indexes wrap around, but modulo when accessing element
+        int i1, i2;
+        i1 = inter1.entity_1_edge->vertex_index+1;
+        i2 = inter1.entity_2_edge->vertex_index+1;
+        double s1, s2, s_prev; // Lengths along collision surface
+        while (i1 < inter2.entity_1_edge->vertex_index+1 && i2 < inter2.entity_2_edge->vertex_index+1) {
+            s1 = glm::dot(dir, vertices1[i1 % vertices1.size()]);
+            s2 = glm::dot(dir, vertices2[i2 % vertices2.size()]);
+            if (s1 > s2) {
+                s_prev = glm::dot(dir, vertices1[(i1-1) % vertices1.size()]);
+            } else {
+                s_prev = glm::dot(dir, vertices1[(i2-1) % vertices2.size()]);
+            }
+        }
+
         collisions.push_back(collision);
     }
 }
@@ -165,17 +218,21 @@ void CollisionManager::initialise_terrain(const Terrain &terrain)
     Edge edge;
     int edge_index = 0;
     for (const auto &element: terrain.elements) {
+        // *** Assumes that terrain element remains in the same place in memory ***
+        edge.vertices = &element.vertices;
         for (int i = 0; i < element.vertices.size()-1; i++) {
             edge.a = element.vertices[i] + element.pos;
             edge.b = element.vertices[i+1] + element.pos;
             edge.index = edge_index;
             edge_index++;
+            edge.vertex_index = i;
             add_terrain_edge(BoundedEdge(edge));
         }
         edge.a = element.vertices.back() + element.pos;
         edge.b = element.vertices[0] + element.pos;
         edge.index = edge_index;
         edge_index++;
+        edge.vertex_index = element.vertices.size() - 1;
         add_terrain_edge(BoundedEdge(edge));
     }
 }
@@ -199,10 +256,22 @@ EdgeBlock CollisionManager::load_polygon(const std::vector<glm::vec2> &vertices)
     EdgeBlock edge_block;
     edge_block.edges_start = entity_edges.size();
     edge_block.edges_count = vertices.size()-1;
+
+    Edge edge;
+    edge.vertices = &vertices;
     for (int i = 0; i < vertices.size()-1; i++) {
-        entity_edges.push_back(Edge(vertices[i], vertices[i+1], i));
+        edge.a = vertices[i];
+        edge.b = vertices[i+1];
+        edge.index = i;
+        edge.vertex_index = i;
+        entity_edges.push_back(edge);
     }
-    entity_edges.push_back(Edge(vertices.back(), vertices[0], vertices.size()-1));
+    edge.a = vertices.back();
+    edge.b = vertices[0];
+    edge.index = vertices.size()-1;
+    edge.vertex_index = vertices.size()-1;
+    entity_edges.push_back(edge);
+
     edge_block.edges_count++;
 
     // Also find the bounding box, which bounds the mesh over all orientations

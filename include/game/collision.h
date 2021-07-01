@@ -31,6 +31,11 @@ struct Edge {
     glm::vec2 a;
     glm::vec2 b;
     int index;
+
+    // Need to record some information to access vertices
+    const std::vector<glm::vec2> *vertices;
+    int vertex_index; // Index of a vertex. b will be the next index
+
     Edge(): a(0, 0), b(0, 0) {}
     Edge(glm::vec2 a, glm::vec2 b, int index): a(a), b(b), index(index) {}
 };
@@ -72,8 +77,8 @@ struct EdgePair {
 // Individual edge intersections
 struct Intersection {
     glm::vec2 pos;
-    int entity_1_edge_index;
-    int entity_2_edge_index;
+    const Edge *entity_1_edge;
+    const Edge *entity_2_edge;
 };
 
 // Pair of edge intersections indicate overlapping solid
