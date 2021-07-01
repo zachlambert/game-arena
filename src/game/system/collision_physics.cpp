@@ -16,6 +16,7 @@ void update_entity(
         return;
     }
 
+    // std::cout << hitbox.collisions[0].pos.x << ", " << hitbox.collisions[0].pos.y << std::endl;
     transform.pos.x += hitbox.collisions[0].normal.x * hitbox.collisions[0].depth;
     transform.pos.y += hitbox.collisions[0].normal.y * hitbox.collisions[0].depth;
     hitbox.collisions.clear();
