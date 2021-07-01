@@ -1,15 +1,11 @@
-# Objective 1
+# TODO
 
-Basic movement control and rendering
-
-- Walk around
-- Focus the camera on the player
-- Point towards the camera
-- Draw a ray for the direction of the gun.
-- On click, produce a bullet ray which decays then disappears
-- If you click on an enemy (just check distance for now), then enemy
-  disappears.
-- Enemies randomly spawn at the origin and move around randomly.
+- Change entity system to use vectors instead of fixed size arrays.
+  Worse performance but more flexible and space efficient.
+- Resolve entity-terrain collisions.
+- Have the gunshot system check line of sight using the collision manager
+  when checking gunshot hits. Create a bounded edge for the line from source
+  to target and check for any terrain intersection.
 
 # Objective 2
 
@@ -47,4 +43,18 @@ Gun logic and particles.
 
 # Objective 6
 
+# COMPLETED
+
+## Objective 1
+
+Basic movement control and rendering
+
+- Walk around
+- Focus the camera on the player
+- Point towards the camera
+- Draw a ray for the direction of the gun.
+- On click, produce a bullet ray which decays then disappears
+- If you click on an enemy (just check distance for now), then enemy
+  disappears.
+- Enemies randomly spawn at the origin and move around randomly.
 
