@@ -18,7 +18,7 @@ void build_world(EntityManager &entity_manager, Terrain &terrain)
         EnemySpawnerConfig config;
         config.pos.x = 0;
         config.pos.y = -100;
-        config.spawn_timeout = 0.5;
+        config.spawn_timeout = 2;
         build_enemy_spawner(entity_manager, config);
     }
 
