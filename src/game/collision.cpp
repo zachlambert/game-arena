@@ -115,54 +115,54 @@ void CollisionManager::find_collisions(
 {
     if (intersections.size() == 0) return;
 
-    // 1. Sort in-place by vertex_1_index
-
     // Just doing bubble sort for now since it is simple.
     // Plus, there probably aren't that many intersections (< 10) so sorting
     // performance isn't critical
 
     for (int i = 0; i < (int)intersections.size()-1; i++) {
         for (int j = 0; j < (int)intersections.size()-1; j++) {
+            if (intersections[j].polygon_1_index < intersections[j+1].polygon_1_index) {
+                std::swap(intersections[j], intersections[j+1]);
+                continue;
+            }
+            if (intersections[j].polygon_1_index > intersections[j+1].polygon_1_index) continue;
+
+            if (intersections[j].polygon_2_index < intersections[j+1].polygon_2_index) {
+                std::swap(intersections[j], intersections[j+1]);
+                continue;
+            }
+            if (intersections[j].polygon_2_index > intersections[j+1].polygon_2_index) continue;
+
             if (intersections[j].vertex_1_index > intersections[j+1].vertex_1_index) {
                 std::swap(intersections[j], intersections[j+1]);
                 continue;
             }
-            if (intersections[j].vertex_1_index == intersections[j+1].vertex_1_index) {
-                int v2 = intersections[j].vertex_2_index;
-                int v2_next = intersections[i+1].vertex_2_index;
-                if (v2_next == 0) v2_next += polygons[intersections[i].polygon_2_index].vertices.size();
-                if (v2_next - v2 == 1) {
-                    std::swap(intersections[j], intersections[j+1]);
-                }
+            if (intersections[j].vertex_1_index < intersections[j+1].vertex_1_index) continue;
+
+            int v2 = intersections[j].vertex_2_index;
+            int v2_next = intersections[i+1].vertex_2_index;
+            if (v2_next == 0) v2_next += polygons[intersections[i].polygon_2_index].vertices.size();
+            if (v2_next - v2 == 1) {
+                std::swap(intersections[j], intersections[j+1]);
             }
         }
     }
 
-    // 2. Make sure the first intersection is ENTITY_1_ENTERING
-
-    if (intersections[0].type != IntersectionType::ENTITY_1_ENTERING) {
-        for (int i = intersections.size()-1; i > 0; i--) {
-            std::swap(intersections[0], intersections[i]);
-        }
-    }
-    if (intersections[0].type != IntersectionType::ENTITY_1_ENTERING) return;
-
-    // 3. Create collision for each pair
-
     Collision collision;
     glm::vec2 dir;
     for (int i = 0; i < intersections.size(); i+=2) {
-        Intersection &inter1 = intersections[i];
-        Intersection &inter2 = intersections[i+1];
+        Intersection &inter1 = intersections[i].type == IntersectionType::ENTITY_1_ENTERING ? intersections[i] : intersections[i+1];
+        Intersection &inter2 = intersections[i].type == IntersectionType::ENTITY_1_ENTERING ? intersections[i+1] : intersections[i];
 
         // Both intersections should have same polygons
-        if (inter1.polygon_1_index != inter2.polygon_1_index) continue;
-        if (inter1.polygon_2_index != inter2.polygon_2_index) continue;
+        assert(inter1.polygon_1_index == inter2.polygon_1_index);
+        assert(inter1.polygon_2_index == inter2.polygon_2_index);
         const std::vector<glm::vec2> &vertices1 = polygons[inter1.polygon_1_index].vertices;
         const std::vector<glm::vec2> &vertices2 = polygons[inter1.polygon_2_index].vertices;
 
         collision.pos = 0.5f*(inter1.pos + inter2.pos);
         dir = inter2.pos - inter1.pos;
+        if (hypot(dir.x, dir.y) < 1e-6) continue;
         // Normalise
         dir /= hypot(dir.x, dir.y);
         // Rotate 90 degrees
@@ -246,56 +246,6 @@ void CollisionManager::find_collisions(
 
         collision.depth = max_depth;
         collisions.push_back(collision);
-
-        /*
-        for (int i1 = i1_start; i1 = (i1intr1.vertex_1_index+1
-        while (i1 != i1_end || i2 != i2_end) {
-            s1 = glm::dot(dir, vertices1[i1]);
-            s2 = glm::dot(dir, vertices2[i2]);
-            if (s1 > s2) {
-                i1_prev = i1-1;
-                if (i1_prev < 0) i1_prev+=vertices1.size();
-                const glm::vec2 &v1a = vertices1[i1_prev];
-                const glm::vec2 &v1b = vertices1[i1];
-                const glm::vec2 &v2 = vertices2[i2];
-                s_prev = glm::dot(dir, v1a);
-                if (s_prev > s2) {
-                    if (i1 == i1_end) break;
-                    i1 = (i1+1)%vertices1.size();
-                    continue;
-                }
-                if (i2 == i2_end) {
-                    std::cout << "break 1" << std::endl;
-                    break;
-                }
-                depth = glm::dot(collision.normal, v1a - v2);
-                depth += (s2-s_prev) / (s1 - s_prev) * glm::dot(collision.normal, v1b - v1a);
-                i2--;
-                if (i2 < 0) i2 += vertices2.size();
-            } else {
-                i2_prev = (i2+1)%vertices2.size();
-                const glm::vec2 &v2a = vertices2[i2_prev];
-                const glm::vec2 &v2b = vertices2[i2];
-                const glm::vec2 &v1 = vertices1[i1];
-                s_prev = glm::dot(dir, v2a);
-                if (s_prev > s1) {
-                    if (i2 == i2_end) break;
-                    i2--;
-                    if (i2 < 0) i2 += vertices2.size();
-                    continue;
-                }
-                if (i1 == i1_end) {
-                    std::cout << "break 3" << std::endl;
-                    break;
-                }
-                depth = glm::dot(collision.normal, v2a - v1);
-                depth += (s1 - s_prev) / (s2 - s_prev) * glm::dot(collision.normal, v2b - v2a);
-                depth = -depth;
-                i1 = (i1+1)%vertices1.size();
-            }
-            if (fabs(depth) > fabs(max_depth)) max_depth = depth;
-        }
-        */
     }
 }
 

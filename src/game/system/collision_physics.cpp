@@ -8,7 +8,8 @@ void update_entity(
     if (hitbox.collisions.empty()) return;
 
     // Resolve collisions
-    if (hitbox.collisions.size() > 1) {
+    if (hitbox.collisions.size() > 2) {
+        // Shouldn't be able to happen
         transform.pos.x -= physics.displacement.x;
         transform.pos.y -= physics.displacement.y;
         transform.orientation -= physics.displacement.z;
@@ -16,9 +17,23 @@ void update_entity(
         return;
     }
 
-    // std::cout << hitbox.collisions[0].pos.x << ", " << hitbox.collisions[0].pos.y << std::endl;
-    transform.pos.x += hitbox.collisions[0].normal.x * hitbox.collisions[0].depth;
-    transform.pos.y += hitbox.collisions[0].normal.y * hitbox.collisions[0].depth;
+    if (hitbox.collisions.size() == 1) {
+        transform.pos.x += hitbox.collisions[0].normal.x * hitbox.collisions[0].depth;
+        transform.pos.y += hitbox.collisions[0].normal.y * hitbox.collisions[0].depth;
+        hitbox.collisions.clear();
+        return;
+    }
+
+    const glm::vec2 &n1 = hitbox.collisions[0].normal;
+    double d1 = hitbox.collisions[0].depth;
+    const glm::vec2 &n2 = hitbox.collisions[1].normal;
+    double d2 = hitbox.collisions[1].depth;
+    double dot = glm::dot(n1, n2);
+
+    float a = (d1 - d2*dot) / (1 - dot*dot);
+    float b = d2 - a*dot;
+
+    transform.pos += a*n1 + b*n2;
     hitbox.collisions.clear();
 }
 

@@ -35,7 +35,7 @@ void build_world(EntityManager &entity_manager, Terrain &terrain)
         element.vertices.push_back(glm::vec2(-100, 0));
         element.vertices.push_back(glm::vec2(-80, 200));
         element.vertices.push_back(glm::vec2(20, 240));
-        element.vertices.push_back(glm::vec2(0, -150));
+        element.vertices.push_back(glm::vec2(0, -450));
         element.color = glm::vec4(0, 0, 0.2, 1);
         terrain.elements.push_back(element);
 
@@ -46,7 +46,16 @@ void build_world(EntityManager &entity_manager, Terrain &terrain)
         element.vertices.push_back(glm::vec2(100, 100));
         element.vertices.push_back(glm::vec2(80, -200));
         element.color = glm::vec4(0, 0, 0.2, 1);
+        terrain.elements.push_back(element);
 
+        element.pos.x = -100;
+        element.pos.y = 600;
+        element.vertices.clear();
+        element.vertices.push_back(glm::vec2(-400, -40));
+        element.vertices.push_back(glm::vec2(-400, 40));
+        element.vertices.push_back(glm::vec2(300, 40));
+        element.vertices.push_back(glm::vec2(300, -40));
+        element.color = glm::vec4(0, 0, 0.2, 1);
         terrain.elements.push_back(element);
 
         terrain.centre = {0, 0};
