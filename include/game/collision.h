@@ -75,10 +75,15 @@ struct EdgePair {
 };
 
 // Individual edge intersections
+enum class IntersectionType {
+    ENTITY_1_ENTERING, // And entity 2 is leaving
+    ENTITY_2_ENTERING // And entity 1 is leaving
+};
 struct Intersection {
     glm::vec2 pos;
     const Edge *entity_1_edge;
     const Edge *entity_2_edge;
+    IntersectionType type;
 };
 
 // Pair of edge intersections indicate overlapping solid
