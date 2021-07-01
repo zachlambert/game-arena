@@ -14,8 +14,6 @@ void EntityManager::remove_entities()
 
 int EntityManager::entity_create(int num_components, Signature signature)
 {
-    if (entities.full()) return -1;
-
     Entity entity;
     entity.start = -1;
     entity.count = num_components;
@@ -27,7 +25,7 @@ int EntityManager::entity_create(int num_components, Signature signature)
     if (free.tail != 0) {
         // Choose the smallest available slot.
         int min_index = -1;
-        int min_excess = MAX_COMPONENTS;
+        int min_excess = entities.tail;
         int excess;
         for (int i = free.tail-1; i >= 0; i--) {
             if (free[i].count >= num_components) {

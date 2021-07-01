@@ -8,10 +8,6 @@
 
 #include <iostream>
 
-constexpr int MAX_COMPONENTS_PER_ENTITY = 16;
-constexpr int MAX_ENTITIES = 1024;
-constexpr int MAX_COMPONENTS = 128;
-
 constexpr int NUM_SYSTEMS = 32;
 typedef std::bitset<NUM_SYSTEMS> Signature;
 enum class SystemType {
@@ -35,7 +31,7 @@ struct Entity {
 };
 
 #define CREATE_COMPONENT(Component, name, TYPE, add_func, get_func) \
-    Buffer<component::Component, MAX_COMPONENTS> name; \
+    Buffer<component::Component> name; \
     void add_func(int entity_id, int offset, component::Component component) {\
         add_component(entity_id, offset, name, ComponentType::TYPE, component);\
     }\
@@ -45,7 +41,7 @@ struct Entity {
 
 class EntityManager {
 public:
-    Buffer<Entity, MAX_ENTITIES> entities;
+    Buffer<Entity> entities;
     void remove_entities();
     int entity_create(int num_components, Signature signature);
     void entity_remove(int entity_id);
@@ -61,18 +57,18 @@ public:
 
 private:
     template <typename T>
-    T* get_component(int entity_id, int index, ComponentType type, Buffer<T, MAX_COMPONENTS> &buffer);
+    T* get_component(int entity_id, int index, ComponentType type, Buffer<T> &buffer);
     template <typename T>
-    void add_component(int entity_id, int offset, Buffer<T, MAX_COMPONENTS> &buffer, ComponentType component_type, T component);
+    void add_component(int entity_id, int offset, Buffer<T> &buffer, ComponentType component_type, T component);
     template <typename T>
-    void remove_component(Buffer<T, MAX_COMPONENTS> &buffer, int index);
+    void remove_component(Buffer<T> &buffer, int index);
 
-    Buffer<ComponentReference, MAX_COMPONENTS> component_references;
-    Buffer<Entity, MAX_ENTITIES> free;
+    Buffer<ComponentReference> component_references;
+    Buffer<Entity> free;
 };
 
 template <typename T>
-inline T* EntityManager::get_component(int entity_id, int index, ComponentType type, Buffer<T, MAX_COMPONENTS> &buffer)
+inline T* EntityManager::get_component(int entity_id, int index, ComponentType type, Buffer<T> &buffer)
 {
     // If index = 0, return the first occurance of the component
     // If index = 1, return the second occurance of the component
@@ -88,7 +84,7 @@ inline T* EntityManager::get_component(int entity_id, int index, ComponentType t
 }
 
 template <typename T>
-inline void EntityManager::add_component(int entity_id, int offset, Buffer<T, MAX_COMPONENTS> &buffer, ComponentType component_type, T component)
+inline void EntityManager::add_component(int entity_id, int offset, Buffer<T> &buffer, ComponentType component_type, T component)
 {
     if (entity_id == -1) return;
     int ref_index = entities[entity_id].start + offset;
@@ -99,7 +95,7 @@ inline void EntityManager::add_component(int entity_id, int offset, Buffer<T, MA
 }
 
 template <typename T>
-inline void EntityManager::remove_component(Buffer<T, MAX_COMPONENTS> &buffer, int index)
+inline void EntityManager::remove_component(Buffer<T> &buffer, int index)
 {
     buffer.remove(index);
     if (buffer.tail != 0) {

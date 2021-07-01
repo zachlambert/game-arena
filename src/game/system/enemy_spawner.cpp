@@ -33,6 +33,5 @@ void system_enemy_spawner(EntityManager &entity_manager, const CollisionManager 
         config.start_orientation = 0;
         config.sprite_id = SpriteId::HUMAN_STILL;
         build_enemy(entity_manager, config);
-        std::cout << "System spawn" << std::endl;
     }
 };

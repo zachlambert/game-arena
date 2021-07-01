@@ -121,8 +121,5 @@ void system_gun(EntityManager &entity_manager, double dt, const Camera &camera)
         if (!entity_manager.entity_supports_system(i, SystemType::GUNSHOT_TARGET)) continue;
         transform = entity_manager.get_transform_component(i, 0);
         entity_manager.entities[i].to_remove |= check_for_gunshot_hit(*transform, i, gunshots);
-        if (entity_manager.entities[i].to_remove) {
-            std::cout << "Removing" << std::endl;
-        }
     }
 }
