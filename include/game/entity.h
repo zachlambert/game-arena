@@ -19,7 +19,8 @@ enum class SystemType {
     GUN,
     GUNSHOT_TARGET,
     ENEMY_SPAWNER,
-    COLLISION
+    COLLISION,
+    COLLISION_PHYSICS
 };
 
 struct Entity {

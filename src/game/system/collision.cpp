@@ -23,10 +23,7 @@ static void update_entity(
 
     // 2. Check for intersections
     std::vector<Intersection> intersections;
-    collision_manager.check_terrain_entity(transform, hitbox, intersections);
-    for (const auto &intersection: intersections) {
-        // std::cout << "Intersection at (" << intersection.pos.x << ", " << intersection.pos.y << ")" << std::endl;
-    }
+    collision_manager.check_terrain_entity(transform, hitbox, hitbox.intersections);
 }
 
 void system_collision(EntityManager &entity_manager, CollisionManager &collision_manager)

@@ -1,9 +1,12 @@
 #include "game/system.h"
 
 static void update_entity(component::Transform &transform, component::Physics &physics, double dt) {
-    transform.pos.x += physics.twist.x * dt;
-    transform.pos.y += physics.twist.y * dt;
-    transform.orientation += physics.twist.z * dt;
+    physics.displacement.x = physics.twist.x * dt;
+    physics.displacement.y = physics.twist.y * dt;
+    physics.displacement.z = physics.twist.z * dt;
+    transform.pos.x += physics.displacement.x;
+    transform.pos.y += physics.displacement.y;
+    transform.orientation += physics.displacement.z;
     if (transform.orientation < -M_PI) transform.orientation += 2*M_PI;
     if (transform.orientation > M_PI) transform.orientation -= 2*M_PI;
 }

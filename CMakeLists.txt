@@ -17,6 +17,7 @@ set(SRC
     src/game/game.cpp
 
     src/game/system/collision.cpp
+    src/game/system/collision_physics.cpp
     src/game/system/enemy.cpp
     src/game/system/enemy_spawner.cpp
     src/game/system/gun.cpp

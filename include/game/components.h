@@ -65,8 +65,9 @@ struct Polygon: public BaseComponent {
 };
 
 struct Physics: public BaseComponent {
+    glm::vec3 displacement; // Incremental twist transform over a single frame
     glm::vec3 twist;
-    Physics(): twist(0, 0, 0) {}
+    Physics(): displacement(0, 0, 0), twist(0, 0, 0) {}
 };
 
 struct Gun: public BaseComponent {
@@ -101,6 +102,10 @@ struct Hitbox: public BaseComponent {
     unsigned int edges_start;
     unsigned int edges_count;
     SpriteId sprite_id;
+    // Could use a fixed size array for intersections, with a max number
+    // of intersections that can be handled, but leaving as vector for now
+    // to be more flexible.
+    std::vector<Intersection> intersections;
     Hitbox(): sprite_id(SpriteId::NONE) {}
 };
 

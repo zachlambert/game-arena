@@ -24,6 +24,7 @@ void Game::update(double dt)
 
     system_physics(entity_manager, dt);
     system_collision(entity_manager, collision_manager);
+    system_collision_physics(entity_manager);
 
     system_render_sprite(entity_manager);
     system_render_polygon(entity_manager);

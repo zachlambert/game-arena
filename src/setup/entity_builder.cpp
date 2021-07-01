@@ -9,6 +9,7 @@ void build_player(EntityManager &entity_manager, PlayerConfig config)
     signature.set((size_t)SystemType::GUN);
     signature.set((size_t)SystemType::GUNSHOT_TARGET);
     signature.set((size_t)SystemType::COLLISION);
+    signature.set((size_t)SystemType::COLLISION_PHYSICS);
 
     // Component 0 = Transform
     component::Transform transform;
@@ -51,6 +52,7 @@ void build_enemy(EntityManager &entity_manager, EnemyConfig config)
     signature.set((size_t)SystemType::RENDER_SPRITE);
     signature.set((size_t)SystemType::GUNSHOT_TARGET);
     signature.set((size_t)SystemType::COLLISION);
+    signature.set((size_t)SystemType::COLLISION_PHYSICS);
 
     // 3 Components
 

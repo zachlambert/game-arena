@@ -18,6 +18,7 @@ void system_gun(EntityManager &entity_manager, double dt, const Camera &camera);
 
 void system_physics(EntityManager &entity_manager, double dt);
 void system_collision(EntityManager &entity_manager, CollisionManager &collision_manager);
+void system_collision_physics(EntityManager &entity_manager);
 
 void system_render_sprite(EntityManager &entity_manager);
 void system_render_polygon(EntityManager &entity_manager);
