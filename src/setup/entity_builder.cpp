@@ -30,7 +30,6 @@ void build_player(EntityManager &entity_manager, PlayerConfig config)
     // Component 4 = Gun ray polygon
     component::Polygon gun_ray_polygon;
     gun_ray_polygon.depth = 5;
-    // TODO
 
     // Component 5 = Hitbox
     component::Hitbox hitbox;
@@ -66,7 +65,7 @@ void build_enemy(EntityManager &entity_manager, EnemyConfig config)
 
     // Component 2 = Visual static
     component::Sprite sprite;
-    sprite.depth = 5;
+    sprite.depth = 8;
     sprite.sprite_id = config.sprite_id;
 
     // Component 3 = Hitbox
@@ -93,4 +92,19 @@ void build_enemy_spawner(EntityManager &entity_manager, EnemySpawnerConfig confi
 
     int id = entity_manager.entity_create(1, signature);
     entity_manager.entity_add_enemy_spawner(id, 0, enemy_spawner);
+}
+
+void build_occlusion_polygon(EntityManager &entity_manager)
+{
+    Signature signature;
+    signature.set((size_t)SystemType::OCCLUSION_POLYGON);
+    
+    // 1 Component
+    
+    // Component 0 = Polygon
+    component::Polygon polygon;
+    polygon.depth = 7;
+
+    int id = entity_manager.entity_create(1, signature);
+    entity_manager.entity_add_polygon(id, 0, polygon);
 }

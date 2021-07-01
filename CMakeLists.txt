@@ -21,6 +21,7 @@ set(SRC
     src/game/system/enemy.cpp
     src/game/system/enemy_spawner.cpp
     src/game/system/gun.cpp
+    src/game/system/occlusion_polygon.cpp
     src/game/system/physics.cpp
     src/game/system/player.cpp
     src/game/system/render_sprite.cpp

@@ -22,16 +22,21 @@ void build_world(EntityManager &entity_manager, Terrain &terrain)
         build_enemy_spawner(entity_manager, config);
     }
 
+    // Create occlusion polygon
+    {
+        build_occlusion_polygon(entity_manager);
+    }
+
     // Build terrain
     {
         terrain.elements.clear();
 
         // Remember: Define meshes clockwise !
         TerrainElement element;
+        element.visual_depth = 6;
 
         element.pos.x = 400;
         element.pos.y = 300;
-        element.visual_depth = 10;
         element.vertices.push_back(glm::vec2(-100, 0));
         element.vertices.push_back(glm::vec2(-80, 200));
         element.vertices.push_back(glm::vec2(20, 240));

@@ -25,4 +25,6 @@ struct EnemySpawnerConfig {
 };
 void build_enemy_spawner(EntityManager &entity_manager, EnemySpawnerConfig config);
 
+void build_occlusion_polygon(EntityManager &entity_manager);
+
 #endif
