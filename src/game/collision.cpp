@@ -147,20 +147,10 @@ void CollisionManager::find_collisions(
     }
     if (intersections[0].type != IntersectionType::ENTITY_1_ENTERING) return;
 
-    for (int i = 0; i < intersections.size(); i++) {
-        std::cout << i << ": " << intersections[i].vertex_1_index << ", " << intersections[i].vertex_2_index << ", ";
-        if (intersections[i].type == IntersectionType::ENTITY_1_ENTERING) {
-            std::cout << "1 in)" << std::endl;
-        } else {
-            std::cout << "1 out)" << std::endl;
-        }
-    }
-
     // 3. Create collision for each pair
 
     Collision collision;
     glm::vec2 dir;
-    std::cout << "Num intersections = " << intersections.size() << std::endl;
     for (int i = 0; i < intersections.size(); i+=2) {
         Intersection &inter1 = intersections[i];
         Intersection &inter2 = intersections[i+1];
@@ -196,45 +186,43 @@ void CollisionManager::find_collisions(
         double depth;
         double max_depth = INFINITY;
 
-        std::cout << "Intersection " << i << std::endl;
-        std::cout << "i1 = " << i1 << " -> " << i1_end << std::endl;
-        std::cout << "i2 = " << i2 << " -> " << i2_end << std::endl;
-
         int i1_prev, i2_prev;
         while (i1 != i1_end || i2 != i2_end) {
             s1 = glm::dot(dir, vertices1[i1]);
             s2 = glm::dot(dir, vertices2[i2]);
-            if ((s1 > s2 && i2 != i2_end) || i1 == i1_end) {
+            if (s1 > s2) {
+                if (i2 == i2_end) break;
                 i1_prev = i1-1;
                 if (i1_prev < 0) i1_prev+=vertices1.size();
-                std::cout << "121: " << i1_prev << "->" << i2 << "->" << i1 << std::endl;
                 const glm::vec2 &v1a = vertices1[i1_prev];
                 const glm::vec2 &v1b = vertices1[i1];
                 const glm::vec2 &v2 = vertices2[i2];
                 s_prev = glm::dot(dir, v1a);
+                if (s_prev > s2) break;
                 depth = glm::dot(collision.normal, v1a - v2);
-                depth += (s2 / (s1 - s_prev)) * glm::dot(collision.normal, v1b - v1a);
+                depth += (s2-s_prev) / (s1 - s_prev) * glm::dot(collision.normal, v1b - v1a);
                 i2--;
                 if (i2 < 0) i2 += vertices2.size();
-                std::cout << "Depth = " << depth << std::endl;
             } else {
+                if (i1 == i1_end) break;
                 i2_prev = (i2+1)%vertices2.size();
-                std::cout << "212: " << i2_prev << "->" << i1 << "->" << i2 << std::endl;
                 const glm::vec2 &v2a = vertices2[i2_prev];
                 const glm::vec2 &v2b = vertices2[i2];
                 const glm::vec2 &v1 = vertices1[i1];
                 s_prev = glm::dot(dir, v2a);
+                if (s_prev > s1) break;
                 depth = glm::dot(collision.normal, v2a - v1);
-                depth += s1 / (s2 - s_prev) * glm::dot(collision.normal, v2b - v2a);
+                depth += (s1 - s_prev) / (s2 - s_prev) * glm::dot(collision.normal, v2b - v2a);
                 depth = -depth;
                 i1 = (i1+1)%vertices1.size();
-                std::cout << "Depth = " << depth << std::endl;
             }
             if (fabs(depth) < fabs(max_depth)) max_depth = depth;
         }
 
-        collision.depth = max_depth;
-        collisions.push_back(collision);
+        if (!std::isinf(max_depth)) {
+            collision.depth = max_depth;
+            collisions.push_back(collision);
+        }
     }
 }
 
