@@ -45,6 +45,7 @@ int main()
     game.input.register_key(InputType::MOVE_UP, GLFW_KEY_W);
     game.input.register_key(InputType::MOVE_DOWN, GLFW_KEY_S);
     game.input.register_key(InputType::PAUSE, GLFW_KEY_P);
+    game.input.register_key(InputType::TOGGLE_GUN, GLFW_KEY_E);
     game.input.register_mouse_button(InputType::CLICK_LEFT, GLFW_MOUSE_BUTTON_LEFT);
 
     // 4. Initialise renderer

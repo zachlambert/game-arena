@@ -50,6 +50,8 @@ void PolygonRenderer::enable(const glm::mat4 &view)
 
 void PolygonRenderer::store_polygon(const component::Polygon &polygon)
 {
+    if (!polygon.visible) return;
+
     if (polygon.to_deallocate) {
         vertices.deallocate(polygon.vertices.size(), polygon.vertices_offset);
         indices.deallocate(polygon.indices.size(), polygon.indices_offset);
@@ -129,6 +131,7 @@ void PolygonRenderer::reinitialise()
 
 void PolygonRenderer::render(const component::Polygon &polygon)
 {
+    if (!polygon.visible) return;
     if (polygon.to_deallocate) return;
 
     glUniformMatrix4fv(m_loc, 1, GL_FALSE, &polygon.model[0][0]);
@@ -142,6 +145,7 @@ void PolygonRenderer::render(const component::Polygon &polygon)
 
 void PolygonRenderer::deallocate_polygon(const component::Polygon &polygon)
 {
+    if (!polygon.allocated) return;
     vertices.deallocate(polygon.vertices.size(), polygon.vertices_offset);
     indices.deallocate(polygon.indices.size(), polygon.indices_offset);
 }

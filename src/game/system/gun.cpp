@@ -22,6 +22,13 @@ static void update_gun_ray(
     component::Polygon &gun_ray_polygon,
     const Camera &camera)
 {
+    if (!gun.gun_out) {
+        gun_ray_polygon.visible = false;
+        return;
+    }
+
+    gun_ray_polygon.visible = true;
+
     // Set transform to same as source sprite (but with no scaling, and different depth)
     gun_ray_polygon.model =
         glm::translate(glm::vec3(source_transform.pos.x, source_transform.pos.y, (double)gun_ray_polygon.depth))
@@ -68,6 +75,8 @@ static void update_gun(
     std::vector<Gunshot> &gunshots,
     double dt)
 {
+    if (!gun.gun_out) return;
+
     if (gun.fire_visual_on) {
         gun.fire_visual_timer += dt;
         if (gun.fire_visual_timer > gun.fire_visual_timeout) {

@@ -10,6 +10,7 @@ void build_player(EntityManager &entity_manager, PlayerConfig config)
     signature.set((size_t)SystemType::GUNSHOT_TARGET);
     signature.set((size_t)SystemType::COLLISION);
     signature.set((size_t)SystemType::COLLISION_PHYSICS);
+    signature.set((size_t)SystemType::ANIMATION);
 
     // Component 0 = Transform
     component::Transform transform;
@@ -22,7 +23,7 @@ void build_player(EntityManager &entity_manager, PlayerConfig config)
     // Component 2 = Sprite
     component::Sprite sprite;
     sprite.depth = 4;
-    sprite.sprite_id = config.sprite_id;
+    sprite.sprite_id = SpriteId::HUMAN_STILL;
 
     // Component 3 = Gun
     component::Gun gun;
@@ -34,13 +35,17 @@ void build_player(EntityManager &entity_manager, PlayerConfig config)
     // Component 5 = Hitbox
     component::Hitbox hitbox;
 
-    int id = entity_manager.entity_create(6, signature);
+    // Component 6 = Animation
+    component::Animation animation;
+
+    int id = entity_manager.entity_create(7, signature);
     entity_manager.entity_add_transform(id, 0, transform);
     entity_manager.entity_add_physics(id, 1, physics);
     entity_manager.entity_add_sprite(id, 2, sprite);
     entity_manager.entity_add_gun(id, 3, gun);
     entity_manager.entity_add_polygon(id, 4, gun_ray_polygon);
     entity_manager.entity_add_hitbox(id, 5, hitbox);
+    entity_manager.entity_add_animation(id, 6, animation);
 }
 
 void build_enemy(EntityManager &entity_manager, EnemyConfig config)

@@ -43,7 +43,8 @@ struct Sprite: public BaseComponent {
     glm::mat4 model_unrotated; // Used for drawing hitboxes
     SpriteId sprite_id;
     unsigned int depth;
-    Sprite(): sprite_id(SpriteId::NONE) {}
+    bool visible;
+    Sprite(): sprite_id(SpriteId::NONE), visible(true) {}
 };
 
 struct Polygon: public BaseComponent {
@@ -63,7 +64,8 @@ struct Polygon: public BaseComponent {
     bool to_deallocate;
 
     unsigned int depth;
-    Polygon(): allocated(false), dirty(true), to_deallocate(false) {}
+    bool visible;
+    Polygon(): allocated(false), dirty(true), to_deallocate(false), visible(true) {}
 };
 
 struct Physics: public BaseComponent {
@@ -85,9 +87,11 @@ struct Gun: public BaseComponent {
     bool fire_visual_on;
     double fire_visual_timer;
     double fire_visual_timeout;
+    bool gun_out;
     Gun():
         origin_offset(150), focus(0), max_focus(1), focus_rate(0.5), base_damage(10),
-        fire_event(false), fire_visual_on(false), fire_visual_timer(0), fire_visual_timeout(0.04) {}
+        fire_event(false), fire_visual_on(false), fire_visual_timer(0), fire_visual_timeout(0.04),
+        gun_out(false) {}
 };
 
 struct EnemySpawner: public BaseComponent {

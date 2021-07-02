@@ -31,7 +31,7 @@ void system_animation(EntityManager &entity_manager, double dt, const AnimationM
     component::Animation *animation;
     component::Sprite *sprite;
     for (int i = 0; i < entity_manager.entities.tail; i++) {
-        if (!entity_manager.entity_supports_system(i, SystemType::ENEMY)) continue;
+        if (!entity_manager.entity_supports_system(i, SystemType::ANIMATION)) continue;
         animation = entity_manager.get_animation_component(i, 0);
         sprite = entity_manager.get_sprite_component(i, 0);
         update_entity(*animation, *sprite, dt, animation_manager);
