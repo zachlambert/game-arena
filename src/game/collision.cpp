@@ -509,26 +509,36 @@ static bool check_point_box(const glm::vec2 &source, const BoundingBox &box)
 bool CollisionManager::check_entity_click(
     glm::vec2 origin, glm::vec2 point,
     const component::Transform &transform,
-    const component::Hitbox &hitbox)const
+    const component::Hitbox &hitbox,
+    double &distance)const
 {
-    if (!check_point_box(point, hitbox.box)) return false;
     transform_sprite_polygon(transform, hitbox);
 
-    // Check point lies in polygon
-    int edge_count = 0;
+    // Check line intersects polygon
     const std::vector<glm::vec2> &vertices = polygons[2*(int)hitbox.sprite_id+1].vertices;
     Edge edge;
-    double dist;
+    glm::vec2 dir = point - origin;
+    glm::vec2 perp = {-dir.y, dir.x};
+    dir /= hypot(dir.x, dir.y);
+    double ua, ub, va, vb;
+    bool intersected = false;
+    double min_distance = INFINITY;
+    double current_distance;
     for (int i = 0; i < vertices.size(); i++) {
         edge.a = vertices[i];
         edge.b = vertices[(i+1)%vertices.size()];
-        if (edge.a.x > point.x) continue;
-        if (edge.b.x < point.x) continue;
-        if (edge.a.x==edge.a.y) continue;
-        dist = (edge.a.y-point.y) + (edge.b.y-edge.a.y)*(point.x-edge.a.x)/(edge.b.x-edge.a.x);
-        if (dist > 0) edge_count++;
+        va = glm::dot(perp, edge.a-origin);
+        vb = glm::dot(perp, edge.b-origin);
+        if ((va < 0 && vb < 0) || (va > 0 && vb > 0)) continue;
+        ua = glm::dot(dir, edge.a-origin);
+        ub = glm::dot(dir, edge.b-origin);
+        current_distance = ua + (ub-ua)*(0-va)/(vb-va);
+        if (current_distance < 0) continue;
+        if (current_distance < min_distance) min_distance = current_distance;
+        intersected = true;
     }
-    if (edge_count%2 == 0) return false;
+    if (!intersected) return false;
+    distance = min_distance;
 
     // Check that line of sight is uninterrupted
     BoundedEdge sight;

@@ -104,7 +104,8 @@ public:
     bool check_entity_click(
         glm::vec2 origin, glm::vec2 point,
         const component::Transform &transform,
-        const component::Hitbox &hitbox)const;
+        const component::Hitbox &hitbox,
+        double &distance)const;
 
 private:
     void add_terrain_edge(const BoundedEdge &edge);

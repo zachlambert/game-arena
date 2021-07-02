@@ -5,6 +5,8 @@ struct Gunshot {
     glm::vec2 fire_point;
     double focus;
     int entity_id;
+    int hit_entity_id;
+    double hit_distance;
 };
 
 static void initialise_gun_ray_polygon(
@@ -43,10 +45,10 @@ static void update_gun_ray(
     // - When a shot is fired, such that it stays the same or a bit, and
     //   darkens.
     if (!gun.fire_visual_on || gun.fire_event) {
-        double gradient =  0.01 * (1 - gun.focus*0.8);
+        double gradient =  0.005 * (1 - gun.focus*0.8);
         double x_dist = 2000/camera.zoom;
         double y_dist = gradient * x_dist;
-        static double origin_y = 6;
+        static double origin_y = 4;
 
         gun_ray_polygon.vertices[0] = {gun.origin_offset, -origin_y};
         gun_ray_polygon.vertices[1] = {gun.origin_offset, origin_y};
@@ -96,16 +98,22 @@ static void update_gun(
     gunshot.fire_point = gun.fire_point;
     gunshot.focus = gun.focus;
     gunshot.entity_id = entity_id;
+    gunshot.hit_entity_id = -1;
     gunshots.push_back(gunshot);
 }
 
-static bool check_for_gunshot_hit(const component::Transform &transform, const component::Hitbox &hitbox, int entity_id, const std::vector<Gunshot> &gunshots, const CollisionManager &collision_manager)
+static void check_for_gunshot_hit(const component::Transform &transform, const component::Hitbox &hitbox, int entity_id, std::vector<Gunshot> &gunshots, const CollisionManager &collision_manager)
 {
-    for (const auto &gunshot: gunshots) {
+    double distance;
+    for (auto &gunshot: gunshots) {
         if (gunshot.entity_id == entity_id) continue;
-        if (collision_manager.check_entity_click(gunshot.origin, gunshot.fire_point, transform, hitbox)) return true;
+        if (collision_manager.check_entity_click(gunshot.origin, gunshot.fire_point, transform, hitbox, distance)) {
+            if (gunshot.hit_entity_id == -1 || distance < gunshot.hit_distance) {
+                gunshot.hit_distance = distance;
+                gunshot.hit_entity_id = entity_id;
+            }
+        }
     }
-    return false;
 }
 
 void system_gun(EntityManager &entity_manager, double dt, const Camera &camera, const CollisionManager &collision_manager)
@@ -123,13 +131,18 @@ void system_gun(EntityManager &entity_manager, double dt, const Camera &camera, 
         update_gun_ray(*transform, *gun, *gun_ray_polygon, camera);
         gun->fire_event = false;
     }
-
     component::Hitbox *hitbox;
     for (int i = 0; i < entity_manager.entities.tail; i++) {
         if (!entity_manager.entity_supports_system(i, SystemType::GUNSHOT_TARGET)) continue;
         transform = entity_manager.get_transform_component(i, 0);
         hitbox = entity_manager.get_hitbox_component(i, 0);
-        // TODO: In future, subtract health. For now, just mark for removal.
-        entity_manager.entities[i].to_remove |= check_for_gunshot_hit(*transform, *hitbox, i, gunshots, collision_manager);
+        check_for_gunshot_hit(*transform, *hitbox, i, gunshots, collision_manager);
+    }
+
+    for (const auto &gunshot: gunshots) {
+        if (gunshot.hit_entity_id != -1) {
+            // TODO: In future, subtract health. For now, just mark for removal.
+            entity_manager.entities[gunshot.hit_entity_id].to_remove = true;
+        }
     }
 }
