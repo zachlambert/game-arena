@@ -34,11 +34,12 @@ void load_spritesheets(std::vector<SpritesheetConfig> &spritesheets)
         {-50, 0},
         {-30, 70},
         {0, 100},
-        {30, 70},
-        {50, 0},
-        {30, -70},
-        {0, -100},
-        {-30, -70}
+        {50, 104},
+        {104, 57},
+        {50, 40},
+        {40, -70},
+        {48, -110},
+        {-40, -104}
     };
     spritesheet.sprites.push_back(sprite);
 
@@ -47,10 +48,15 @@ void load_spritesheets(std::vector<SpritesheetConfig> &spritesheets)
     sprite.size = {256, 256};
     sprite.offset = {0, 0};
     sprite.collision_polygon = {
-        {-64, 0},
-        {0, 128},
-        {64, 0},
-        {0, -128}
+        {-50, 0},
+        {-40, 104},
+        {48, 110},
+        {40, 70},
+        {50, -40},
+        {104, -57},
+        {50, -104},
+        {0, -100},
+        {-30, -70}
     };
     spritesheet.sprites.push_back(sprite);
 

@@ -80,6 +80,7 @@ void Renderer::render(const Game &game)
 
     // Debugging
 
+    return;
     // Render collision information
     {
         collision_renderer.enable_terrain(game.camera.view);
