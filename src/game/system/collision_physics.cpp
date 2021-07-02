@@ -1,38 +1,46 @@
 #include "game/system.h"
 
+void resolve_collisions_soft(
+    component::Transform &transform,
+    component::Physics &physics,
+    component::Hitbox &hitbox)
+{
+    constexpr float kp = 10000;
+    constexpr float kd = 200;
+    glm::vec2 contact_vel;
+    glm::vec2 v0(physics.twist.x, physics.twist.y);
+    glm::vec2 disp, perp;
+    for (const auto &collision: hitbox.collisions) {
+        disp = collision.pos - transform.pos;
+        perp = {-disp.y, disp.x};
+        contact_vel = glm::vec2(physics.twist.x, physics.twist.y) + perp*physics.twist.z;
+        float d_depth = -glm::dot(contact_vel, collision.normal);
+        physics.contact_force.x += kp * collision.normal.x * collision.depth;
+        physics.contact_force.y += kp * collision.normal.y * collision.depth;
+        physics.contact_force.x += kd * collision.normal.x * d_depth;
+        physics.contact_force.y += kd * collision.normal.y * d_depth;
+        physics.contact_force.z += disp.x*physics.contact_force.y - disp.y*physics.contact_force.x;
+    }
+    hitbox.collisions.clear();
+}
+
 void update_entity(
     component::Transform &transform,
     component::Physics &physics,
     component::Hitbox &hitbox)
 {
-    physics.force.x = 0;
-    physics.force.y = 0;
-    physics.force.z = 0;
     if (hitbox.collisions.empty()) return;
-
-    for (const auto &collision: hitbox.collisions) {
-        physics.force.x += collision.normal.x * collision.depth;
-        physics.force.y += collision.normal.y * collision.depth;
-        glm::vec2 disp = collision.pos - transform.pos;
-        physics.force.z += disp.x*physics.force.y - disp.y*physics.force.x;
-    }
-    physics.force *= 10000.0f;
-    hitbox.collisions.clear();
+    resolve_collisions_soft(transform, physics, hitbox);
     return;
-
-    // Resolve collisions
-    if (hitbox.collisions.size() > 2) {
-        // Can only happen when changing sprite
-        transform.pos.x -= physics.displacement.x;
-        transform.pos.y -= physics.displacement.y;
-        transform.orientation -= physics.displacement.z;
-        hitbox.collisions.clear();
-        return;
-    }
 
     if (hitbox.collisions.size() == 1) {
         transform.pos += hitbox.collisions[0].normal * (float)hitbox.collisions[0].depth;
         hitbox.collisions.clear();
+        return;
+    }
+
+    if (hitbox.collisions.size() > 2) {
+        resolve_collisions_soft(transform, physics, hitbox);
         return;
     }
 
@@ -42,6 +50,9 @@ void update_entity(
     double d2 = hitbox.collisions[1].depth;
     double dot = glm::dot(n1, n2);
 
+    // Contacts in opposite directions, away from each other.
+    // Occurs when an entity penetrates through a small bit of terrain.
+    // In this case, ignore the larger displacement.
     if (dot < 0 && glm::dot(hitbox.collisions[1].pos - hitbox.collisions[0].pos, n1) < 0) {
         glm::vec2 disp(physics.displacement.x, physics.displacement.y);
         if (glm::dot(disp, n1) < 0) {
@@ -67,7 +78,7 @@ void update_entity(
     float b = d2 - a*dot;
 
     glm::vec2 disp = a*n1 + b*n2;
-    if (hypot(disp.x, disp.y) > 50) {
+    if (hypot(disp.x, disp.y) > 5 || std::isinf(a) || std::isinf(b) ) {
         // If the required displacement to resolve the collision is large, just
         // revert the displacement instead. This avoids large jumps when rotating
         // beteen two walls either side.

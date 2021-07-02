@@ -72,9 +72,10 @@ struct Physics: public BaseComponent {
     glm::vec3 displacement; // Incremental twist transform over a single frame
     glm::vec3 twist;
     glm::vec3 force;
+    glm::vec3 contact_force;
     double mass;
     double inertia;
-    Physics(): displacement(0, 0, 0), twist(0, 0, 0), force(0, 0, 0), mass(1), inertia(5000) {}
+    Physics(): displacement(0, 0, 0), twist(0, 0, 0), force(0, 0, 0), contact_force(0, 0, 0), mass(1), inertia(5000) {}
 };
 
 struct Gun: public BaseComponent {
