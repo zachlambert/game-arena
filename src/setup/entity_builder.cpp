@@ -52,6 +52,7 @@ void build_enemy(EntityManager &entity_manager, EnemyConfig config)
     signature.set((size_t)SystemType::GUNSHOT_TARGET);
     signature.set((size_t)SystemType::COLLISION);
     signature.set((size_t)SystemType::COLLISION_PHYSICS);
+    signature.set((size_t)SystemType::ANIMATION);
 
     // 3 Components
 
@@ -71,11 +72,15 @@ void build_enemy(EntityManager &entity_manager, EnemyConfig config)
     // Component 3 = Hitbox
     component::Hitbox hitbox;
 
-    int id = entity_manager.entity_create(4, signature);
+    // Component 4 = Animation
+    component::Animation animation;
+
+    int id = entity_manager.entity_create(5, signature);
     entity_manager.entity_add_transform(id, 0, transform);
     entity_manager.entity_add_physics(id, 1, physics);
     entity_manager.entity_add_sprite(id, 2, sprite);
     entity_manager.entity_add_hitbox(id, 3, hitbox);
+    entity_manager.entity_add_animation(id, 4, animation);
 }
 
 void build_enemy_spawner(EntityManager &entity_manager, EnemySpawnerConfig config)

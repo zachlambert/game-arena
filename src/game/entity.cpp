@@ -110,6 +110,9 @@ void EntityManager::entity_remove(int entity_id)
             case ComponentType::HITBOX:
                 remove_component(hitbox, comp_index);
                 break;
+            case ComponentType::ANIMATION:
+                remove_component(animation, comp_index);
+                break;
         }
     }
 

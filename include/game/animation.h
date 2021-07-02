@@ -8,14 +8,13 @@
 
 struct AnimationConfig {
     std::vector<SpriteId> sprites;
-    bool loop;
-    double frame_time;
 };
 
 class AnimationManager {
 public:
     void add_animation(AnimationId animation_id, AnimationConfig animation);
-    const AnimationConfig &get_animation(AnimationId animation_id);
+    const AnimationConfig &get_animation(AnimationId animation_id)const;
+    void increment_frame(AnimationId animation_id, int &index, SpriteId &sprite_id, bool &looped)const;
 private:
     std::vector<AnimationConfig> animations;
 };

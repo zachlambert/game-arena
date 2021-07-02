@@ -8,6 +8,7 @@
 #include "game/camera.h"
 #include "game/entity.h"
 #include "game/terrain.h"
+#include "game/animation.h"
 #include "window/window.h"
 #include "window/input.h"
 
@@ -24,6 +25,7 @@ public:
     EntityManager entity_manager;
     Terrain terrain;
     CollisionManager collision_manager;
+    AnimationManager animation_manager;
 };
 
 #endif

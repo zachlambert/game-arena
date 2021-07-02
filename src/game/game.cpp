@@ -1,6 +1,7 @@
 #include "game/game.h"
 
 #include "setup/world_builder.h"
+#include "setup/animation_config.h"
 #include "game/system.h"
 
 #include <iostream>
@@ -12,6 +13,8 @@ void Game::initialise(const Resources &resources)
     build_world(entity_manager, terrain);
 
     collision_manager.initialise_terrain(terrain);
+
+    load_animations(animation_manager);
 }
 
 void Game::update(double dt)
@@ -38,6 +41,7 @@ void Game::update(double dt)
 
     system_occlusion_polygon(entity_manager, collision_manager, camera);
 
+    system_animation(entity_manager, dt, animation_manager);
     system_render_sprite(entity_manager);
     system_render_polygon(entity_manager);
 }

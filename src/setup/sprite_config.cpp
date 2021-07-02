@@ -39,7 +39,7 @@ void load_spritesheets(std::vector<SpritesheetConfig> &spritesheets)
     spritesheet.sprites.push_back(sprite);
 
     sprite.id = SpriteId::HUMAN_WALK_1;
-    sprite.pos = {768, 0};
+    sprite.pos = {512, 0};
     sprite.size = {256, 256};
     sprite.offset = {0, 0};
     sprite.collision_polygon = {

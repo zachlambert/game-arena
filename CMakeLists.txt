@@ -17,6 +17,7 @@ set(SRC
     src/game/entity.cpp
     src/game/game.cpp
 
+    src/game/system/animation.cpp
     src/game/system/collision.cpp
     src/game/system/collision_physics.cpp
     src/game/system/enemy.cpp
@@ -36,6 +37,7 @@ set(SRC
     src/render/terrain_renderer.cpp
     src/render/texture.cpp
 
+    src/setup/animation_config.cpp
     src/setup/entity_builder.cpp
     src/setup/world_builder.cpp
     src/setup/sprite_config.cpp

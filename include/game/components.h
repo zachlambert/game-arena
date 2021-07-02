@@ -111,9 +111,12 @@ struct Hitbox: public BaseComponent {
 
 struct Animation: public BaseComponent {
     AnimationId id;
+    bool started;
     int index;
     double frame_time;
     double frame_timer;
+    bool loop;
+    Animation(): id(AnimationId::NONE), started(false), index(-1), frame_time(0.1), frame_timer(0) {}
 };
 
 } // namespace component

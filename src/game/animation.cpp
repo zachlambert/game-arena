@@ -8,7 +8,18 @@ void AnimationManager::add_animation(AnimationId animation_id, AnimationConfig a
     animations[(int)animation_id] = animation;
 }
 
-const AnimationConfig &AnimationManager::get_animation(AnimationId animation_id)
+void AnimationManager::increment_frame(
+    AnimationId animation_id,
+    int &index,
+    SpriteId &sprite_id,
+    bool &looped)const
 {
-    return animations[(int)animation_id];
+    looped = false;
+    index++;
+    const AnimationConfig &animation = animations[(int)animation_id];
+    if (index == animation.sprites.size()) {
+        index = 0;
+        looped = true;
+    }
+    sprite_id = animation.sprites[index];
 }

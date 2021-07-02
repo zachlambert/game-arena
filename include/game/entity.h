@@ -21,7 +21,8 @@ enum class SystemType {
     ENEMY_SPAWNER,
     COLLISION,
     COLLISION_PHYSICS,
-    OCCLUSION_POLYGON
+    OCCLUSION_POLYGON,
+    ANIMATION
 };
 
 struct Entity {
@@ -56,6 +57,7 @@ public:
     CREATE_COMPONENT(Gun, gun, GUN, entity_add_gun, get_gun_component);
     CREATE_COMPONENT(EnemySpawner, enemy_spawner, ENEMY_SPAWNER, entity_add_enemy_spawner, get_enemy_spawner_component);
     CREATE_COMPONENT(Hitbox, hitbox, HITBOX, entity_add_hitbox, get_hitbox_component);
+    CREATE_COMPONENT(Animation, animation, ANIMATION, entity_add_animation, get_animation_component);
 
 private:
     template <typename T>
