@@ -1,47 +1,54 @@
 # TODO
 
-- Change entity system to use vectors instead of fixed size arrays.
-  Worse performance but more flexible and space efficient.
-- Resolve entity-terrain collisions.
-- Have the gunshot system check line of sight using the collision manager
-  when checking gunshot hits. Create a bounded edge for the line from source
-  to target and check for any terrain intersection.
+# Objective 4
 
-# Objective 2
+Animation.
 
-Walls and collisions
-
-- Add in static walls, defined by polygons
-- Add a collision system which holds collision polygon for entities.
-- Handle wall collisions such that entities slide along the edge instead
-  of stopping completely.
-- Have enemies only get hit when you click on them (using the mesh, instead of just distance away).
-- Also: Add a collision renderer for debugging, which renders collision polygons and the
-  terrain collision octree.
-
-# Objective 3
-
-Basic animation and fog of war.
-
+- Create animation component and system which changes sprite id.
 - Basic walk cycle animation (two frames), when not holding gun
-- Add fog of war, where terrain out of view is darker and entities are not visible (can avoid drawing if completely in fog of war. If partially, draw, then overwrite the obscured part with the polygon).
+- Add the E key to swap between gun out and gun away, with an animation between them.
+- Only allow shooting, and only display gun ray, when gun is out.
 
 # Objective 4
 
-Gun logic and particles.
+Gun logic.
 
+- Have enemies only get hit when you click on them (using the mesh, instead of just distance away), and there is a collision-free line of sight.
 - Have the gun ray narrow if you hold it still and don't move.
-- Add a particle effect when an enemy is hit.
 - Have a random hit change with gun, which increases with a narrower gun ray and closer distance. (visually: width of ray at target)
 - Give entities health and reduce this health on hit. Remove when depleted
-- Block the bullet if it hits a wall.
-- Add a different particle effect for when a wall is hit.
 
 # Objective 5
 
+Particles.
 
+- Create a particle renderer.
+- Add a particle effect when an enemy is hit.
+- Add a different particle effect for when a wall is hit.
 
 # Objective 6
+
+Basic enemy logic and basic level.
+
+- Give the enemies guns and have them aim and shoot at you.
+- Have the enemies walk in a straight line towards you.
+- Create a simple level for testing, with walls and enemy spawners.
+
+# Objective 7
+
+Level 1 AI.
+
+- Enemies have a set of waypoints they follow, which by default, they navigate between.
+- Give the enemies lines of sight. If they spot the player, they set their target to some distance away from  the player (a good spot to shoot) and navigate towards this.
+- Whenever they can see the player, they shoot towards the player at some rate.
+- When the player hasn't been spotted for a certain period of time (eg: 10 seconds), the enemy resumes default behaviour.
+
+# Objective 8
+
+Level 2 AI.
+
+- Enemies hear gunshots and navigate towards gunshots when in earshot.
+- After losing the player, will continue to explore randomly for a bit.
 
 # COMPLETED
 
@@ -58,3 +65,17 @@ Basic movement control and rendering
   disappears.
 - Enemies randomly spawn at the origin and move around randomly.
 
+# Objective 2
+
+Walls and collisions
+
+- Add in static walls, defined by polygons
+- Add a collision system which holds collision polygon for entities.
+- Handle wall collisions such that entities slide along the edge instead
+  of stopping completely.
+- Also: Add a collision renderer for debugging, which renders collision polygons and the
+  terrain collision octree.
+
+# Objective 3
+
+Add occlusion polygon
