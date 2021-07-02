@@ -6,11 +6,22 @@ static void update_polygon(
     const CollisionManager &collision_manager,
     const Camera &camera)
 {
+    if (polygon.allocated == false) {
+        // For now, just assigning a fixed size polygon
+        polygon.vertices.resize(128);
+        polygon.indices.resize(256);
+        polygon.colors.resize(128);
+        for (int i = 0; i < 128; i++) {
+            polygon.colors[i] = {0.5, 0.5, 0.5, 1};
+        }
+        polygon.model = glm::translate(glm::vec3(1, 1, (double)polygon.depth));
+    }
+
+    polygon.dirty = true;
+
     double fov = 150.0 * (M_PI/180);
     double angle = player_transform.orientation + fov/2;
 
-    if (polygon.vertices.size() < 7) polygon.vertices.resize(7);
-    if (polygon.indices.size() < 15) polygon.indices.resize(15);
     polygon.vertices[0] = camera.project_point({camera.screen_width/2, camera.screen_height/2});
 
     int i = 0;
@@ -27,17 +38,53 @@ static void update_polygon(
         polygon.indices[3*i+1] = i+1;
         polygon.indices[3*i+2] = i+2;
     }
-    polygon.dirty = true;
 
-    polygon.vertices.resize(16);
-    polygon.indices.resize(16);
-    polygon.element_count = 14;
+    // Now add cast shadows for terrain edges
+    BoundingBox view_box;
+    glm::vec2 bot_left = camera.project_point({0, camera.screen_height});
+    glm::vec2 top_right = camera.project_point({camera.screen_width, 0});
+    view_box.left = bot_left.x;
+    view_box.bot = bot_left.y;
+    view_box.right = top_right.x;
+    view_box.top = top_right.y;
 
-    polygon.colors.resize(7);
-    glm::vec4 color(0.5, 0.5, 0.5, 1);
-    for (int i = 0; i < 7; i++) polygon.colors[i] = color;
+    std::vector<const Edge*> edges;
+    collision_manager.get_occlusion_edges(
+        view_box,
+        player_transform.orientation-fov/2,
+        fov,
+        edges
+    );
 
-    polygon.model = glm::translate(glm::vec3(1, 1, (double)polygon.depth));
+    std::cout << "A" << std::endl;
+
+    int vertex_index = 7;
+    int index_index = 15;
+    glm::vec2 dir_a, dir_b;
+    glm::vec2 centre(0.5*(view_box.left+view_box.right), 0.5*(view_box.bot+view_box.top));
+    for (const auto &edge: edges) {
+        polygon.vertices[vertex_index] = edge->a;
+        polygon.vertices[vertex_index+1] = edge->b;
+        dir_a = edge->a - centre;
+        dir_a /= hypot(dir_a.x, dir_a.y);
+        dir_b = edge->b - centre;
+        dir_b /= hypot(dir_a.x, dir_a.y);
+        polygon.vertices[vertex_index+2] = centre + 2*(float)camera.screen_width*dir_b;
+        polygon.vertices[vertex_index+3] = centre + 2*(float)camera.screen_width*dir_a;
+
+        polygon.indices.push_back(index_index);
+        polygon.indices.push_back(index_index+1);
+        polygon.indices.push_back(index_index+2);
+        polygon.indices.push_back(index_index);
+        polygon.indices.push_back(index_index+2);
+        polygon.indices.push_back(index_index+3);
+
+        vertex_index += 4;
+        index_index += 4;
+    }
+    polygon.element_count = index_index;
+
+    std::cout << "B" << std::endl;
 }
 
 void system_occlusion_polygon(EntityManager &entity_manager, const CollisionManager &collision_manager, const Camera &camera)

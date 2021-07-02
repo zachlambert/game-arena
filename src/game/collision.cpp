@@ -436,4 +436,63 @@ void CollisionManager::check_terrain_entity(
     }
 
     find_collisions(intersections, collisions);
+
+}
+
+static bool edge_in_view(const Edge &edge, const glm::vec2 &centre, double angle_start, double angle_width)
+{
+    // Check if edge is facing towards the centre
+    glm::vec2 perp = edge.b - edge.a;
+    perp = {-perp.y, perp.x};
+    if (glm::dot(edge.a - centre, perp) > 0) return false;
+
+    // Check either a or b is in the angle window
+    glm::vec2 disp;
+    double angle;
+    // Check if a is in view
+    disp = edge.a - centre;
+    angle = atan2(disp.y, disp.x);
+    angle -= angle_start;
+    if (angle < 0) angle += 2*M_PI;
+    if (angle > 2*M_PI) angle -= 2*M_PI;
+    if (angle < angle_width) return true;
+    // Or if a is in view
+    disp = edge.b - centre;
+    angle = atan2(disp.y, disp.x);
+    angle -= angle_start;
+    if (angle < 0) angle += 2*M_PI;
+    if (angle > 2*M_PI) angle -= 2*M_PI;
+    if (angle < angle_width) return true;
+    return false;
+}
+
+void CollisionManager::get_occlusion_edges(
+    const BoundingBox &view_box,
+    double angle_start, double angle_width,
+    std::vector<const Edge*> &edges)const
+{
+    glm::vec2 centre(0.5*(view_box.left+view_box.right), 0.5*(view_box.bot+view_box.top));
+    glm::vec2 disp1, disp2;
+    double angle1, angle2;
+
+    std::stack<Octree*> nodes;
+    nodes.push(root);
+    while (!nodes.empty()) {
+        // 1. Check edges at node
+        Octree* node = nodes.top();
+        nodes.pop();
+        for (const auto &bounded_edge: node->edges) {
+            // 1. Check that the edge is in the view box
+            if (!check_box_box(bounded_edge.box, view_box)) continue;
+            // 2. Check that is within the viewing angle
+            if (!edge_in_view(bounded_edge.edge, centre, angle_start, angle_width)) continue;
+            edges.push_back(&bounded_edge.edge);
+        }
+        // 2. Check for intersection with sub-regions (nodes)
+        for (int i = 0; i < 4; i++) {
+            if (node->nodes[i] == nullptr) continue;
+            if (!check_box_box(node->nodes[i]->box, view_box)) continue;
+            nodes.push(node->nodes[i]);
+        }
+    }
 }

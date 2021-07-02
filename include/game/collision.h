@@ -99,6 +99,8 @@ public:
     void initialise_terrain(const Terrain &terrain);
     void check_terrain_entity(const component::Transform &transform, const component::Hitbox &hitbox, std::vector<Collision> &collisions);
 
+    void get_occlusion_edges(const BoundingBox &view_box, double angle_start, double angle_width, std::vector<const Edge*> &edges)const;
+
 private:
     void add_terrain_edge(const BoundedEdge &edge);
     void transform_sprite_polygon(const component::Transform &transform, const component::Hitbox &hitbox);
