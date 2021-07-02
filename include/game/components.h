@@ -6,6 +6,7 @@
 
 #include "game/collision.h"
 #include "setup/sprite_id.h"
+#include "setup/animation_id.h"
 
 enum class ComponentType {
     TRANSFORM,
@@ -15,6 +16,7 @@ enum class ComponentType {
     GUN,
     ENEMY_SPAWNER,
     HITBOX,
+    ANIMATION
 };
 
 struct ComponentReference {
@@ -105,6 +107,13 @@ struct Hitbox: public BaseComponent {
     // to be more flexible.
     std::vector<Collision> collisions;
     Hitbox(): sprite_id(SpriteId::NONE) {}
+};
+
+struct Animation: public BaseComponent {
+    AnimationId id;
+    int index;
+    double frame_time;
+    double frame_timer;
 };
 
 } // namespace component

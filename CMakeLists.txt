@@ -11,6 +11,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 set(SRC
     src/main.cpp
 
+    src/game/animation.cpp
     src/game/camera.cpp
     src/game/collision.cpp
     src/game/entity.cpp
