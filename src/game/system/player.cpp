@@ -5,31 +5,45 @@ static void update_player_state(
     component::Physics &physics,
     component::Gun &gun,
     const Input &input,
-    Camera &camera)
+    Camera &camera,
+    double dt)
 {
-    physics.twist.x = 0;
-    if (input.input_down(InputType::MOVE_RIGHT)) {
-        physics.twist.x += 800;
-    }
-    if (input.input_down(InputType::MOVE_LEFT)) {
-        physics.twist.x -= 800;
+    physics.force.x = 0;
+    bool right = input.input_down(InputType::MOVE_RIGHT);
+    bool left = input.input_down(InputType::MOVE_LEFT);
+    if ((right && left) || (!right && !left)) {
+        physics.force.x += 40*(0-physics.twist.x);
+    } else if (right) {
+        physics.force.x += 40*(800-physics.twist.x);
+    } else if (left) {
+        physics.force.x += 40*(-800-physics.twist.x);
     }
 
-    physics.twist.y = 0;
-    if (input.input_down(InputType::MOVE_UP)) {
-        physics.twist.y += 800;
-    }
-    if (input.input_down(InputType::MOVE_DOWN)) {
-        physics.twist.y -= 800;
+    physics.force.y = 0;
+    bool up = input.input_down(InputType::MOVE_UP);
+    bool down = input.input_down(InputType::MOVE_DOWN);
+    if ((up && down) || (!up && !down)) {
+        physics.force.y += 40*(0-physics.twist.y);
+    } else if (up) {
+        physics.force.y += 40*(800-physics.twist.y);
+    } else if (down) {
+        physics.force.y += 40*(-800-physics.twist.y);
     }
 
     glm::vec2 mouse_pos_screen = input.get_mouse_pos();
     glm::vec2 mouse_pos_world = camera.project_point(mouse_pos_screen);
     double goal_orientation = std::atan2(mouse_pos_world.y - transform.pos.y, mouse_pos_world.x - transform.pos.x);
-    physics.twist.z = goal_orientation - transform.orientation;
-    if (physics.twist.z > M_PI) physics.twist.z -= 2*M_PI;
-    if (physics.twist.z < -M_PI) physics.twist.z += 2*M_PI;
-    physics.twist.z *= 50; // Kp gain
+    double error = goal_orientation - transform.orientation;
+    if (error > M_PI) error -= 2*M_PI;
+    if (error < -M_PI) error += 2*M_PI;
+
+    static double prev_error = 0;
+    static double error_sum = 0;
+    double d_error = (error - prev_error) / dt;
+    error_sum += error * dt;
+
+    prev_error = error;
+    physics.force.z = 12000000*error + 500000*d_error;// + 50000*error_sum;
 
     if (input.query_input_state(InputType::TOGGLE_GUN) == InputState::PRESSED) {
         gun.gun_out = !gun.gun_out;
@@ -62,7 +76,7 @@ static void update_player_visual(
     }
 }
 
-void system_player(EntityManager &entity_manager, const Input &input, Camera &camera)
+void system_player(EntityManager &entity_manager, const Input &input, Camera &camera, double dt)
 {
     component::Transform *transform;
     component::Physics *physics;
@@ -77,7 +91,7 @@ void system_player(EntityManager &entity_manager, const Input &input, Camera &ca
         gun = entity_manager.get_gun_component(i, 0);
         sprite = entity_manager.get_sprite_component(i, 0);
         animation = entity_manager.get_animation_component(i, 0);
-        update_player_state(*transform, *physics, *gun, input, camera);
+        update_player_state(*transform, *physics, *gun, input, camera, dt);
         update_player_visual(*gun, *sprite, *animation);
     }
 };

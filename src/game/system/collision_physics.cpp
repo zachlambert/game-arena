@@ -5,8 +5,8 @@ void resolve_collisions_soft(
     component::Physics &physics,
     component::Hitbox &hitbox)
 {
-    constexpr float kp = 10000;
-    constexpr float kd = 200;
+    constexpr float kp = 9000;
+    constexpr float kd = 140;
     glm::vec2 contact_vel;
     glm::vec2 v0(physics.twist.x, physics.twist.y);
     glm::vec2 disp, perp;
@@ -24,15 +24,11 @@ void resolve_collisions_soft(
     hitbox.collisions.clear();
 }
 
-void update_entity(
+void resolve_collisions_hard(
     component::Transform &transform,
     component::Physics &physics,
     component::Hitbox &hitbox)
 {
-    if (hitbox.collisions.empty()) return;
-    resolve_collisions_soft(transform, physics, hitbox);
-    return;
-
     if (hitbox.collisions.size() == 1) {
         transform.pos += hitbox.collisions[0].normal * (float)hitbox.collisions[0].depth;
         hitbox.collisions.clear();
@@ -54,8 +50,8 @@ void update_entity(
     // Occurs when an entity penetrates through a small bit of terrain.
     // In this case, ignore the larger displacement.
     if (dot < 0 && glm::dot(hitbox.collisions[1].pos - hitbox.collisions[0].pos, n1) < 0) {
-        glm::vec2 disp(physics.displacement.x, physics.displacement.y);
-        if (glm::dot(disp, n1) < 0) {
+        std::cout << "here" << std::endl;
+        if (d1 < d2) {
             transform.pos += n1 * (float)d1;
         } else {
             transform.pos += n2 * (float)d2;
@@ -78,23 +74,29 @@ void update_entity(
     float b = d2 - a*dot;
 
     glm::vec2 disp = a*n1 + b*n2;
-    if (hypot(disp.x, disp.y) > 5 || std::isinf(a) || std::isinf(b) ) {
-        // If the required displacement to resolve the collision is large, just
-        // revert the displacement instead. This avoids large jumps when rotating
-        // beteen two walls either side.
-        transform.pos.x -= physics.displacement.x;
-        transform.pos.y -= physics.displacement.y;
-        transform.orientation -= physics.displacement.z;
-        std::cout << "asdf" << std::endl;
-    } else {
-        transform.pos += a*n1 + b*n2;
-        std::cout << hypot(disp.x, disp.y) << std::endl;
-        std::cout << "d1 = " << d1 << std::endl;
-        std::cout << "d2 = " << d1 << std::endl;
-        std::cout << "dot = " << dot << std::endl;
+
+    double disp_mag = hypot(disp.x, disp.y);
+    glm::vec2 dir1 = disp / (float)disp_mag;
+    glm::vec2 dir2 = physics.displacement / (float)hypot(physics.displacement.x, physics.displacement.y);
+    if (glm::dot(dir1, dir2) > -0.8 || disp_mag > 5 || std::isnan(disp_mag)) {
+        resolve_collisions_soft(transform, physics, hitbox);
+        return;
     }
 
+    transform.pos += a*n1 + b*n2;
+    std::cout << hypot(disp.x, disp.y) << std::endl;
+
     hitbox.collisions.clear();
+}
+
+void update_entity(
+    component::Transform &transform,
+    component::Physics &physics,
+    component::Hitbox &hitbox)
+{
+    if (hitbox.collisions.empty()) return;
+    resolve_collisions_soft(transform, physics, hitbox);
+    // resolve_collisions_hard(transform, physics, hitbox);
 }
 
 void system_collision_physics(EntityManager &entity_manager)

@@ -25,7 +25,7 @@ void Game::update(double dt)
 
     system_enemy_spawner(entity_manager, collision_manager, dt);
 
-    system_player(entity_manager, input, camera);
+    system_player(entity_manager, input, camera, dt);
     system_enemy(entity_manager);
     system_gun(entity_manager, dt, camera);
 
