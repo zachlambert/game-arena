@@ -12,7 +12,8 @@ enum class InputType {
     MOVE_UP,
     MOVE_DOWN,
     CLICK_LEFT,
-    CLICK_RIGHT
+    CLICK_RIGHT,
+    PAUSE
 };
 
 enum class InputState {

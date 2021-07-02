@@ -20,6 +20,7 @@ public:
     void update(double dt);
     void cleanup();
 
+    bool paused;
     Input input;
     Camera camera;
     EntityManager entity_manager;

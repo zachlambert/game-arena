@@ -9,16 +9,20 @@
 void Game::initialise(const Resources &resources)
 {
     collision_manager.load_sprite_polygons(resources.spritesheets);
-
     build_world(entity_manager, terrain);
-
     collision_manager.initialise_terrain(terrain);
-
     load_animations(animation_manager);
+    paused = false;
 }
 
 void Game::update(double dt)
 {
+    if (input.query_input_state(InputType::PAUSE) == InputState::PRESSED) {
+        paused = !paused;
+    }
+
+    if (paused) return;
+
     system_enemy_spawner(entity_manager, collision_manager, dt);
 
     system_player(entity_manager, input, camera);
