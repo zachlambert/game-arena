@@ -27,7 +27,7 @@ void Game::update(double dt)
 
     system_player(entity_manager, input, camera, dt);
     system_enemy(entity_manager);
-    system_gun(entity_manager, dt, camera);
+    system_gun(entity_manager, dt, camera, collision_manager);
 
     system_physics(entity_manager, dt);
     system_collision(entity_manager, collision_manager);

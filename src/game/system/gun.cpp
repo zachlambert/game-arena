@@ -99,18 +99,16 @@ static void update_gun(
     gunshots.push_back(gunshot);
 }
 
-static bool check_for_gunshot_hit(component::Transform &transform, int entity_id, const std::vector<Gunshot> &gunshots)
+static bool check_for_gunshot_hit(const component::Transform &transform, const component::Hitbox &hitbox, int entity_id, const std::vector<Gunshot> &gunshots, const CollisionManager &collision_manager)
 {
-    // TODO: In future, subtract health. For now, just mark for removal.
     for (const auto &gunshot: gunshots) {
         if (gunshot.entity_id == entity_id) continue;
-        glm::vec2 disp = gunshot.fire_point - transform.pos;
-        if (std::hypot(disp.x, disp.y) < 200) return true;
+        if (collision_manager.check_entity_click(gunshot.origin, gunshot.fire_point, transform, hitbox)) return true;
     }
     return false;
 }
 
-void system_gun(EntityManager &entity_manager, double dt, const Camera &camera)
+void system_gun(EntityManager &entity_manager, double dt, const Camera &camera, const CollisionManager &collision_manager)
 {
     std::vector<Gunshot> gunshots;
     component::Transform *transform;
@@ -126,9 +124,12 @@ void system_gun(EntityManager &entity_manager, double dt, const Camera &camera)
         gun->fire_event = false;
     }
 
+    component::Hitbox *hitbox;
     for (int i = 0; i < entity_manager.entities.tail; i++) {
         if (!entity_manager.entity_supports_system(i, SystemType::GUNSHOT_TARGET)) continue;
         transform = entity_manager.get_transform_component(i, 0);
-        entity_manager.entities[i].to_remove |= check_for_gunshot_hit(*transform, i, gunshots);
+        hitbox = entity_manager.get_hitbox_component(i, 0);
+        // TODO: In future, subtract health. For now, just mark for removal.
+        entity_manager.entities[i].to_remove |= check_for_gunshot_hit(*transform, *hitbox, i, gunshots, collision_manager);
     }
 }

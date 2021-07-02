@@ -111,7 +111,7 @@ static bool check_box_box(const BoundingBox &box1, const BoundingBox &box2)
 
 void CollisionManager::find_collisions(
     std::vector<Intersection> &intersections,
-    std::vector<Collision> &collisions)
+    std::vector<Collision> &collisions)const
 {
     if (intersections.size() <= 1) return;
 
@@ -377,7 +377,7 @@ static void transform_point(const component::Transform &transform, const glm::ve
         + transform.scale.y * original.y * cos(transform.orientation);
 }
 
-void CollisionManager::transform_sprite_polygon(const component::Transform &transform, const component::Hitbox &hitbox)
+void CollisionManager::transform_sprite_polygon(const component::Transform &transform, const component::Hitbox &hitbox)const
 {
     const std::vector<glm::vec2> &original = polygons[2*(int)hitbox.sprite_id].vertices;
     std::vector<glm::vec2> &transformed = polygons[2*(int)hitbox.sprite_id+1].vertices;
@@ -495,4 +495,64 @@ void CollisionManager::get_occlusion_edges(
             nodes.push(node->nodes[i]);
         }
     }
+}
+
+static bool check_point_box(const glm::vec2 &source, const BoundingBox &box)
+{
+    if (source.x < box.left) return false;
+    if (source.x > box.right) return false;
+    if (source.y < box.bot) return false;
+    if (source.y > box.top) return false;
+    return true;
+}
+
+bool CollisionManager::check_entity_click(
+    glm::vec2 origin, glm::vec2 point,
+    const component::Transform &transform,
+    const component::Hitbox &hitbox)const
+{
+    if (!check_point_box(point, hitbox.box)) return false;
+    transform_sprite_polygon(transform, hitbox);
+
+    // Check point lies in polygon
+    int edge_count = 0;
+    const std::vector<glm::vec2> &vertices = polygons[2*(int)hitbox.sprite_id+1].vertices;
+    Edge edge;
+    double dist;
+    for (int i = 0; i < vertices.size(); i++) {
+        edge.a = vertices[i];
+        edge.b = vertices[(i+1)%vertices.size()];
+        if (edge.a.x > point.x) continue;
+        if (edge.b.x < point.x) continue;
+        if (edge.a.x==edge.a.y) continue;
+        dist = (edge.a.y-point.y) + (edge.b.y-edge.a.y)*(point.x-edge.a.x)/(edge.b.x-edge.a.x);
+        if (dist > 0) edge_count++;
+    }
+    if (edge_count%2 == 0) return false;
+
+    // Check that line of sight is uninterrupted
+    BoundedEdge sight;
+    sight.edge.a = origin;
+    sight.edge.b = point;
+    sight.compute_box();
+
+    Intersection intersection; // Unused, but needed for check_edge_edge function
+    std::stack<Octree*> nodes;
+    nodes.push(root);
+    while (!nodes.empty()) {
+        Octree* node = nodes.top();
+        nodes.pop();
+        for (const auto &bounded_edge: node->edges) {
+            if (!check_box_box(bounded_edge.box, sight.box)) continue;
+            if (check_edge_edge(bounded_edge.edge, sight.edge, intersection)) {
+                return false;
+            }
+        }
+        for (int i = 0; i < 4; i++) {
+            if (node->nodes[i] == nullptr) continue;
+            if (!check_box_box(node->nodes[i]->box, hitbox.box)) continue;
+            nodes.push(node->nodes[i]);
+        }
+    }
+    return true;
 }

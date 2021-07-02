@@ -80,7 +80,7 @@ struct Collision {
     glm::vec2 pos;
     glm::vec2 normal;
     double depth;
-    bool slide; 
+    bool slide;
     // Two entities need to move away by a distance "depth" along normal.
     // If two intersections occur on the same edge, can slide perpendicular to normal.
 };
@@ -101,16 +101,21 @@ public:
 
     void get_occlusion_edges(const BoundingBox &view_box, double angle_start, double angle_width, std::vector<const Edge*> &edges)const;
 
+    bool check_entity_click(
+        glm::vec2 origin, glm::vec2 point,
+        const component::Transform &transform,
+        const component::Hitbox &hitbox)const;
+
 private:
     void add_terrain_edge(const BoundedEdge &edge);
-    void transform_sprite_polygon(const component::Transform &transform, const component::Hitbox &hitbox);
-    void find_collisions(std::vector<Intersection> &intersections, std::vector<Collision> &collisions);
+    void transform_sprite_polygon(const component::Transform &transform, const component::Hitbox &hitbox)const;
+    void find_collisions(std::vector<Intersection> &intersections, std::vector<Collision> &collisions)const;
 
     glm::vec2 centre, size;
 
     Octree *root;
 
-    std::vector<CollisionPolygon> polygons;
+    mutable std::vector<CollisionPolygon> polygons;
     std::vector<BoundingBox> sprite_boxes;
 
     friend class CollisionRenderer;
