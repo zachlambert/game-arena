@@ -56,8 +56,6 @@ void PolygonRenderer::store_polygon(const component::Polygon &polygon)
     }
 
     if (!polygon.allocated) {
-        std::cout << "Allocating" << std::endl;
-        std::cout << "Num vertices = " << polygon.vertices.size() << std::endl;
         polygon.allocated = true;
         // TODO: !!! Will break of vertices and indices sizes aren't multiples of 2
         vertices.allocate(polygon.vertices.size(), polygon.vertices_offset);
@@ -65,7 +63,6 @@ void PolygonRenderer::store_polygon(const component::Polygon &polygon)
         for (std::size_t i = 0; i < polygon.vertices.size(); i++) {
             vertices.data[i].position.z = 0;
         }
-        std::cout << "Allocated" << std::endl;
     }
 
     if (polygon.dirty) {

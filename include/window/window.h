@@ -13,7 +13,8 @@ public:
     Window(
         const std::string &name,
         unsigned int width,
-        unsigned int height
+        unsigned int height,
+        bool fullscreen
     );
     bool initialise();
     bool is_running();
@@ -22,6 +23,7 @@ public:
     const std::string name;
     unsigned int width;
     unsigned int height;
+    bool fullscreen;
     GLFWwindow *window;
 };
 

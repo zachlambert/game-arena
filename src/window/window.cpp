@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <GLFW/glfw3.h>
 
-Window::Window(const std::string &name, unsigned int width, unsigned int height):
-    name(name), width(width), height(height), window(NULL) {}
+Window::Window(const std::string &name, unsigned int width, unsigned int height, bool fullscreen):
+    name(name), width(width), height(height), fullscreen(fullscreen), window(NULL) {}
 
 bool Window::initialise()
 {
@@ -18,7 +18,12 @@ bool Window::initialise()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL);
+    if (fullscreen) {
+        window = glfwCreateWindow(width, height, name.c_str(), glfwGetPrimaryMonitor(), NULL);
+    } else {
+        window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL);
+    }
+
     if (!window) {
         fprintf(stderr, "Failed to open GLFW window.\n");
         glfwTerminate();

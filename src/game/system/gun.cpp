@@ -36,10 +36,10 @@ static void update_gun_ray(
     // - When a shot is fired, such that it stays the same or a bit, and
     //   darkens.
     if (!gun.fire_visual_on || gun.fire_event) {
-        double gradient =  0.02 * (1 - gun.focus*0.8);
+        double gradient =  0.01 * (1 - gun.focus*0.8);
         double x_dist = 2000/camera.zoom;
         double y_dist = gradient * x_dist;
-        static double origin_y = 8;
+        static double origin_y = 6;
 
         gun_ray_polygon.vertices[0] = {gun.origin_offset, -origin_y};
         gun_ray_polygon.vertices[1] = {gun.origin_offset, origin_y};
@@ -47,15 +47,15 @@ static void update_gun_ray(
         gun_ray_polygon.vertices[3] = {gun.origin_offset + x_dist, -origin_y - y_dist};
 
         if (gun.fire_event) {
-            gun_ray_polygon.colors[0] = {0.2, 0.2, 0.2, 1};
-            gun_ray_polygon.colors[1] = {0.2, 0.2, 0.2, 1};
-            gun_ray_polygon.colors[2] = {0.2, 0.2, 0.2, 0};
-            gun_ray_polygon.colors[3] = {0.2, 0.2, 0.2, 0};
+            gun_ray_polygon.colors[0] = {0, 0, 0, 1};
+            gun_ray_polygon.colors[1] = {0, 0, 0, 1};
+            gun_ray_polygon.colors[2] = {1, 1, 1, 1};
+            gun_ray_polygon.colors[3] = {1, 1, 1, 1};
         } else if (!gun.fire_visual_on) {
-            gun_ray_polygon.colors[0] = {0.6, 0.6, 0.6, 1};
-            gun_ray_polygon.colors[1] = {0.6, 0.6, 0.6, 1};
-            gun_ray_polygon.colors[2] = {0.6, 0.6, 0.6, 0};
-            gun_ray_polygon.colors[3] = {0.6, 0.6, 0.6, 0};
+            gun_ray_polygon.colors[0] = {0.7, 0.7, 0.7, 1};
+            gun_ray_polygon.colors[1] = {0.7, 0.7, 0.7, 1};
+            gun_ray_polygon.colors[2] = {1, 1, 1, 1};
+            gun_ray_polygon.colors[3] = {1, 1, 1, 1};
         }
         gun_ray_polygon.dirty = true;
     }

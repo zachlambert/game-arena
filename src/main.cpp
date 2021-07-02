@@ -24,7 +24,8 @@ int main()
 {
     // 1. Create a window
 
-    Window window("Arena", 1080, 720);
+    // Window window("Arena", 1920, 1080, true);
+    Window window("Arena", 1080, 720, false);
     if (!window.initialise()) {
         return 1;
     }
