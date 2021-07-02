@@ -71,7 +71,10 @@ struct Polygon: public BaseComponent {
 struct Physics: public BaseComponent {
     glm::vec3 displacement; // Incremental twist transform over a single frame
     glm::vec3 twist;
-    Physics(): displacement(0, 0, 0), twist(0, 0, 0) {}
+    glm::vec3 force;
+    double mass;
+    double inertia;
+    Physics(): displacement(0, 0, 0), twist(0, 0, 0), force(0, 0, 0), mass(1), inertia(5000) {}
 };
 
 struct Gun: public BaseComponent {

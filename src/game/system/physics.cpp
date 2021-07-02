@@ -1,6 +1,9 @@
 #include "game/system.h"
 
 static void update_entity(component::Transform &transform, component::Physics &physics, double dt) {
+    physics.twist.x += dt*physics.force.x / physics.mass;
+    physics.twist.y += dt*physics.force.y / physics.mass;
+    physics.twist.z += dt*physics.force.z / physics.inertia;
     physics.displacement.x = physics.twist.x * dt;
     physics.displacement.y = physics.twist.y * dt;
     physics.displacement.z = physics.twist.z * dt;

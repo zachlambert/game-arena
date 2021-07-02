@@ -2,14 +2,27 @@
 
 void update_entity(
     component::Transform &transform,
-    const component::Physics &physics,
+    component::Physics &physics,
     component::Hitbox &hitbox)
 {
+    physics.force.x = 0;
+    physics.force.y = 0;
+    physics.force.z = 0;
     if (hitbox.collisions.empty()) return;
+
+    for (const auto &collision: hitbox.collisions) {
+        physics.force.x += collision.normal.x * collision.depth;
+        physics.force.y += collision.normal.y * collision.depth;
+        glm::vec2 disp = collision.pos - transform.pos;
+        physics.force.z += disp.x*physics.force.y - disp.y*physics.force.x;
+    }
+    physics.force *= 10000.0f;
+    hitbox.collisions.clear();
+    return;
 
     // Resolve collisions
     if (hitbox.collisions.size() > 2) {
-        // Shouldn't be able to happen
+        // Can only happen when changing sprite
         transform.pos.x -= physics.displacement.x;
         transform.pos.y -= physics.displacement.y;
         transform.orientation -= physics.displacement.z;
@@ -40,6 +53,16 @@ void update_entity(
         return;
     }
 
+    if (dot > 1-1e-6) {
+        if (d1 > d2) {
+            transform.pos += n1 * (float)d1;
+        } else {
+            transform.pos += n2 * (float)d2;
+        }
+        hitbox.collisions.clear();
+        return;
+    }
+
     float a = (d1 - d2*dot) / (1 - dot*dot);
     float b = d2 - a*dot;
 
@@ -51,8 +74,13 @@ void update_entity(
         transform.pos.x -= physics.displacement.x;
         transform.pos.y -= physics.displacement.y;
         transform.orientation -= physics.displacement.z;
+        std::cout << "asdf" << std::endl;
     } else {
         transform.pos += a*n1 + b*n2;
+        std::cout << hypot(disp.x, disp.y) << std::endl;
+        std::cout << "d1 = " << d1 << std::endl;
+        std::cout << "d2 = " << d1 << std::endl;
+        std::cout << "dot = " << dot << std::endl;
     }
 
     hitbox.collisions.clear();
