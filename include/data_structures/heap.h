@@ -68,11 +68,9 @@ public:
     }
 
     void resize(int n) {
-        std::cout << "resizing to " << n << std::endl;
         resize_flag = true;
         data.resize(n);
         while (nodes[root_index].capacity != n) {
-            std::cout << "Capacity = " << nodes[root_index].capacity << std::endl;
             Node new_root;
             new_root.index = 0;
             new_root.left = root_index;

@@ -1,5 +1,45 @@
 #include "game/system.h"
 
+#include <list>
+
+static bool point_in_interval(
+    double angle, const std::pair<double, double> &interval)
+{
+    // Assumes angles are over the same range, eg [-pi, pi]
+    double dif1 = angle - interval.first;
+    if (dif1 < 0) dif1 += 2*M_PI;
+    double dif2 = interval.second - interval.first;
+    if (dif2 < 0) dif2 += 2*M_PI;
+    return (dif1 <= dif2);
+}
+
+static bool combine_intervals(
+    const std::pair<double, double> &i1,
+    const std::pair<double, double> &i2,
+    std::pair<double, double> &result)
+{
+    if (point_in_interval(i1.first, i2)) {
+        result.first = i2.first;
+        if (point_in_interval(i1.second, i2)) {
+            result.second = i2.second;
+        } else {
+            result.second = i1.second;
+        }
+        return true;
+    }
+    if (point_in_interval(i1.second, i2)) {
+        result.first = i1.first;
+        result.second = i2.second;
+        return true;
+    }
+    if (point_in_interval(i2.first, i1)) {
+        result.first = i1.first;
+        result.second = i2.second;
+        return true;
+    }
+    return false;
+}
+
 static void update_polygon(
     const component::Transform &player_transform,
     component::Polygon &polygon,
@@ -56,17 +96,69 @@ static void update_polygon(
         edges
     );
 
+    glm::vec2 centre(0.5*(view_box.left+view_box.right), 0.5*(view_box.bot+view_box.top));
+
+    glm::vec2 disp;
+    std::vector<double> edge_dists(edges.size());
+    for (int i = 0; i < edges.size(); i++) {
+        disp = 0.5f*(edges[i]->a+edges[i]->b) - centre;
+        edge_dists[i] = hypot(disp.y, disp.x);
+    }
+
+    // Sort in-place by distance
+    // Bubble sort for simplicity
+    for (int i = 0; i < (int)edges.size()-1; i++) {
+        for (int j = 0; j < (int)edges.size()-1; j++) {
+            if (edge_dists[j] > edge_dists[j+1]) {
+                std::swap(edge_dists[j], edge_dists[j+1]);
+                std::swap(edges[j], edges[j+1]);
+            }
+        }
+    }
+
+    double angle_a, angle_b;
+    std::list<std::pair<double, double>> intervals;
+
     int vertex_index = 7;
     int index_index = 15;
     glm::vec2 dir_a, dir_b;
-    glm::vec2 centre(0.5*(view_box.left+view_box.right), 0.5*(view_box.bot+view_box.top));
     for (const auto &edge: edges) {
+        dir_a = edge->a - centre;
+        angle_a = atan2(dir_a.y, dir_a.x);
+        dir_b = edge->b - centre;
+        angle_b = atan2(dir_b.y, dir_b.x);
+
+        // Check if this angle interval is already occluded
+        bool skip = false;
+        for (const auto &interval: intervals) {
+            if (point_in_interval(angle_a, interval) && point_in_interval(angle_b, interval)) {
+                skip = true;
+                break;
+            }
+        }
+        if (skip) continue;
+
+        // Otherwise, add an interval
+        std::pair<double, double> interval(angle_a, angle_b);
+        auto iter = intervals.begin();
+        auto next = iter;
+        while (iter != intervals.end()) {
+            next = iter;
+            next++;
+            if (combine_intervals(*iter, interval, interval)) {
+                intervals.remove(*iter);
+            }
+            iter = next;
+        }
+        intervals.push_back(interval);
+
+        // Add the vertices and indices
+        dir_a /= hypot(dir_a.x, dir_a.y);
+        dir_b /= hypot(dir_a.x, dir_a.y);
         polygon.vertices[vertex_index] = edge->a;
         polygon.vertices[vertex_index+1] = edge->b;
         dir_a = edge->a - centre;
-        dir_a /= hypot(dir_a.x, dir_a.y);
         dir_b = edge->b - centre;
-        dir_b /= hypot(dir_a.x, dir_a.y);
         polygon.vertices[vertex_index+2] = centre + 2*(float)(view_box.right-view_box.left)*dir_b;
         polygon.vertices[vertex_index+3] = centre + 2*(float)(view_box.right-view_box.left)*dir_a;
 
