@@ -30,7 +30,7 @@ static void update_polygon(
         screen_pos.x = camera.screen_width/2 + cos(angle) * 2*camera.screen_width;
         screen_pos.y = camera.screen_height/2 - sin(angle) * 2*camera.screen_width;
         polygon.vertices[i+1] = camera.project_point(screen_pos);
-        angle += (2*M_PI - fov)/4;
+        angle += (2*M_PI - fov)/5;
         i++;
     }
     for (int i = 0; i < 5; i++) {
@@ -56,8 +56,6 @@ static void update_polygon(
         edges
     );
 
-    std::cout << "A" << std::endl;
-
     int vertex_index = 7;
     int index_index = 15;
     glm::vec2 dir_a, dir_b;
@@ -69,22 +67,20 @@ static void update_polygon(
         dir_a /= hypot(dir_a.x, dir_a.y);
         dir_b = edge->b - centre;
         dir_b /= hypot(dir_a.x, dir_a.y);
-        polygon.vertices[vertex_index+2] = centre + 2*(float)camera.screen_width*dir_b;
-        polygon.vertices[vertex_index+3] = centre + 2*(float)camera.screen_width*dir_a;
+        polygon.vertices[vertex_index+2] = centre + 2*(float)(view_box.right-view_box.left)*dir_b;
+        polygon.vertices[vertex_index+3] = centre + 2*(float)(view_box.right-view_box.left)*dir_a;
 
-        polygon.indices.push_back(index_index);
-        polygon.indices.push_back(index_index+1);
-        polygon.indices.push_back(index_index+2);
-        polygon.indices.push_back(index_index);
-        polygon.indices.push_back(index_index+2);
-        polygon.indices.push_back(index_index+3);
+        polygon.indices[index_index] = vertex_index;
+        polygon.indices[index_index+1] = vertex_index+1;
+        polygon.indices[index_index+2] = vertex_index+2;
+        polygon.indices[index_index+3] = vertex_index;
+        polygon.indices[index_index+4] = vertex_index+2;
+        polygon.indices[index_index+5] = vertex_index+3;
 
         vertex_index += 4;
-        index_index += 4;
+        index_index += 6;
     }
     polygon.element_count = index_index;
-
-    std::cout << "B" << std::endl;
 }
 
 void system_occlusion_polygon(EntityManager &entity_manager, const CollisionManager &collision_manager, const Camera &camera)
